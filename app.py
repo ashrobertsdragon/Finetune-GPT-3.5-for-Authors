@@ -20,28 +20,20 @@ UPLOAD_FOLDER = os.path.join("prosepal", "upload_folder")
 MAX_FILE_SIZE = 2 * 1024 * 1024  # 2 MB
 TOKENIZER = tiktoken.get_encoding("cl100k_base")
 
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = MAX_FILE_SIZE
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+app.config["MAX_CONTENT_LENGTH"] = MAX_FILE_SIZE
 
 def is_utf8(file_path: str) -> bool:
   try:
-    with open(file_path, 'r', encoding='utf-8') as file:
+    with open(file_path, "r", encoding="utf-8") as file:
       file.read()
     return True
   except UnicodeDecodeError:
     return False
 
-def clear_screen():
-  "Clears the the screen using OS-specific commands"
-
-  if os.name == 'nt':
-    os.system('cls')
-  else:
-    os.system('clear')
-
 def psuedo_animation(folder_name: str, message: str):
   for i in range(1,4):
-    clear_screen()
+
     training_status[folder_name] = f"{message}{'.' * i}"
     time.sleep(1)
 
@@ -324,7 +316,6 @@ def fine_tune(folder_name: str):
     upload_file = client.fine_tuning.jobs.retrieve(id=JSONL_file.id)
     psuedo_animation(folder_name, message)
     if upload_file.status == "processed":
-      clear_screen()
       training_status[folder_name] = "File processed"
       break
 
@@ -334,9 +325,11 @@ def fine_tune(folder_name: str):
     fine_tune_info = client.fine_tuning.jobs.retrieve(id=fine_tune_job.id)
     psuedo_animation(message)
     if fine_tune_info.status == "succeeded":
-      training_status[folder_name] = fine_tune_info.status
-      training_status[folder_name] = f"Fine-tuned model info {fine_tune_info}"
-      training_status[folder_name] = f"Model id {fine_tune_info.fine_tuned_model}"
+      training_status[folder_name] = (
+        f"{fine_tune_info.status}"
+        f"Fine-tuned model info {fine_tune_info}"
+        f"Model id {fine_tune_info.fine_tuned_model}"
+      )
       break
   return
 
@@ -361,13 +354,16 @@ def train(folder_name:str, role: str, user_key: str, chunk_type: str):
   client.api_key = user_key
   process_files(folder_name, role, chunk_type)
   fine_tune(folder_name)
+  shutil.rmtree(folder_name)
+  del user_key
+  del training_status[folder_name]
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route("/", methods=["GET", "POST"])
 def index():
-  if request.method == 'POST':
-    author = request.form["author"]
+  if request.method == "POST":
+    role = request.form["role"]
     chunk_type = request.form["chunk_type"]
-    user_key = request.form['user_key']
+    user_key = request.form["user_key"]
 
     # Validate user key
     if not (user_key.startswith("sk-") and 50 < len(user_key) > 60):
@@ -386,18 +382,15 @@ def index():
           os.remove(file_path)
           return "File is not UTF-8 encoded", 400
                     
-    threading.Thread(target=train, args=(random_folder, user_key, author, chunk_type)).start()
-    shutil.rmtree(random_folder)
-    del user_key
-    del training_status[random_folder]
-    return render_template("index.html", folder_name=random_folder.split('/')[-1])
+    threading.Thread(target=train, args=(random_folder, user_key, role, chunk_type)).start()
+    return render_template("index.html", folder_name=random_folder.split("/")[-1])
 
   return render_template("index.html")
 
 @app.route("/status/<folder_name>")
 def status(folder_name: str):
     full_path = os.path.join(UPLOAD_FOLDER, folder_name)
-    return jsonify({'status': training_status.get(full_path, 'Not started')})
+    return jsonify({"status": training_status.get(full_path, "Not started")})
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
