@@ -56,14 +56,11 @@ def write_jsonl_file(content: str, file_path: str):
       f.write("\n")
   return
 
-def format_for_finetuning(chunks: list, role: str, user_message: str):
+def format_for_finetuning(chunks: list, role: str, user_message: str) -> list:
 
   formatted_data = []
   for i, chunk in enumerate(chunks):
-    if isinstance(user_message, list):
-      user_content = user_message[i]
-    else:
-      user_content = user_message
+    user_content = user_message[i]
     message = {
       "messages": [
         {"role": "system", "content": role},
@@ -82,37 +79,57 @@ def extract_dialogue(paragraph: str) -> Tuple[str, str]:
   dialogue = ""
   prose = ""
   sentence = ""
+  check_next_char = False
+  end_sentence = False
   in_dialogue = False
   punctuation = [".", "?", "!"]
   quote_count = 0
 
-  for char in paragraph:
+  for i, char in enumerate(paragraph):
     sentence += char
+    if char == '"':
+      quote_count += 1
+      in_dialogue = True if (quote_count // 2 == 1) else False
+      end_sentence = True if check_next_char is True else False
+      check_next_char = False
     if char in punctuation:
+      if i + 1 < len(paragraph):
+        check_next_char = True
+        continue
+      end_sentence = True
+    if end_sentence is True:
       if in_dialogue is False:
         prose += sentence.strip()
       elif in_dialogue is True:
         dialogue += sentence.strip()
       sentence = ""
-  if char == '"':
-    quote_count +=1
-    in_dialogue = True if (quote_count // 2 == 0) else False
+      end_sentence = False
+
   return prose, dialogue
 
-def dialogue_prose(book: str) -> list:
+def dialogue_prose(book: str, role: str) -> list:
 
-  prose_list = []
-  dialogue_list = []
+  chunks = []
+  user_message = []
+  punctuation = [".", "?", "!"]
+  prose_sentences = 0
+  dialogue_sentences = 0
   chapters = separate_into_chapters(book)
 
   for chapter in chapters:
     paragraphs = chapter.split("\n")
     for paragraph in paragraphs:
       prose, dialogue = extract_dialogue(paragraph)
-      prose_list.append(prose)
-      dialogue_list.append(dialogue)
-
-  
+      for mark in punctuation:
+        prose_sentences += prose.count(mark)
+        dialogue_sentences += dialogue.count(mark)
+      if prose:
+        chunks.append(prose)
+        user_message.append(f"Write {prose_sentences} sentences of description action")
+      if dialogue:
+        chunks.append(dialogue)
+        user_message.append(f"Write {dialogue_sentences} sentences of dialogue")
+  return format_for_finetuning(chunks, role, user_message)
 
 def count_tokens(text: str) -> Tuple[List[int], int]:
   tokens = TOKENIZER.encode(text)
