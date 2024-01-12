@@ -6,6 +6,7 @@ import uuid
 import threading
 import time
 from collections import deque
+from typing import List, Tuple
 
 from openai import OpenAI
 import tiktoken
@@ -14,13 +15,14 @@ from flask import Flask, render_template, request, jsonify
 app = Flask(__name__)
 training_status = {}
 client = OpenAI()
-UPLOAD_FOLDER = '/path/to/non-web-accessible-folder'
+UPLOAD_FOLDER = os.path.join("prosepal", "upload_folder")
 MAX_FILE_SIZE = 2 * 1024 * 1024  # 2 MB
+TOKENIZER = tiktoken.get_encoding("cl100k_base")
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = MAX_FILE_SIZE
 
-def is_utf8(file_path):
+def is_utf8(file_path: str) -> bool:
   try:
     with open(file_path, 'r', encoding='utf-8') as file:
       file.read()
@@ -36,41 +38,91 @@ def clear_screen():
   else:
     os.system('clear')
 
-def processing_psuedo_animation(folder_name, message):
+def processing_psuedo_animation(folder_name: str, message: str):
   for i in range(1,4):
     clear_screen()
     training_status[folder_name] = f"{message}{'.' * i}"
     time.sleep(1)
 
-def read_text_file(file_path):
+def read_text_file(file_path: str) -> str:
   with open(file_path, "r") as f:
     read_file = f.read()
   return read_file
 
-def write_jsonl_file(content, file_path):
+def write_jsonl_file(content: str, file_path: str):
   with open(file_path, "a") as f:
     for item in content:
       json.dump(item, f)
       f.write("\n")
   return
 
-def separate_into_chapters(text):
+def count_tokens(text: str) -> Tuple[List[int], int]:
+  tokens = TOKENIZER.encode(text)
+  num_tokens = len(tokens)
+  return tokens, num_tokens
+
+def adjust_to_newline(tokens: List[int], end_index: int) -> int:
+
+  newline = 198 # token id for a newline character
+  while end_index > 0 and tokens[end_index - 1] != newline:
+    end_index -= 1
+  return end_index
+
+def sliding_window_large(book: str) -> list:
+
+  chunk_list = []
+  chunk_size = 4096
+  start_index = 0
+  tokens, num_tokens = count_tokens(book)
+
+  while start_index < num_tokens:
+    end_index = min(start_index + chunk_size, num_tokens)
+    # Adjust end_index to the last newline token in the chunk
+    if end_index < num_tokens:
+      end_index = adjust_to_newline(tokens, end_index)
+    chunk_tokens = tokens[start_index:end_index]
+    chunk_list.append(TOKENIZER.decode(chunk_tokens))
+    start_index = end_index
+  return chunk_list
+
+def sliding_window_small(book: str) -> list:
+
+  chunk_list = []
+  chapters = separate_into_chapters(book)
+
+  for chapter in chapters:
+    tokens, chapter_token_count = count_tokens(chapter)
+    chunk_size = min(chapter_token_count / 3, 4096)
+    start_index = 0
+
+    while start_index < chapter_token_count:
+      end_index = min(start_index + chunk_size, chapter_token_count)
+      # Adjust end_index to the last newline token in the chunk
+      if end_index < chapter_token_count:
+        end_index = adjust_to_newline(tokens, end_index)
+      chunk_tokens = tokens[start_index:end_index]
+      chunk_list.append(TOKENIZER.decode(chunk_tokens))
+      start_index = end_index
+  return chunk_list
+
+def separate_into_chapters(text: str) -> List:
   return re.split(r"\s*\*\*\s*", text)
 
-def split_into_chunks(chapter, chunk_size = 2000):
+def split_into_chunks(content: str, role: str, chunk_type: str) -> list:
+    
+  if chunk_type == "sliding_window_small":
+    chunks = sliding_window_small(content)
+    formatted_messages = format_for_fine_tuning(chunks, role)
+  if chunk_type == "sliding_window_large":
+    formatted_messages = format_for_fine_tuning(chunks, role)
+  if chunk_type == "dialogue_pass":
+    formatted_messages = format_for_fine_tuning(chunks, role)
+  if chunk_type == "generate_beats":
+    formatted_messages = format_for_fine_tuning(chunks, role)
+  return formatted_messages
 
-  tokenizer = tiktoken.get_encoding("cl100k_base")
-  tokens = tokenizer.encode(chapter)
-  chunks = []
+def format_for_fine_tuning(chunks: list, role: str) -> list:
 
-  for i in range(0, len(tokens), chunk_size):
-    chunk_tokens = tokens[i:i + chunk_size]
-    chunks.append(tokenizer.decode(chunk_tokens))
-  return chunks
-
-def format_for_fine_tuning(chunks, author):
-  
-  system_message = f"You are a junior author who writes in the style of {author}"
   formatted_data = []
   queue = deque(chunks)
 
@@ -79,17 +131,15 @@ def format_for_fine_tuning(chunks, author):
     assistant_message = queue[0]
     message = {
       "messages": [
-        { "role": "system", "content": system_message },
-        { "role": "user", "content": user_message },
-        { "role": "assistant", "content": assistant_message }
+        {"role": "system", "content": role},
+        {"role": "user", "content": user_message},
+        {"role": "assistant", "content": assistant_message}
       ]
     }
     formatted_data.append(message)
   return formatted_data
 
-def fine_tune(folder_name, api_key):
-  
-  client.api_key = api_key
+def fine_tune(folder_name: str):
 
   fine_tune_file = os.path.join(folder_name, "fine_tune.jsonl")
 
@@ -101,7 +151,7 @@ def fine_tune(folder_name, api_key):
   training_status[folder_name] = f"Uploaded file id {JSONL_file.id}"
   message = "processing"
   while True:
-    upload_file = client.files.retrieve(id=JSONL_file.id)
+    upload_file = client.fine_tuning.jobs.retrieve(id=JSONL_file.id)
     processing_psuedo_animation(folder_name, message)
     if upload_file.status == "processed":
       clear_screen()
@@ -111,7 +161,7 @@ def fine_tune(folder_name, api_key):
   fine_tune_job = client.fine_tuning.jobs.create(training_file=JSONL_file.id, model="gpt-3.5-turbo-1105")
   message = "Fine-tuning"
   while True:
-    fine_tune_info = client.fine_tuning.job.retrieve(id=fine_tune_job.id)
+    fine_tune_info = client.fine_tuning.jobs.retrieve(id=fine_tune_job.id)
     processing_psuedo_animation(message)
     if fine_tune_info.status == "succeeded":
       training_status[folder_name] = fine_tune_info.status
@@ -120,7 +170,7 @@ def fine_tune(folder_name, api_key):
       break
   return
 
-def process_files(folder_name, author):
+def process_files(folder_name: str, role: str, chunk_type: str):
   
   fine_tune_messages = []
   for file_name in os.listdir(folder_name):
@@ -129,26 +179,24 @@ def process_files(folder_name, author):
         for file in files:
           file_path = os.path.join(root, file)
           content = read_text_file(file_path)
-          chapters = separate_into_chapters(content)
-
-          for chapter in chapters:
-            chunks = split_into_chunks(chapter)
-            formatted_messages = format_for_fine_tuning(chunks, author)
-            fine_tune_messages.extend(formatted_messages)
-
+          formatted_messages = split_into_chunks(content, role, chunk_type)
+          fine_tune_messages.extend(formatted_messages)
           training_status[folder_name] = f"{file} processed"
   fine_tune_path = os.path.join(folder_name, "fine_tune.jsonl")
   write_jsonl_file(fine_tune_messages, fine_tune_path)
   training_status[folder_name] = "All files processed"
   return
 
-def train(folder_name, author, user_key):
-  process_files(folder_name, author)
-  fine_tune(folder_name, user_key)
+def train(folder_name:str, role: str, user_key: str, chunk_type: str):
+  client.api_key = user_key
+  process_files(folder_name, role, chunk_type)
+  fine_tune(folder_name)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
   if request.method == 'POST':
+    author = request.form["author"]
+    chunk_type = request.form["chunk_type"]
     user_key = request.form['user_key']
 
     # Validate user key
@@ -168,7 +216,7 @@ def index():
           os.remove(file_path)
           return "File is not UTF-8 encoded", 400
                     
-    threading.Thread(target=train, args=(random_folder, user_key)).start()
+    threading.Thread(target=train, args=(random_folder, user_key, author, chunk_type)).start()
     shutil.rmtree(random_folder)
     del user_key
     del training_status[random_folder]
@@ -177,7 +225,7 @@ def index():
   return render_template("index.html")
 
 @app.route("/status/<folder_name>")
-def status(folder_name):
+def status(folder_name: str):
     full_path = os.path.join(UPLOAD_FOLDER, folder_name)
     return jsonify({'status': training_status.get(full_path, 'Not started')})
 
