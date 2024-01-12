@@ -6,10 +6,11 @@ import uuid
 import threading
 import time
 from collections import deque
-from typing import List, Tuple
+from typing import Any, List, Optional, Tuple
 
-from openai import OpenAI
+import openai
 import tiktoken
+from openai import OpenAI
 from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
@@ -38,7 +39,7 @@ def clear_screen():
   else:
     os.system('clear')
 
-def processing_psuedo_animation(folder_name: str, message: str):
+def psuedo_animation(folder_name: str, message: str):
   for i in range(1,4):
     clear_screen()
     training_status[folder_name] = f"{message}{'.' * i}"
@@ -71,9 +72,103 @@ def format_for_finetuning(chunks: list, role: str, user_message: str) -> list:
     formatted_data.append(message)
   return formatted_data
 
-def generate_beats(book: str, role: str) -> list:
-  pass
 
+def error_handle(e: Any, retry_count: int) -> int:
+  """
+  Determines whether error is unresolvable or should be retried. If unresolvable,
+  error is logged and administrator is emailed before exit. Otherwise, exponential
+  backoff is used for up to 5 retries.
+
+  Args:
+    e: an Exception body
+    retry_count: the number of attempts so far
+
+  Returns:
+    retry_count: the number of attemps so far
+  """
+
+  unresolvable_errors = [
+    openai.BadRequestError,
+    openai.AuthenticationError,
+    openai.NotFoundError,
+    openai.PermissionDeniedError,
+    openai.UnprocessableEntityError
+  ]
+
+  error_code = getattr(e, "status_code", None)
+  error_details = getattr(e, "response", {}).json().get("error", {})
+  error_message = error_details.get("message", "Unknown error")
+
+  if isinstance(e, tuple(unresolvable_errors)):
+    exit(1)
+  if error_code == 401:
+    exit(1)
+  if "exceeded your current quota" in error_message:
+    exit(1)
+
+  retry_count += 1
+  if retry_count == 5:
+    exit(1)
+  else:
+    sleep_time = (5 - retry_count)  + (retry_count ** 2)
+    time.sleep(sleep_time)
+  return retry_count
+
+def call_gpt_api(prompt: str, retry_count: Optional[int] = 0) -> str:
+  """
+  Makes API calls to the OpenAI ChatCompletions engine.
+
+  Args:.
+    prompt (str): The user's prompt.
+    retry_count (int, optional): The number of retry attempts. Defaults to 0.
+
+  Returns:
+    str: The generated content from the OpenAI GPT-3 model.
+  """
+  
+  role_script = (
+    "You are an expert develompental editor who specializes in writing scene beats "
+    "that are clear and concise. For the following chapter, please reverse engineer "
+    "the scene beats for the author. Provide only the beats and not any commentary "
+    "the beginning or end."
+  )
+  messages = [
+      {"role": "system", "content": role_script},
+      {"role": "user", "content": prompt}
+  ]
+
+  try:
+    response = client.chat.completions.create(
+      model = "gpt-3.5-turbo-1106",
+      messages = messages,
+      temperature = 0.7,
+      max_tokens = 1000,
+    )
+    if response.choices and response.choices[0].message.content:
+      answer = response.choices[0].message.content.strip()
+    else:
+      raise Exception("No message content found")
+
+  except Exception as e:
+    retry_count = error_handle(e, retry_count)
+    answer = call_gpt_api(prompt, retry_count)
+  return answer
+
+def generate_beats(book: str, role: str) -> list:
+
+  user_message = []
+  chunks = []
+  chapters = separate_into_chapters(book)
+
+  for chapter in chapters:
+    words = len(chapter.split(" "))
+    prompt = f"Chapter: {chapter}"
+    chapter_beats = call_gpt_api(prompt)
+    user_message.append(
+      f"Write {words} words for a chapter with the following scene beats:\n{chapter_beats}"
+    )
+    chunks.append(chapter)
+    return format_for_finetuning(chunks, role, user_message)
 
 def extract_dialogue(paragraph: str) -> Tuple[str, str]:
   dialogue = ""
@@ -227,7 +322,7 @@ def fine_tune(folder_name: str):
   message = "processing"
   while True:
     upload_file = client.fine_tuning.jobs.retrieve(id=JSONL_file.id)
-    processing_psuedo_animation(folder_name, message)
+    psuedo_animation(folder_name, message)
     if upload_file.status == "processed":
       clear_screen()
       training_status[folder_name] = "File processed"
@@ -237,7 +332,7 @@ def fine_tune(folder_name: str):
   message = "Fine-tuning"
   while True:
     fine_tune_info = client.fine_tuning.jobs.retrieve(id=fine_tune_job.id)
-    processing_psuedo_animation(message)
+    psuedo_animation(message)
     if fine_tune_info.status == "succeeded":
       training_status[folder_name] = fine_tune_info.status
       training_status[folder_name] = f"Fine-tuned model info {fine_tune_info}"
