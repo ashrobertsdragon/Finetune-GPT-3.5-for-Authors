@@ -56,6 +56,64 @@ def write_jsonl_file(content: str, file_path: str):
       f.write("\n")
   return
 
+def format_for_finetuning(chunks: list, role: str, user_message: str):
+
+  formatted_data = []
+  for i, chunk in enumerate(chunks):
+    if isinstance(user_message, list):
+      user_content = user_message[i]
+    else:
+      user_content = user_message
+    message = {
+      "messages": [
+        {"role": "system", "content": role},
+        {"role": "user", "content": user_content},
+        {"role": "assistant", "content": chunk}
+      ]
+    }
+    formatted_data.append(message)
+  return formatted_data
+
+def generate_beats(book: str, role: str) -> list:
+  pass
+
+
+def extract_dialogue(paragraph: str) -> Tuple[str, str]:
+  dialogue = ""
+  prose = ""
+  sentence = ""
+  in_dialogue = False
+  punctuation = [".", "?", "!"]
+  quote_count = 0
+
+  for char in paragraph:
+    sentence += char
+    if char in punctuation:
+      if in_dialogue is False:
+        prose += sentence.strip()
+      elif in_dialogue is True:
+        dialogue += sentence.strip()
+      sentence = ""
+  if char == '"':
+    quote_count +=1
+    in_dialogue = True if (quote_count // 2 == 0) else False
+  return prose, dialogue
+
+def dialogue_prose(book: str) -> list:
+
+  prose_list = []
+  dialogue_list = []
+  chapters = separate_into_chapters(book)
+
+  for chapter in chapters:
+    paragraphs = chapter.split("\n")
+    for paragraph in paragraphs:
+      prose, dialogue = extract_dialogue(paragraph)
+      prose_list.append(prose)
+      dialogue_list.append(dialogue)
+
+  
+
 def count_tokens(text: str) -> Tuple[List[int], int]:
   tokens = TOKENIZER.encode(text)
   num_tokens = len(tokens)
@@ -108,21 +166,8 @@ def sliding_window_small(book: str) -> list:
 def separate_into_chapters(text: str) -> List:
   return re.split(r"\s*\*\*\s*", text)
 
-def split_into_chunks(content: str, role: str, chunk_type: str) -> list:
-    
-  if chunk_type == "sliding_window_small":
-    chunks = sliding_window_small(content)
-    formatted_messages = format_for_fine_tuning(chunks, role)
-  if chunk_type == "sliding_window_large":
-    formatted_messages = format_for_fine_tuning(chunks, role)
-  if chunk_type == "dialogue_pass":
-    formatted_messages = format_for_fine_tuning(chunks, role)
-  if chunk_type == "generate_beats":
-    formatted_messages = format_for_fine_tuning(chunks, role)
-  return formatted_messages
-
-def format_for_fine_tuning(chunks: list, role: str) -> list:
-
+def sliding_window_format(chunks: list, role: str) -> list:
+  
   formatted_data = []
   queue = deque(chunks)
 
@@ -138,6 +183,19 @@ def format_for_fine_tuning(chunks: list, role: str) -> list:
     }
     formatted_data.append(message)
   return formatted_data
+
+def split_into_chunks(content: str, role: str, chunk_type: str) -> list:
+    
+  if chunk_type == "sliding_window_small":
+    chunks = sliding_window_small(content)
+    formatted_messages = sliding_window_format(chunks, role, chunk_type)
+  if chunk_type == "sliding_window_large":
+    formatted_messages = sliding_window_format(chunks, role, chunk_type)
+  if chunk_type == "dialogue_pass":
+    formatted_messages = dialogue_prose(chunks, role, chunk_type)
+  if chunk_type == "generate_beats":
+    formatted_messages = generate_beats(chunks, role, chunk_type)
+  return formatted_messages
 
 def fine_tune(folder_name: str):
 
