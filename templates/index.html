@@ -1,32 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Fine-tuning GPT-3.5 for Authors</title>
-    <script>
-        function checkStatus(folderName) {
-            fetch(`/status/${folderName}`)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('status').innerText = data.status;
-                    if (data.status !== 'Training complete.') {
-                        setTimeout(() => checkStatus(folderName), 1000);
-                    }
-                });
-        }
-    </script>
+  <title>Fine-tuning GPT-3.5 for Authors</title>
+  <script>
+    function checkStatus(folderName) {
+      fetch(`/status/${folderName}`)
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('status').innerText = data.status;
+          if (data.status !== 'Training complete.') {
+            setTimeout(() => checkStatus(folderName), 1000);
+          }
+        });
+    }
+  </script>
 </head>
 <body>
-    {% if folder_name %}
-        <p id="status">Fine-tuning started</p>
-        <script>checkStatus("{{ folder_name }}");</script>
-    {% else %}
-        <form method="POST" enctype="multipart/form-data">
-            <label for="user_key">OpenAI API key:</label>
-            <input type="text" name="user_key" id="user_key" required>
-            <label for="file">Upload Text File(s) (limit 2MB per file, but be text file):</label>
-            <input type="file" name="file" id="file" multiple accept=".txt,.text">
-            <input type="submit" value="Submit">
-        </form>
-    {% endif %}
+  {% if folder_name %}
+    <p id="status">Fine-tuning started</p>
+    <script>checkStatus("{{ folder_name }}");</script>
+  {% else %}
+    <form method="POST" enctype="multipart/form-data">
+      <label for="chunk_type">Fine tuning method</label>
+      <select name="chunk_type" id="chunk_type">
+        <option value="sliding_window_small">Sliding Window (chapter-level)</option>
+        <option value="sliding_window_large">Sliding Window (book-level)</option>
+        <option value="dialogue_prose">Dialogue/Prose</option>
+        <option value="generate_beats">Generate Beats (extra cost)</option>
+      </select>
+      <label for="role">System message:</label>
+      <input type="text" name="role" id="role" required>
+      <label for="user_key">OpenAI API key:</label>
+      <input type="text" name="user_key" id="user_key" required>
+      <label for="file">Upload Text File(s) (limit 2MB per file, must be text file):</label>
+      <input type="file" name="file" id="file" multiple accept=".txt,.text">
+      <input type="submit" value="Submit">
+      </form>
+  {% endif %}
 </body>
 </html>
