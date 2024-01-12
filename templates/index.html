@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fine-tuning GPT-3.5 for Authors</title>
+    <script>
+        function checkStatus(folderName) {
+            fetch(`/status/${folderName}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('status').innerText = data.status;
+                    if (data.status !== 'Training complete.') {
+                        setTimeout(() => checkStatus(folderName), 1000);
+                    }
+                });
+        }
+    </script>
+</head>
+<body>
+    {% if folder_name %}
+        <p id="status">Fine-tuning started</p>
+        <script>checkStatus("{{ folder_name }}");</script>
+    {% else %}
+        <form method="POST" enctype="multipart/form-data">
+            <label for="user_key">OpenAI API key:</label>
+            <input type="text" name="user_key" id="user_key" required>
+            <label for="file">Upload Text File(s) (limit 2MB per file, but be text file):</label>
+            <input type="file" name="file" id="file" multiple accept=".txt,.text">
+            <input type="submit" value="Submit">
+        </form>
+    {% endif %}
+</body>
+</html>
