@@ -5,13 +5,12 @@ import threading
 from openai import OpenAI
 from flask import Flask, render_template, request, jsonify
 
-from data_preparation import is_utf8
+from file_handling import is_utf8
+from shared_resources import training_status
 from training_management import train
 
 
 app = Flask(__name__)
-training_status = {}
-client = OpenAI()
 UPLOAD_FOLDER = os.path.join("prosepal", "upload_folder")
 MAX_FILE_SIZE = 2 * 1024 * 1024  # 2 MB
 
@@ -29,21 +28,21 @@ def index():
     if not (user_key.startswith("sk-") and 50 < len(user_key) > 60):
       return "Invalid user key", 400
 
-    random_folder = os.path.join(UPLOAD_FOLDER, str(uuid.uuid4()))
-    os.makedirs(random_folder, exist_ok=True)
+    folder_name = os.path.join(UPLOAD_FOLDER, str(uuid.uuid4()))
+    os.makedirs(folder_name, exist_ok=True)
 
     for file in request.files.getlist("file"):
       if file and file.filename.endswith(("txt", "text")):
         random_filename = f"{str(uuid.uuid4())}.txt"
-        file_path = os.path.join(random_folder, random_filename)
+        file_path = os.path.join(folder_name, random_filename)
         file.save(file_path)
 
         if not is_utf8(file_path):
           os.remove(file_path)
           return "File is not UTF-8 encoded", 400
                     
-    threading.Thread(target=train, args=(random_folder, user_key, role, chunk_type)).start()
-    return render_template("index.html", folder_name=random_folder.split("/")[-1])
+    threading.Thread(target=train, args=(folder_name, user_key, role, chunk_type)).start()
+    return render_template("index.html", folder_name=folder_name.split("/")[-1])
 
   return render_template("index.html")
 
