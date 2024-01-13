@@ -4,7 +4,7 @@ import time
 
 from chunking import split_into_chunks
 from file_handling import read_text_file, write_jsonl_file
-from openai_client import client
+from openai_client import set_client
 from shared_resources import training_status
 
 
@@ -63,7 +63,7 @@ def process_files(folder_name: str, role: str, chunk_type: str):
   return
 
 def train(folder_name:str, role: str, user_key: str, chunk_type: str):
-  client.api_key = user_key
+  set_client(user_key)
   process_files(folder_name, role, chunk_type)
   fine_tune(folder_name)
   shutil.rmtree(folder_name)
