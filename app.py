@@ -2,7 +2,6 @@ import os
 import uuid
 import threading
 
-from openai import OpenAI
 from flask import Flask, render_template, request, jsonify
 
 from file_handling import is_utf8

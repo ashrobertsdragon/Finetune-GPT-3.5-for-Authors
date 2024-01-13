@@ -3,7 +3,7 @@ from typing import Any, Optional
 
 import openai
 
-from training_management import client
+from openai_client import client
 
 
 def error_handle(e: Any, retry_count: int) -> int:
