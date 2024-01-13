@@ -2,6 +2,7 @@
 <html>
 <head>
   <title>Fine-tuning GPT-3.5 for Authors</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <script>
     function checkStatus(folderName) {
       fetch(`/status/${folderName}`)
@@ -13,9 +14,32 @@
           }
         });
     }
+    function toggleVisibility() {
+      var apiKeyInput = document.getElementById("user_key");
+      var currentType = apiKeyInput.getAttribute("type");
+      apiKeyInput.setAttribute("type", currentType === "password" ? "text" : "password");
+    }
+    document.addEventListener('DOMContentLoaded', (event) => {
+      const toggleSwitch = document.getElementById('darkModeToggle');
+      const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+
+      // Set the initial mode
+      if (prefersDarkScheme.matches) {
+        document.body.classList.toggle("dark-mode");
+      }
+
+      // Listen for toggle switch
+      toggleSwitch.addEventListener('change', () => {
+        document.body.classList.toggle("dark-mode");
+      });
+    });
   </script>
 </head>
-<body>
+<body class=""light-mode">
+  <label class="switch">
+    <input type="checkbox" id="darkModeToggle">
+    <span class="slider round"></span>
+  </label>
   {% if folder_name %}
     <p id="status">Fine-tuning started</p>
     <script>checkStatus("{{ folder_name }}");</script>
@@ -31,11 +55,30 @@
       <label for="role">System message:</label>
       <input type="text" name="role" id="role" required>
       <label for="user_key">OpenAI API key:</label>
-      <input type="text" name="user_key" id="user_key" required>
+      <input type="password" name="user_key" id="user_key" size="60" maxlength="60" required>
+      <button type="button" onclick="toggleVisibility()">Show</button>
       <label for="file">Upload Text File(s) (limit 2MB per file, must be text file):</label>
       <input type="file" name="file" id="file" multiple accept=".txt,.text">
+      <input type="checkbox" id="rights_confirmation" name="rights_confirmation" required>
+      <label for="rights_confirmation">I confirm that I have the rights to these files</label>
+      <input type="checkbox" id="terms_agreement" name="terms_agreement" required>
+      <label for="terms_agreement">I agree to the <a href="/terms" target="_blank">terms and conditions</a></label>
       <input type="submit" value="Submit">
       </form>
   {% endif %}
+  <!-- Footer -->
+  <footer style="position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px">
+    <div>
+      <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">
+          <img src="https://licensebuttons.net/l/by/4.0/80x15.png" alt="CC-BY-4 License">
+      </a>
+      <span> | </span>
+      <a href="https://prosepal.io" target="_blank">ProsePal</a>
+      <span> | </span>
+      <a href="/terms" target="_blank">Terms and Conditions</a>
+      <span> | </span>
+      <a href="/privacy" target="_blank">Privacy Policy</a>
+    </div>
+</footer>
 </body>
 </html>
