@@ -15,19 +15,7 @@
           }
         });
     }
-    function toggleVisibility() {
-      var apiKeyInput = document.getElementById("user_key");
-      var currentType = apiKeyInput.getAttribute("type");
-      apiKeyInput.setAttribute("type", currentType === "password" ? "text" : "password");
-      var visibilityImage = document.getElementById("VisibilityImage");
-      if (currentType === "password") {
-    // If the password is visible, set the image to invisible.png
-        visibilityImage.src = "static/invisible.png";
-      } else {
-    // If the password is hidden, set the image to visibility.png
-        visibilityImage.src = "static/visibility.png";
-      }
-    }
+
 
   </script>
 </head>
@@ -61,7 +49,7 @@
         <label for="user_key">OpenAI API key:</label>
         <div id="key">
           <input type="password" name="user_key" id="user_key" size="60" maxlength="60" required>
-          <button id="ShowButton" type="button" onclick="toggleVisibility()"><img id="visibilityImage" style="height: .75em; width: 1em" src="static/visibility.png" alt="show"></button>
+          <button id="ShowButton" type="button" onclick="toggleVisibility()"><img id="visibilityImage" style="height: .75em; width: 1em" src="static/visibility.png" alt="show key"></button>
         </div>
         <div id="upload">
           <label for="file">Upload Text File(s) (limit 2MB per file, must be text file):</label>
@@ -117,6 +105,21 @@
         document.body.classList.toggle("light-mode");
       });
     })
+    function toggleVisibility() {
+      var apiKeyInput = document.getElementById("user_key");
+      var currentType = apiKeyInput.getAttribute("type");
+      apiKeyInput.setAttribute("type", currentType === "password" ? "text" : "password");
+      var visibilityImage = document.getElementById("visibilityImage");
+      if (currentType === "password") {
+    // If the password is visible, set the image to invisible.png
+        visibilityImage.src = "static/invisible.png";
+        visibilityImage.alt = "hide key"
+      } else {
+    // If the password is hidden, set the image to visibility.png
+        visibilityImage.src = "static/visibility.png";
+        visibilityImage.alt = "show key"
+      }
+    }
   </script>
 </body>
 </html>

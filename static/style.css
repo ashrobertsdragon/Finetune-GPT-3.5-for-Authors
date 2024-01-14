@@ -1,4 +1,4 @@
-.form-container {
+body {
   max-width: 600px;
   margin: 0 auto;
 }
@@ -125,7 +125,7 @@ label a {
 }
 
 /* General Styling */
-body, button, input, select, textarea {
+body, button {
   font-family: 'Roboto', sans-serif;
 }
 input, select, textarea {
@@ -166,17 +166,15 @@ div {
 }
 
 #checkboxes label {
-  padding-bottom: 0;
   font-size: .8em;
-  margin-bottom: 0;
+  padding-top: .2em;
 }
-#checkboxes input[type="checkbox"] {
-  margin-bottom: 0;
-  padding-bottom: 0;
-}
+
 #rights, #terms {
   display: flex;
   align-items: center;
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
 
 #rights input[type="checkbox"], 
@@ -195,12 +193,12 @@ textarea,
     border-radius: 4px;
   }
 
-
 #role {
   min-height: 5em;
   width: 100%;
   resize: both; /* Resizable corner */
 }
+
 #key {
   display: flex;
   align-items: center;
@@ -217,7 +215,7 @@ button#showButton {
   width: 2em;
   position: relative;
   margin: 0;
-  background: url('/static/visibility.png') no-repeat center; /* Use an eye icon image */
+  background: url('/static/visibility.png') no-repeat center;
   background-color: #DBE1E7;
   border: none;
   padding: 0;
