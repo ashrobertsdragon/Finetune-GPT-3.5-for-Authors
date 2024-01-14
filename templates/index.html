@@ -3,7 +3,6 @@
 <head>
   <title>Fine-tuning GPT-3.5 for Authors</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <script>
     function checkStatus(folderName) {
@@ -20,67 +19,104 @@
       var apiKeyInput = document.getElementById("user_key");
       var currentType = apiKeyInput.getAttribute("type");
       apiKeyInput.setAttribute("type", currentType === "password" ? "text" : "password");
+      var visibilityImage = document.getElementById("VisibilityImage");
+      if (currentType === "password") {
+    // If the password is visible, set the image to invisible.png
+        visibilityImage.src = "static/invisible.png";
+      } else {
+    // If the password is hidden, set the image to visibility.png
+        visibilityImage.src = "static/visibility.png";
+      }
     }
+
+  </script>
+</head>
+<body class="light-mode">
+  <div id="form-container">
+    <div id="toggle">
+      <p>Dark mode</p>
+      <label class="switch">
+        <input type="checkbox" id="darkModeToggle">
+        <span class="slider round"></span>
+      </label>
+    </div>
+    {% if folder_name %}
+      <p id="status">Fine-tuning started</p>
+      <script>checkStatus("{{ folder_name }}");</script>
+    {% else %}
+      <form method="POST" enctype="multipart/form-data">
+        <div id="chunk">
+          <label for="chunk_type">Fine tuning method</label>
+          <select name="chunk_type" id="chunk_type">
+            <option value="sliding_window_small">Sliding Window (chapter-level)</option>
+            <option value="sliding_window_large">Sliding Window (book-level)</option>
+            <option value="dialogue_prose">Dialogue/Prose</option>
+            <option value="generate_beats">Generate Beats (extra cost)</option>
+          </select>
+        </div>
+        <div id="sys_role">
+          <label for="role">System message:</label>
+          <textarea name="role" id="role" rows=5 required></textarea>
+        </div>
+        <label for="user_key">OpenAI API key:</label>
+        <div id="key">
+          <input type="password" name="user_key" id="user_key" size="60" maxlength="60" required>
+          <button id="ShowButton" type="button" onclick="toggleVisibility()"><img id="visibilityImage" style="height: .75em; width: 1em" src="static/visibility.png" alt="show"></button>
+        </div>
+        <div id="upload">
+          <label for="file">Upload Text File(s) (limit 2MB per file, must be text file):</label>
+          <input type="file" name="file" id="file" multiple accept=".txt,.text">
+        </div>
+        <div id="checkboxes">
+          <div id="rights">
+            <input type="checkbox" id="rights_confirmation" name="rights_confirmation" required>
+            <label for="rights_confirmation">I confirm that I have the rights to these files</label>
+          </div>
+          <div id="terms">
+            <input type="checkbox" id="terms_agreement" name="terms_agreement" required>
+            <label for="terms_agreement">I agree to the  <a href="/terms" target="_blank">terms and conditions</a></label>
+          </div>
+        </div>
+        <input type="submit" value="Submit">
+        </form>
+    {% endif %}
+  </div>
+
+  <!-- Footer -->
+  <footer style="bottom: 0; width: 100%; text-align: center; padding: 10px">
+    <div>
+      © <a href="https://prosepal.io" target="_blank">ProsePal</a>
+      <span> | </span>
+      <a href ="https://github.com/ashrobertsdragon/Finetune-GPT-3.5-for-Authors">Code available on GitHub under MIT License</a>
+      <span> | </span>
+      <a href="/terms" target="_blank">Terms and Conditions</a>
+      <span> | </span>
+      <a href="/privacy" target="_blank">Privacy Policy</a>
+      <span> | </span>
+      <a href="https://www.flaticon.com/free-icons/hide" title="hide icons">Hide icons created by Google - Flaticon</a>
+    </div>
+  </footer>
+  <script>
     document.addEventListener('DOMContentLoaded', (event) => {
       const toggleSwitch = document.getElementById('darkModeToggle');
       const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
 
       // Set the initial mode
       if (prefersDarkScheme.matches) {
-        document.body.classList.toggle("dark-mode");
-      }
+        toggleSwitch.checked = true;
+        document.body.classList.add("dark-mode");
+        document.body.classList.remove("light-mode");
+    } else {
+        document.body.classList.add("light-mode");
+        document.body.classList.remove("dark-mode");
+    }
 
       // Listen for toggle switch
       toggleSwitch.addEventListener('change', () => {
         document.body.classList.toggle("dark-mode");
+        document.body.classList.toggle("light-mode");
       });
-    });
+    })
   </script>
-</head>
-<body class="light-mode">
-  <label class="switch">
-    <input type="checkbox" id="darkModeToggle">
-    <span class="slider round"></span>
-  </label>
-  {% if folder_name %}
-    <p id="status">Fine-tuning started</p>
-    <script>checkStatus("{{ folder_name }}");</script>
-  {% else %}
-    <form method="POST" enctype="multipart/form-data">
-      <label for="chunk_type">Fine tuning method</label>
-      <select name="chunk_type" id="chunk_type">
-        <option value="sliding_window_small">Sliding Window (chapter-level)</option>
-        <option value="sliding_window_large">Sliding Window (book-level)</option>
-        <option value="dialogue_prose">Dialogue/Prose</option>
-        <option value="generate_beats">Generate Beats (extra cost)</option>
-      </select>
-      <label for="role">System message:</label>
-      <input type="text" name="role" id="role" required>
-      <label for="user_key">OpenAI API key:</label>
-      <input type="password" name="user_key" id="user_key" size="60" maxlength="60" required>
-      <button type="button" onclick="toggleVisibility()">Show</button>
-      <label for="file">Upload Text File(s) (limit 2MB per file, must be text file):</label>
-      <input type="file" name="file" id="file" multiple accept=".txt,.text">
-      <input type="checkbox" id="rights_confirmation" name="rights_confirmation" required>
-      <label for="rights_confirmation">I confirm that I have the rights to these files</label>
-      <input type="checkbox" id="terms_agreement" name="terms_agreement" required>
-      <label for="terms_agreement">I agree to the <a href="/terms" target="_blank">terms and conditions</a></label>
-      <input type="submit" value="Submit">
-      </form>
-  {% endif %}
-  <!-- Footer -->
-  <footer style="position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px">
-    <div>
-      <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">
-          <img src="https://licensebuttons.net/l/by/4.0/80x15.png" alt="CC-BY-4 License">
-      </a>
-      <span> | </span>
-      <a href="https://prosepal.io" target="_blank">ProsePal</a>
-      <span> | </span>
-      <a href="/terms" target="_blank">Terms and Conditions</a>
-      <span> | </span>
-      <a href="/privacy" target="_blank">Privacy Policy</a>
-    </div>
-</footer>
 </body>
 </html>

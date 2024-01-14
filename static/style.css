@@ -1,112 +1,272 @@
-/* Dark Mode and Light Mode */
-body.dark-mode {
-    background-color: midnightblue;
-    color: gainsboro;
+.form-container {
+  max-width: 600px;
+  margin: 0 auto;
 }
-body.light-mode {
-    background-color: gainsboro;
-    color: midnightblue;
-}
-
 /* Toggle Switch */
+#toggle {
+  margin: 0 auto;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 15px 0; /* Adjust padding as needed */
+}
+#toggle p {
+  margin: 0;
+  padding-right: 10px; 
+}
 .switch {
-  position: absolute;
-  top: 10px;
-  left: 10px;
+  position: relative;
+  display: inline-block;
+  margin: 0;
+  width: 60px;
+  height: 34px;
+  padding-bottom: 0;
 }
 .switch input { 
   opacity: 0;
   width: 0;
   height: 0;
 }
-.switch {
-  display: inline-block;
-  width: 60px;
-  height: 34px;
-}
-.switch span {
+.slider {
   position: absolute;
   cursor: pointer;
-  background-color: #ccc;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   transition: .4s;
+  -webkit-transition: .4s;
   border-radius: 34px;
 }
-.switch span:before {
+.slider:before {
   position: absolute;
   content: "";
   height: 26px;
   width: 26px;
   left: 4px;
   bottom: 4px;
-  background-color: white;
   transition: .4s;
+  border-radius: 50%;
+  transition: .4s;
+  -webkit-transition: .4s;
+}
+input:checked + .slider {
+  background-color: #3F5C7D;
+  box-shadow: inset 0 0 3px #DBE1E7;;
+}
+input:checked + .slider:before {
+  background-color: #DBE1E7;
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+input:not(:checked) + .slider {
+  background-color: #DBE1E7;
+  box-shadow: 0 0 3px #1C0B19;
+}
+input:not(:checked) + .slider:before {
+  background-color: #3F5C7D;  
+} 
+.slider.round {
+  border-radius: 34px;
+}
+.slider.round:before {
   border-radius: 50%;
 }
 
-input:checked + .slider {
-  background-color: #2196F3;
+/* Dark Mode and Light Mode */
+body.dark-mode {
+  background-color: #1C0B19;
+  color: #DBE1E7;
+}
+body.light-mode {
+  background-color: #DBE1E7;
+  color: #1C0B19;
+  
+}
+body.dark-mode label {
+  color: inherit;
+}
+body.light-mode label {
+  color: inherit;
+}
+body.dark-mode form {
+  background-color: #3F5C7D;
+  box-shadow: inset 0 0 5px #DBE1E7; /* White shadow */
+} 
+body.dark-mode input[type="text"],
+body.dark-mode input[type="password"],
+body.dark-mode select,
+body.dark-mode textarea {
+  background-color: #1C0B19;
+  color: #DBE1E7;
+  border-color: #1C0B19;
+  box-shadow: inset 0 0 3px #DBE1E7;
+}
+body.dark-mode input[type="submit"] {
+  box-shadow: inset 0 0 3px darkgreen;
 }
 
-input:checked + .slider:before {
-  transform: translateX(26px);
+button, input[type="submit"] {
+  transition: background-color 0.3s ease;
 }
 
+a {
+  transition: color 0.3s ease;
+  color: inherit;
+  text-decoration: underline;
+}
+a:hover {
+  color: darkgreen;
+}
+
+label a {
+  padding-left: .25em;
+}
+
+/* General Styling */
+body, button, input, select, textarea {
+  font-family: 'Roboto', sans-serif;
+}
+input, select, textarea {
+  font-family: 'Lato', sans-serif;
+}
+button {
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  box-shadow:  0 0 3px #1C0B19;
+}
+
+/* Form container */
 form {
-  max-width: 600px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 20px 40px;
   box-shadow: 0 0 10px rgba(0, 0, 0.1);
-  background-color: white;
+  background-color: #BBE5ED;
   border-radius: 8px;
   }
-  label {
-    display: block;
-    margin-top: 20px;
-    margin-bottom: 5px;
+label {
+  display: flex;
+  font-size: 1.1em;
+  padding-bottom: .25em;
+}
+div {
+  padding-bottom: .5em;
+}
+#chunk {
+  margin-right: auto;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+#chunk label {
+  margin-right: 10px; /* Adjust space between label and dropdown */
+}
+
+#checkboxes label {
+  padding-bottom: 0;
+  font-size: .8em;
+  margin-bottom: 0;
+}
+#checkboxes input[type="checkbox"] {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+#rights, #terms {
+  display: flex;
+  align-items: center;
+}
+
+#rights input[type="checkbox"], 
+#terms input[type="checkbox"] {
+  margin-right: 5px;
 }
 
 input[type="text"],
 input[type="password"],
-select {
-    width: 100%;
+textarea,
+  select {
+    font-size: .9em;
+    width: auto;
     padding: 8px;
-    border: 1px solid #ccc;
+    border: 1px solid #DBE1E7;
     border-radius: 4px;
-    box-sizing: border-box;
-    margin-bottom: 20px;
-}
+  }
 
+
+#role {
+  min-height: 5em;
+  width: 100%;
+  resize: both; /* Resizable corner */
+}
+#key {
+  display: flex;
+  align-items: center;
+  width: 100%
+}
+#user_key {
+  flex-grow: 1;
+  margin-right: 5px;
+}
+/* Show Button with Eye Icon */
+button#showButton {
+  flex: 0;
+  font-size: .9em;
+  width: 2em;
+  position: relative;
+  margin: 0;
+  background: url('/static/visibility.png') no-repeat center; /* Use an eye icon image */
+  background-color: #DBE1E7;
+  border: none;
+  padding: 0;
+  box-shadow: 0 0 10px rgba(0, 0, 0.1);
+}
+image#VisibilityIcon {
+  background-color: #DBE1E7;
+}
 input[type="file"] {
-    border: none;
+  border: none;
 }
-
 input[type="submit"] {
-    width: 100%;
-    background-color: #4CAF50;
-    color: white;
-    padding: 14px 20px;
-    margin: 8px 0;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+  text-transform: uppercase;
+  display: block;
+  text-align: center;
+  width: auto;
+  background-color: #5C946E;
+  color: #DBE1E7;
+  padding: 14px 20px;
+  margin: 8px auto;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: 0 0 3px #1C0B19;
+}
+input[type="submit"]:hover {
+    background-color: #787D62;
 }
 
-input[type="submit"]:hover {
-    background-color: #45a049;
-}
 footer {
-  background-color: #f2f2f2;
-  color: #333;
+  font-size: .75em;
   text-align: center;
   padding: 15px 0;
   position: relative;
   bottom: 0;
   width: 100%;
 }
-
-footer a {
-  color: #007bff;
+footer.light-mode {
+  background-color: #DBE1E7;
+  color: #3F5C7D;
 }
+footer.dark-mode {
+  background-color: #1C0B19;
+  color: #DBE1E7;
+}
+footer a {
+  color: #BBE5ED;
+}
+
 @media screen and (max-width: 600px) {
   form {
       width: 100%;
@@ -123,44 +283,4 @@ footer a {
       width: 22px;
       height: 22px;
   }
-}
-body.dark-mode input[type="text"],
-body.dark-mode input[type="password"],
-body.dark-mode select,
-body.dark-mode textarea {
-    background-color: #333;
-    color: gainsboro;
-    border-color: #444;
-}
-button, input[type="submit"] {
-  transition: background-color 0.3s ease;
-}
-
-a {
-  transition: color 0.3s ease;
-}
-/* General Styling */
-body, button, input, select, textarea {
-    font-family: 'Roboto', sans-serif;
-}
-input, select, textarea {
-    font-family: 'Lato', sans-serif;
-}
-button {
-    background-color: forestgreen;
-    color: gainsboro;
-    padding: 10px 20px;
-    border: none;
-    cursor: pointer;
-    border-radius: 4px;
-}
-button:hover {
-    background-color: darkgreen;
-}
-a {
-    color: inherit;
-    text-decoration: none;
-}
-a:hover {
-    text-decoration: underline;
 }
