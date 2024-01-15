@@ -51,9 +51,6 @@ def status(folder_name: str):
     full_path = os.path.join(UPLOAD_FOLDER, folder_name)
     return jsonify({"status": training_status.get(full_path, "Not started")})
 
-if __name__ == "__main__":
-    app.run(debug=True)
-
 @app.route('/convert-ebook', methods=['GET', 'POST'])
 def convert_ebook():
     if request.method == 'POST':
@@ -79,4 +76,7 @@ def convert_ebook():
 
             return send_from_directory(directory=unique_folder, filename=os.path.basename(output_filepath), as_attachment=True)
 
-    return render_template('convert_ebook.html')
+    return render_template('convert-ebook.html')
+
+if __name__ == "__main__":
+    app.run(debug=True)

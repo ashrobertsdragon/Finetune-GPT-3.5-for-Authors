@@ -538,7 +538,7 @@ def parse_text_file(book_content: str) -> str:
   parsed_lines = ["\n***\n" if is_chapter(line) else desmarten_text(line) for line in book_lines]
   return "\n".join(parsed_lines)
 
-def convert_file(unique_folder: str, file_path: str, metadata: dict) -> None:
+def convert_file(file_path: str, metadata: dict) -> None:
   """
   Converts a book to a text file with 3 asterisks for chapter breaks
   Arguments:
@@ -547,6 +547,7 @@ def convert_file(unique_folder: str, file_path: str, metadata: dict) -> None:
   """
 
   book_content = ""
+  folder, book_file = os.path.split(file_path)
 
   book_file = book_file.replace(" ", "_")
   book_file = book_file.replace("-", "_")
@@ -571,7 +572,7 @@ def convert_file(unique_folder: str, file_path: str, metadata: dict) -> None:
     raise ValueError("Invalid file type")
 
   book_name = f"{base_name}.txt"
-  book_path = os.path.join(unique_folder, book_name)
+  book_path = os.path.join(folder, book_name)
   write_to_file(book_content, book_path)
   return book_path
 
