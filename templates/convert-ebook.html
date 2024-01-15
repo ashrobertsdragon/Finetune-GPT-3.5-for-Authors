@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Convert Ebook to Text</title>
+</head>
+<body>
+    <form action="{{ url_for('convert_ebook') }}" method="post" enctype="multipart/form-data">
+        <input type="file" name="ebook" accept=".epub,pdf,docx,txt"><br>
+        Title: <input type="text" name="title"><br>
+        Author: <input type="text" name="author"><br>
+        <input type="submit" value="Convert">
+    </form>
+</body>
+</html>

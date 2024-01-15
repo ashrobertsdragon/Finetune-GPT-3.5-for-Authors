@@ -2,8 +2,9 @@ import os
 import uuid
 import threading
 
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_from_directory, after_this_request
 
+from convert_file import convert_file
 from file_handling import is_utf8
 from shared_resources import training_status
 from training_management import train
@@ -52,3 +53,30 @@ def status(folder_name: str):
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+@app.route('/convert-ebook', methods=['GET', 'POST'])
+def convert_ebook():
+    if request.method == 'POST':
+        uploaded_file = request.files.get('ebook')
+        title = request.form.get('title')
+        author = request.form.get('author')
+
+        if uploaded_file:
+            unique_folder = str(uuid.uuid4())
+            os.makedirs(unique_folder, exist_ok=True)
+            filepath = os.path.join(unique_folder, uploaded_file.filename)
+            uploaded_file.save(filepath)
+
+            metadata = {'title': title, 'author': author}
+            output_filepath = convert_file(unique_folder, filepath, metadata)
+
+            @after_this_request
+            def cleanup(response):
+                os.remove(filepath)
+                os.remove(output_filepath)
+                os.remove(unique_folder)
+                return response
+
+            return send_from_directory(directory=unique_folder, filename=os.path.basename(output_filepath), as_attachment=True)
+
+    return render_template('convert_ebook.html')
