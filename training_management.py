@@ -4,7 +4,7 @@ import time
 
 from chunking import split_into_chunks
 from file_handling import read_text_file, write_jsonl_file
-from openai_client import set_client
+from openai_client import client
 from shared_resources import training_status
 
 
