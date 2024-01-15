@@ -17,7 +17,7 @@ MAX_FILE_SIZE = 2 * 1024 * 1024  # 2 MB
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["MAX_CONTENT_LENGTH"] = MAX_FILE_SIZE
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/finetune", methods=["GET", "POST"])
 def index():
   if request.method == "POST":
     role = request.form["role"]
@@ -42,9 +42,9 @@ def index():
           return "File is not UTF-8 encoded", 400
                     
     threading.Thread(target=train, args=(folder_name, user_key, role, chunk_type)).start()
-    return render_template("index.html", folder_name=folder_name.split("/")[-1])
+    return render_template("finetune.html", folder_name=folder_name.split("/")[-1])
 
-  return render_template("index.html")
+  return render_template("finetune.html")
 
 @app.route("/status/<folder_name>")
 def status(folder_name: str):
