@@ -1,6 +1,7 @@
 import os
 import uuid
 import threading
+import time
 
 from flask import Flask, render_template, request, jsonify, send_from_directory, after_this_request
 
@@ -60,21 +61,25 @@ def convert_ebook():
 
         if uploaded_file:
             unique_folder = str(uuid.uuid4())
-            os.makedirs(unique_folder, exist_ok=True)
-            filepath = os.path.join(unique_folder, uploaded_file.filename)
+            folder_name = os.path.join("upload_folder", unique_folder)
+            absolute_folder_name = os.path.join("app", folder_name)
+            os.makedirs(absolute_folder_name, exist_ok=True)
+            filepath = os.path.join(absolute_folder_name, uploaded_file.filename)
             uploaded_file.save(filepath)
 
             metadata = {'title': title, 'author': author}
-            output_filepath = convert_file(unique_folder, filepath, metadata)
+            output_file = convert_file(filepath, metadata)
 
             @after_this_request
             def cleanup(response):
-                os.remove(filepath)
-                os.remove(output_filepath)
-                os.remove(unique_folder)
-                return response
+              time.sleep(10)
+              output_filepath = os.path.join(absolute_folder_name, output_file)
+              os.remove(filepath)
+              os.remove(output_filepath)
+              os.remove(absolute_folder_name)
+              return response
 
-            return send_from_directory(directory=unique_folder, filename=os.path.basename(output_filepath), as_attachment=True)
+            return send_from_directory(directory=folder_name, path=output_file, as_attachment=True)
 
     return render_template('convert-ebook.html')
 

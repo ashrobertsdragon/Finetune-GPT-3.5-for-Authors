@@ -37,7 +37,7 @@ def read_text_file (file: str) -> str:
 
 def write_to_file(content: str, file: str):
   with open(file, "w") as f:
-    f.write(content, file)
+    f.write(content)
 
 def roman_to_int(roman: str) -> int:
   """
@@ -574,5 +574,5 @@ def convert_file(file_path: str, metadata: dict) -> None:
   book_name = f"{base_name}.txt"
   book_path = os.path.join(folder, book_name)
   write_to_file(book_content, book_path)
-  return book_path
+  return book_name
 
