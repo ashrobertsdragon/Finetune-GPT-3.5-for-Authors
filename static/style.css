@@ -122,7 +122,18 @@ body.dark-mode textarea {
   0 3.5px 6px rgba(44, 11, 25, 0.09) !important;
 }
 body.dark-mode input[type="submit"] {
-  box-shadow: inset 0 0 3px darkgreen;
+  box-shadow: inset 0 0 0.5px 1px rgba(219, 225, 231, 0.1),
+  0 0 0 1px rgba(0, 100, 0, 0.075),
+  0 0.3px 0.4px rgba(0, 100, 0, 0.02),
+  0 0.9px 1.5px rgba(0, 100, 0, 0.045),
+  0 3.5px 6px rgba(0, 100, 0, 0.09);
+}
+body.dark-mode input[type="submit"]:hover {
+  box-shadow: inset 0 0 0.5px 1px rgba(219, 225, 231, 0.1),
+  0 0 0 1px rgba(244, 238, 144, 0.075),
+  0 0.3px 0.4px rgba(244, 238, 144, 0.02),
+  0 0.9px 1.5px rgba(244, 238, 144, 0.045),
+  0 3.5px 6px rgba(244, 238, 144, 0.09);
 }
 
 button, input[type="submit"] {
@@ -174,16 +185,28 @@ label {
 div {
   padding-bottom: .5em;
 }
-#chunk {
+#chunk, .metadata {
   margin-right: auto;
   display: flex;
   justify-content: flex-start;
   align-items: center;
 }
-#chunk label {
-  margin-right: 10px; /* Adjust space between label and dropdown */
+#chunk, .metadata label {
+  margin-right: 10px;
+  white-space: nowrap;
 }
 
+.metadata label {
+  width: 3em;
+}
+
+.form {
+  padding-bottom: .5em;
+}
+
+#file-upload {
+  padding: .5em 0;
+}
 #checkboxes label {
   font-size: .8em;
   padding-top: .2em;
@@ -261,7 +284,7 @@ input[type="submit"] {
   box-shadow: 0 0 3px #1C0B19;
 }
 input[type="submit"]:hover {
-    background-color: #787D62;
+    background-color: darkgreen;
 }
 
 footer {
@@ -282,19 +305,26 @@ footer.dark-mode {
 }
 
 @media screen and (max-width: 600px) {
-  form {
+  .form-container {
       width: 100%;
       box-shadow: none;
       padding: 10px;
   }
 
   .switch {
-      width: 40px;
+      width: 48px;
       height: 24px;
   }
-
   .switch span:before {
-      width: 22px;
+      width: 24px;
       height: 22px;
+  }
+  input[type="text"],
+  input[type="password"],
+  input[type="checkbox"],
+  input[type="file"],
+  textarea,
+  select {
+    height: 48px;
   }
 }

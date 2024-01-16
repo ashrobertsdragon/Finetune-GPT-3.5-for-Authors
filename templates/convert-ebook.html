@@ -20,29 +20,28 @@
       </div>
     </div>
     <form id="conversionForm" action="{{ url_for('convert_ebook') }}" method="post" enctype="multipart/form-data">
-      <div id="upload">
+      <div class="form" id="upload">
         <label for="ebook">Upload ebook (must be epub, pdf, docx, or text file)</label>
-        <input type="file" name="ebook" accept=".epub,pdf,docx,txt">
+        <input id="file-upload" type="file" name="ebook" accept=".epub,pdf,docx,txt">
       </div>
-      <div id=""metadata">
-        <div id="title">
+      <div class="form" id=""metadata">
+        <div class="metadata" id="title">
           <label for="title">Title:</label>
           <input type="text" name="title">
         </div>
-        <div id="author">
+        <div class="metadata" id="author">
           <label for="author">Author:</label>
           <input type="text" name="author"><br>
         </div>
       </div>
-        <div id="checkboxes">
-          <div id="rights">
-            <input type="checkbox" id="rights_confirmation" name="rights_confirmation" required>
-            <label for="rights_confirmation">I confirm that I have the rights to these files</label>
-          </div>
-          <div id="terms">
-            <input type="checkbox" id="terms_agreement" name="terms_agreement" required>
-            <label for="terms_agreement">I agree to the  <a href="/terms" target="_blank">terms and conditions</a></label>
-          </div>
+      <div class="form" id="checkboxes">
+        <div id="rights">
+          <input type="checkbox" id="rights_confirmation" name="rights_confirmation" required>
+          <label for="rights_confirmation">I confirm that I have the rights to these files</label>
+        </div>
+        <div id="terms">
+          <input type="checkbox" id="terms_agreement" name="terms_agreement" required>
+          <label for="terms_agreement">I agree to the  <a href="/terms" target="_blank">terms and conditions</a></label>
         </div>
       <input type="submit" value="Convert">
     </form>
@@ -60,6 +59,37 @@
     </div>
   </footer>
   <script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+      const toggleSwitch = document.getElementById('darkModeToggle');
+      const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+
+      function updateLogo() {
+        if (document.body.classList.contains("dark-mode")) {
+          logo.src = 'static/logo-dark.png';
+        } else {
+          logo.src = 'static/logo.png';
+        }
+      }
+
+      // Set the initial mode
+      if (prefersDarkScheme.matches) {
+        toggleSwitch.checked = true;
+        document.body.classList.add("dark-mode");
+        document.body.classList.remove("light-mode");
+      } else {
+        document.body.classList.add("light-mode");
+        document.body.classList.remove("dark-mode");
+      }
+      updateLogo();
+
+      // Listen for toggle switch
+      toggleSwitch.addEventListener('change', () => {
+        document.body.classList.toggle("dark-mode");
+        document.body.classList.toggle("light-mode");
+        updateLogo();
+      });
+    })
+
     document.addEventListener('DOMContentLoaded', (event) => {
       const form = document.getElementById('conversionForm');
       const loadingMessage = document.getElementById('loadingMessage');
