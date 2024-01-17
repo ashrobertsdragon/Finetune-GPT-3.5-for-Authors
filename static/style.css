@@ -219,6 +219,19 @@ div {
   padding-bottom: 0;
 }
 
+.required {
+  color: #ff0000;
+  font-weight: bold;
+  font-size: .9em;
+  padding-top: .1em;
+  padding-left: .2em;
+  text-transform: uppercase;
+}
+body.dark-mode .required {
+  color: magenta;
+  font-size: 1.1em;
+}
+
 #rights input[type="checkbox"], 
 #terms input[type="checkbox"] {
   margin-right: 5px;

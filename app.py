@@ -1,9 +1,9 @@
 import os
-import uuid
+import shutil
 import threading
-import time
+import uuid
 
-from flask import Flask, render_template, request, jsonify, send_from_directory, after_this_request
+from flask import Flask, render_template, request, jsonify, send_file, after_this_request, send_from_directory
 
 from convert_file import convert_file
 from file_handling import is_utf8
@@ -18,6 +18,10 @@ MAX_FILE_SIZE = 2 * 1024 * 1024  # 2 MB
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["MAX_CONTENT_LENGTH"] = MAX_FILE_SIZE
 
+@app.route('/favicon.ico')
+def favicon():
+  return send_from_directory(os.path.join(app.root_path, 'static'),
+                            'favicon.ico', mimetype='image/vnd.microsoft.icon')
 @app.route("/finetune", methods=["GET", "POST"])
 def index():
   if request.method == "POST":
@@ -54,34 +58,42 @@ def status(folder_name: str):
 
 @app.route('/convert-ebook', methods=['GET', 'POST'])
 def convert_ebook():
-    if request.method == 'POST':
-        uploaded_file = request.files.get('ebook')
-        title = request.form.get('title')
-        author = request.form.get('author')
 
-        if uploaded_file:
-            unique_folder = str(uuid.uuid4())
-            folder_name = os.path.join("upload_folder", unique_folder)
-            absolute_folder_name = os.path.join("app", folder_name)
-            os.makedirs(absolute_folder_name, exist_ok=True)
-            filepath = os.path.join(absolute_folder_name, uploaded_file.filename)
-            uploaded_file.save(filepath)
+  supported_mimetypes = [
+    "application/epub+zip", 
+    "application/pdf", 
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "text/plain"
+  ]
+  if request.method == 'POST':
+    uploaded_file = request.files.get('ebook')
+    title = request.form.get('title')
+    author = request.form.get('author')
+    if uploaded_file:
+      if uploaded_file.mimetype not in supported_mimetypes:
+        return jsonify({"error": "Unsupported file type"}), 400
+      
+      unique_folder = str(uuid.uuid4())
+      flask_folder_name = os.path.join("upload_folder", unique_folder)
+      absolute_folder_name = os.path.join("app", flask_folder_name)
+      os.makedirs(absolute_folder_name, exist_ok=True)
+      absolute_filepath = os.path.join(absolute_folder_name, uploaded_file.filename)
+      uploaded_file.save(absolute_filepath)
 
-            metadata = {'title': title, 'author': author}
-            output_file = convert_file(filepath, metadata)
+      metadata = {'title': title, 'author': author}
+      output_file = convert_file(absolute_filepath, metadata)
 
-            @after_this_request
-            def cleanup(response):
-              time.sleep(10)
-              output_filepath = os.path.join(absolute_folder_name, output_file)
-              os.remove(filepath)
-              os.remove(output_filepath)
-              os.remove(absolute_folder_name)
-              return response
+    @after_this_request
+    def cleanup(response):
+      shutil.rmtree(absolute_folder_name)
+      return response
 
-            return send_from_directory(directory=folder_name, path=output_file, as_attachment=True)
+    flask_output_filepath = os.path.join(flask_folder_name, output_file)
+    return send_file(path_or_file=flask_output_filepath, mimetype="text/plain", as_attachment="True", max_age=None)
 
-    return render_template('convert-ebook.html')
+
+
+  return render_template('convert-ebook.html')
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", debug=True)

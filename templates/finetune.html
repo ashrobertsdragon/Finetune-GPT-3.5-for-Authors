@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Fine-tuning GPT-3.5 for Authors</title>
-  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
@@ -61,11 +61,11 @@
         <div id="checkboxes">
           <div id="rights">
             <input type="checkbox" id="rights_confirmation" name="rights_confirmation" required>
-            <label for="rights_confirmation">I confirm that I have the rights to these files</label>
+            <label for="rights_confirmation">I confirm that I have the rights to these files <span class="required"> (Required)</span>x`</label>
           </div>
           <div id="terms">
             <input type="checkbox" id="terms_agreement" name="terms_agreement" required>
-            <label for="terms_agreement">I agree to the  <a href="/terms" target="_blank">terms and conditions</a></label>
+            <label for="terms_agreement">I agree to the  <a href="/terms" target="_blank">terms and conditions</a> <span class="required"> (Required)</span></label>
           </div>
         </div>
         <input type="submit" value="Submit">
