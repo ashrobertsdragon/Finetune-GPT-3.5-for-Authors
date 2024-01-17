@@ -2,10 +2,10 @@ import os
 import shutil
 import time
 
-from chunking import split_into_chunks
 from file_handling import read_text_file, write_jsonl_file
-from openai_client import client, set_client
-from shared_resources import training_status
+from finetune.chunking import split_into_chunks
+from finetune.openai_client import client, set_client
+from finetune.shared_resources import training_status
 
 
 def psuedo_animation(folder_name: str, message: str):

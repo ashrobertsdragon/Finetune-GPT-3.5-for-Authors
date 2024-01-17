@@ -3,7 +3,7 @@ from typing import Any, Optional
 
 import openai
 
-from openai_client import client
+from finetune.openai_client import client
 
 
 def error_handle(e: Any, retry_count: int) -> int:

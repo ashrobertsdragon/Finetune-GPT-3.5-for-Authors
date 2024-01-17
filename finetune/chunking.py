@@ -1,7 +1,7 @@
 from typing import Tuple
 
-from api_management import call_gpt_api
-from data_preparation import adjust_to_newline, count_tokens, format_for_finetuning, separate_into_chapters, sliding_window_format, TOKENIZER
+from finetune.api_management import call_gpt_api
+from finetune.data_preparation import adjust_to_newline, count_tokens, format_for_finetuning, separate_into_chapters, sliding_window_format, TOKENIZER
 
 
 def generate_beats(book: str, role: str) -> list:

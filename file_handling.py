@@ -13,6 +13,10 @@ def read_text_file(file_path: str) -> str:
     read_file = f.read()
   return read_file
 
+def write_to_file(content: str, file: str):
+  with open(file, "w") as f:
+    f.write(content)
+
 def write_jsonl_file(content: str, file_path: str):
   with open(file_path, "a") as f:
     for item in content:
