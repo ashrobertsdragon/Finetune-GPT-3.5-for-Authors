@@ -1,10 +1,10 @@
 import os
 import shutil
-import threading
 import time
+import threading
 import uuid
 
-from flask import Flask, render_template, request, jsonify, send_file, after_this_request, send_from_directory
+from flask import Flask, render_template, request, jsonify, send_file, send_from_directory
 
 from ebook_conversion.convert_file import convert_file
 from file_handling import is_utf8
@@ -13,11 +13,30 @@ from finetune.training_management import train
 
 
 app = Flask(__name__)
-UPLOAD_FOLDER = os.path.join("prosepal", "upload_folder")
+UPLOAD_FOLDER = os.path.join("app", "upload_folder")
 MAX_FILE_SIZE = 2 * 1024 * 1024  # 2 MB
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["MAX_CONTENT_LENGTH"] = MAX_FILE_SIZE
+
+
+def cleanup_directory():
+  while True:
+    now = time.time()
+    for folder_name in os.listdir(UPLOAD_FOLDER):
+      folder_path = os.path.join(UPLOAD_FOLDER, folder_name)
+      if os.path.isdir(folder_path):
+        creation_time = os.path.getctime(folder_path)
+        if now - creation_time > 300:  # 5 minutes in seconds
+          try:
+            shutil.rmtree(folder_path)
+          except Exception as e:
+            if now - creation_time > 3600:
+              print(f"Error deleting folder {folder_path}: {e}")
+    time.sleep(3600)  # Wait for 1 hour before next cleanup
+
+cleanup_thread = threading.Thread(target=cleanup_directory, daemon=True)
+cleanup_thread.start()
 
 @app.route("/favicon.ico")
 def favicon():
@@ -51,7 +70,7 @@ def index():
         if not is_utf8(file_path):
           os.remove(file_path)
           return "File is not UTF-8 encoded", 400
-                    
+  
     threading.Thread(target=train, args=(folder_name, user_key, role, chunk_type)).start()
     return render_template("finetune.html", folder_name=folder_name.split("/")[-1])
 
@@ -59,8 +78,8 @@ def index():
 
 @app.route("/status/<folder_name>")
 def status(folder_name: str):
-    full_path = os.path.join(UPLOAD_FOLDER, folder_name)
-    return jsonify({"status": training_status.get(full_path, "Not started")})
+  full_path = os.path.join(UPLOAD_FOLDER, folder_name)
+  return jsonify({"status": training_status.get(full_path, "Not started")})
 
 @app.route("/convert-ebook", methods=["GET", "POST"])
 def convert_ebook():
@@ -90,16 +109,9 @@ def convert_ebook():
       output_file = convert_file(absolute_filepath, metadata)
       flask_output_filepath = os.path.join(flask_folder_name, output_file)
 
-      @after_this_request
-      def cleanup(response):
-        time.sleep(5)
-        response.close()
-        shutil.rmtree(absolute_folder_name)
-        return response
-
       return send_file(path_or_file=flask_output_filepath, mimetype="text/plain", as_attachment="True", max_age=None)
 
   return render_template("convert-ebook.html")
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", debug=True)
+  app.run(host="0.0.0.0", debug=True)
