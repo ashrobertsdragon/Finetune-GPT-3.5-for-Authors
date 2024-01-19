@@ -1,10 +1,12 @@
 import time
+import logging
 from typing import Any, Optional
 
 import openai
 
 from finetune.openai_client import client
 
+error_logger = logging.getLogger("error_logger")
 
 def error_handle(e: Any, retry_count: int) -> int:
   """
@@ -32,15 +34,13 @@ def error_handle(e: Any, retry_count: int) -> int:
   error_details = getattr(e, "response", {}).json().get("error", {})
   error_message = error_details.get("message", "Unknown error")
 
-  if isinstance(e, tuple(unresolvable_errors)):
-    exit(1)
-  if error_code == 401:
-    exit(1)
-  if "exceeded your current quota" in error_message:
+  if isinstance(e, tuple(unresolvable_errors)) or error_code == 401 or "exceeded your current quota" in error_message:
+    error_logger(f"{e}. Error code: {error_code}. Error message: {error_message}")
     exit(1)
 
   retry_count += 1
   if retry_count == 5:
+    error_logger("Retry count exceeded")
     exit(1)
   else:
     sleep_time = (5 - retry_count)  + (retry_count ** 2)

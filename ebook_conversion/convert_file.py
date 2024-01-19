@@ -1,3 +1,4 @@
+import logging
 import os
 
 from ebook_conversion.docx_conversion import read_docx
@@ -5,6 +6,9 @@ from ebook_conversion.epub_conversion import read_epub
 from ebook_conversion.pdf_conversion import read_pdf
 from ebook_conversion.text_conversion import parse_text_file
 from file_handling import read_text_file, write_to_file
+
+
+error_logger = logging.getLogger("error_logger")
 
 def convert_file(file_path: str, metadata: dict) -> None:
   """
@@ -37,7 +41,7 @@ def convert_file(file_path: str, metadata: dict) -> None:
     book_content = read_text_file(file_path)
     book_content = parse_text_file(book_content)
   else:
-    raise ValueError("Invalid file type")
+    error_logger.error("Invalid file type")
 
   book_name = f"{base_name}.txt"
   book_path = os.path.join(folder, book_name)

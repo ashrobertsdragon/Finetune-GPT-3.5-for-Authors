@@ -1,4 +1,5 @@
 import base64
+import logging
 from io import BytesIO
 from typing import Any, Tuple
 
@@ -14,6 +15,9 @@ from ebook_conversion.chapter_check import is_chapter, is_not_chapter
 from ebook_conversion.ocr import run_ocr
 from ebook_conversion.text_conversion import desmarten_text
 
+
+error_logger = logging.getLogger("error_logger")
+info_logger = logging.getLogger("info_logger")
 
 def create_image_from_binary(binary_data, width: int, height: int) -> str:
   """
@@ -34,7 +38,7 @@ def create_image_from_binary(binary_data, width: int, height: int) -> str:
     image = base64.b64encode(buffered.getvalue()).decode('utf-8')
     return image
   except Exception as e:
-    print(f"Error processing object: {e}")
+    error_logger.exception(e)
 
 def extract_image(document: bytes, obj_num: int, attempt: int) -> str:
   """
@@ -70,7 +74,7 @@ def extract_image(document: bytes, obj_num: int, attempt: int) -> str:
       stream = obj.get_data()
       return create_image_from_binary(stream, width, height)
   except Exception as e:
-    print(e)
+    info_logger.info(e)
     return extract_image(document, obj_num + 1, attempt + 1)
 
 def parse_img_obj(file_path: str, obj_nums: list) -> str:

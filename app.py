@@ -1,3 +1,4 @@
+import logging
 import os
 import shutil
 import time
@@ -6,11 +7,15 @@ import uuid
 
 from flask import Flask, render_template, request, jsonify, send_file, send_from_directory
 
+from logging_config import start_loggers
 from ebook_conversion.convert_file import convert_file
 from file_handling import is_utf8
 from finetune.shared_resources import training_status
 from finetune.training_management import train
 
+
+start_loggers()
+error_logger = logging.getLogger('error_logger')
 
 app = Flask(__name__)
 UPLOAD_FOLDER = os.path.join("app", "upload_folder")
@@ -19,7 +24,6 @@ MAX_FILE_SIZE = 2 * 1024 * 1024  # 2 MB
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["MAX_CONTENT_LENGTH"] = MAX_FILE_SIZE
 
-
 def cleanup_directory():
   while True:
     now = time.time()
@@ -27,12 +31,13 @@ def cleanup_directory():
       folder_path = os.path.join(UPLOAD_FOLDER, folder_name)
       if os.path.isdir(folder_path):
         creation_time = os.path.getctime(folder_path)
-        if now - creation_time > 300:  # 5 minutes in seconds
-          try:
-            shutil.rmtree(folder_path)
-          except Exception as e:
-            if now - creation_time > 3600:
-              print(f"Error deleting folder {folder_path}: {e}")
+        try:
+          shutil.rmtree(folder_path)
+        except Exception as e:
+          time_passed = now - creation_time
+          if time_passed > 3600:
+            length_time = f"{time_passed//60} minutes {round(time_passed%60)}seconds"
+            error_logger.exception(f"{folder_path} still locked after {length_time}.\n{e}")
     time.sleep(3600)  # Wait for 1 hour before next cleanup
 
 cleanup_thread = threading.Thread(target=cleanup_directory, daemon=True)
@@ -56,6 +61,7 @@ def index():
 
     # Validate user key
     if not (user_key.startswith("sk-") and 50 < len(user_key) > 60):
+      error_logger.error("invalid key")
       return "Invalid user key", 400
 
     folder_name = os.path.join(UPLOAD_FOLDER, str(uuid.uuid4()))
@@ -69,6 +75,7 @@ def index():
 
         if not is_utf8(file_path):
           os.remove(file_path)
+          error_logger.error(f"{file_path} is not UTF-8")
           return "File is not UTF-8 encoded", 400
   
     threading.Thread(target=train, args=(folder_name, user_key, role, chunk_type)).start()
