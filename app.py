@@ -1,12 +1,11 @@
 import logging
 import os
-import shutil
-import time
 import threading
 import uuid
 
 from flask import Flask, render_template, request, jsonify, send_file, send_from_directory
 
+from cleanup import cleanup_directory
 from logging_config import start_loggers
 from ebook_conversion.convert_file import convert_file
 from file_handling import is_utf8
@@ -23,24 +22,8 @@ MAX_FILE_SIZE = 2 * 1024 * 1024  # 2 MB
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["MAX_CONTENT_LENGTH"] = MAX_FILE_SIZE
+cleanup_thread = threading.Thread(target=cleanup_directory, args=(UPLOAD_FOLDER,), daemon=True)
 
-def cleanup_directory():
-  while True:
-    now = time.time()
-    for folder_name in os.listdir(UPLOAD_FOLDER):
-      folder_path = os.path.join(UPLOAD_FOLDER, folder_name)
-      if os.path.isdir(folder_path):
-        creation_time = os.path.getctime(folder_path)
-        try:
-          shutil.rmtree(folder_path)
-        except Exception as e:
-          time_passed = now - creation_time
-          if time_passed > 3600:
-            length_time = f"{time_passed//60} minutes {round(time_passed%60)}seconds"
-            error_logger.exception(f"{folder_path} still locked after {length_time}.\n{e}")
-    time.sleep(3600)  # Wait for 1 hour before next cleanup
-
-cleanup_thread = threading.Thread(target=cleanup_directory, daemon=True)
 cleanup_thread.start()
 
 @app.route("/favicon.ico")
