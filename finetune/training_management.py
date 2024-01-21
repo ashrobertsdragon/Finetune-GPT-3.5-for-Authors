@@ -60,13 +60,14 @@ def process_files(folder_name: str, role: str, chunk_type: str):
   fine_tune_path = os.path.join(folder_name, "fine_tune.jsonl")
   write_jsonl_file(fine_tune_messages, fine_tune_path)
   training_status[folder_name] = "All files processed"
-  return
+  return fine_tune_path
 
 def train(folder_name:str, role: str, user_key: str, chunk_type: str):
   set_client(user_key)
   initialize_dictionary()
-  process_files(folder_name, role, chunk_type)
+  fine_tune_path = process_files(folder_name, role, chunk_type)
   fine_tune(folder_name)
-  shutil.rmtree(folder_name)
+  relative_path = os.path.relpath(fine_tune_path, "app")
+  training_status[folder_name] = f"Download JSONL file:  <a href='/{relative_path}'"
   del user_key
-  del training_status[folder_name]
+  return relative_path

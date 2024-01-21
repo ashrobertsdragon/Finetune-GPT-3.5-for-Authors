@@ -3,6 +3,7 @@ import os
 import shutil
 import time
 
+from finetune.shared_resources import training_status
 
 error_logger = logging.getLogger('error_logger')
 
@@ -15,6 +16,7 @@ def cleanup_directory(UPLOAD_FOLDER):
         creation_time = os.path.getctime(folder_path)
         try:
           shutil.rmtree(folder_path)
+          del training_status[folder_path]
         except Exception as e:
           time_passed = now - creation_time
           if time_passed > 3600:
