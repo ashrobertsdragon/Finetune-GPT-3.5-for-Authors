@@ -22,9 +22,7 @@ MAX_FILE_SIZE = 2 * 1024 * 1024  # 2 MB
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["MAX_CONTENT_LENGTH"] = MAX_FILE_SIZE
-cleanup_thread = threading.Thread(target=cleanup_directory, args=(UPLOAD_FOLDER,), daemon=True)
-
-cleanup_thread.start()
+cleanup_thread = threading.Thread(target=cleanup_directory, args=(UPLOAD_FOLDER,), daemon=True).start()
 
 @app.route("/favicon.ico")
 def favicon():
@@ -35,41 +33,6 @@ def favicon():
 def apple_favicon():
   return send_from_directory(os.path.join(app.root_path, "static"), 
                             "apple-touch-icon.png", mimetype="image/png")
-@app.route("/finetune", methods=["GET", "POST"])
-def index():
-  if request.method == "POST":
-    role = request.form["role"]
-    chunk_type = request.form["chunk_type"]
-    user_key = request.form["user_key"]
-
-    # Validate user key
-    if not (user_key.startswith("sk-") and 50 < len(user_key) > 60):
-      error_logger.error("invalid key")
-      return "Invalid user key", 400
-
-    folder_name = os.path.join(UPLOAD_FOLDER, str(uuid.uuid4()))
-    os.makedirs(folder_name, exist_ok=True)
-
-    for file in request.files.getlist("file"):
-      if file and file.filename.endswith(("txt", "text")):
-        random_filename = f"{str(uuid.uuid4())}.txt"
-        file_path = os.path.join(folder_name, random_filename)
-        file.save(file_path)
-
-        if not is_utf8(file_path):
-          os.remove(file_path)
-          error_logger.error(f"{file_path} is not UTF-8")
-          return "File is not UTF-8 encoded", 400
-  
-    threading.Thread(target=train, args=(folder_name, user_key, role, chunk_type)).start()
-    return render_template("finetune.html", folder_name=folder_name.split("/")[-1])
-
-  return render_template("finetune.html")
-
-@app.route("/status/<folder_name>")
-def status(folder_name: str):
-  full_path = os.path.join(UPLOAD_FOLDER, folder_name)
-  return jsonify({"status": training_status.get(full_path, "Not started")})
 
 @app.route("/convert-ebook", methods=["GET", "POST"])
 def convert_ebook():
@@ -102,6 +65,50 @@ def convert_ebook():
       return send_file(path_or_file=flask_output_filepath, mimetype="text/plain", as_attachment="True", max_age=None)
 
   return render_template("convert-ebook.html")
+
+@app.route("/finetune", methods=["GET", "POST"])
+def finetune():
+  if request.method == "POST":
+    role = request.form["role"]
+    chunk_type = request.form["chunk_type"]
+    user_key = request.form["user_key"]
+
+    # Validate user key
+    if not (user_key.startswith("sk-") and 50 < len(user_key) < 60):
+      error_logger.error("invalid key")
+      return "Invalid user key", 400
+
+    folder_name = os.path.join(UPLOAD_FOLDER, str(uuid.uuid4()))
+    os.makedirs(folder_name, exist_ok=True)
+
+    for file in request.files.getlist("file"):
+      if (
+        file
+        and file.filename.endswith(("txt", "text"))
+        and file.mimetype == "text/plain"
+      ):
+        random_filename = f"{str(uuid.uuid4())}.txt"
+        file_path = os.path.join(folder_name, random_filename)
+        file.save(file_path)
+
+        if not is_utf8(file_path):
+          os.remove(file_path)
+          error_logger.error(f"{file_path} is not UTF-8")
+          return "File is not UTF-8 encoded", 400
+  
+    threading.Thread(target=train, args=(folder_name, user_key, role, chunk_type)).start()
+    return render_template("finetune.html", folder_name=folder_name.split("/")[-1])
+
+  return render_template("finetune.html")
+
+@app.route("/status/<folder_name>")
+def status(folder_name: str):
+  return jsonify({"status": training_status.get(folder_name, "Not started")})
+
+@app.route("/download/<path:download_path>")
+def download_file(download_path):
+  flask_path = os.path.join("upload_folder", download_path)
+  return send_file(flask_path, as_attachment=True)
 
 if __name__ == "__main__":
   app.run(host="0.0.0.0", debug=True)
