@@ -1,5 +1,6 @@
 import base64
 import logging
+import re
 from io import BytesIO
 from typing import Any, Tuple
 
@@ -14,6 +15,7 @@ from PIL import Image
 from ebook_conversion.chapter_check import is_chapter, is_not_chapter
 from ebook_conversion.ocr import run_ocr
 from ebook_conversion.text_conversion import desmarten_text
+from file_handling import write_to_file
 
 
 error_logger = logging.getLogger("error_logger")
@@ -38,7 +40,7 @@ def create_image_from_binary(binary_data, width: int, height: int) -> str:
     image = base64.b64encode(buffered.getvalue()).decode('utf-8')
     return image
   except Exception as e:
-    error_logger.exception(e)
+    error_logger.exception(f"failed to create base64 encoded image due to {e}")
 
 def extract_image(document: bytes, obj_num: int, attempt: int) -> str:
   """
@@ -74,7 +76,7 @@ def extract_image(document: bytes, obj_num: int, attempt: int) -> str:
       stream = obj.get_data()
       return create_image_from_binary(stream, width, height)
   except Exception as e:
-    info_logger.info(e)
+    info_logger.info(f"Issue: {e} with object: {obj_num}")
     return extract_image(document, obj_num + 1, attempt + 1)
 
 def parse_img_obj(file_path: str, obj_nums: list) -> str:
@@ -141,40 +143,52 @@ def parse_pdf_page(page: str, metadata: dict) -> str:
   Returns the pdf page as a string.
   """
 
-  chapter_list = []
-  text_lines = 0
-  paragraph = ""
+  page_list = []
   paragraph_list = []
 
-  def parse_paragraph(paragraph: str) -> list:
-    nonlocal text_lines
-    if text_lines < 3:
-      if is_not_chapter(paragraph, metadata):
-        return []
-      elif is_chapter(paragraph):
-        paragraph = "\n***\n"
-    chapter_list.append(paragraph)
-    text_lines += 1
-    return chapter_list
+  def parse_paragraph(paragraph_list: list) -> str:
+    """
+    Check if the first three lines of text contain a identifier for a page
+    unrelated to the chapter, or a chapter heading.
+    If not a chapter, return an empty list. If a chapter heading, replace with
+    three asterisks. Otherwise concantate line to paragraph string and add to
+    page list
+    """
+
+    text_lines = 0
+    paragraph = ""
+
+    for line in paragraph_list:
+      if line.strip() or text_lines < 3:
+        if is_not_chapter(paragraph, metadata):
+          return ""
+        elif is_chapter(paragraph):
+          return "\n***\n"
+      paragraph += line
+      text_lines += 1
+    return paragraph
 
   lines = page.split("\n")
+
   for line in lines:
-    line = line.strip()
-    if line:
-      line = desmarten_text(line)
-      paragraph_list.append(line)
+    if line.strip():
+      paragraph_list.append(desmarten_text(line))
     elif paragraph_list:
-      paragraph = "".join(paragraph_list)
-      chapter_list = parse_paragraph(paragraph)
-      if not chapter_list:
+      paragraph = parse_paragraph(paragraph_list)
+      if paragraph:
+        page_list.append(paragraph)
+        paragraph_list = []
+      else:
         return ""
-      paragraph_list = []
+
   if paragraph_list:
-    paragraph = " ".join(paragraph_list)
-    chapter_list = parse_paragraph(paragraph)
-    if not chapter_list:
+    paragraph = parse_paragraph(paragraph_list)
+    if paragraph:
+      page_list.append(paragraph)
+    else:
       return ""
-  return "\n".join(chapter_list)
+
+  return "\n".join(page_list)
 
 def read_pdf(file_path: str, metadata: dict) -> str:
   """
@@ -185,7 +199,7 @@ def read_pdf(file_path: str, metadata: dict) -> str:
   Returns the contents of the pdf file as a string.
   """
 
-  pdf_pages = []
+  full_text = ""
   for page in extract_pages(file_path):
     pdf_text = ""
     obj_nums = []
@@ -199,5 +213,12 @@ def read_pdf(file_path: str, metadata: dict) -> str:
     page_text = ocr_text + "\n" + pdf_text if ocr_text is not None else pdf_text
     pdf_page = parse_pdf_page(page_text, metadata)
     if pdf_page:
-      pdf_pages.append(pdf_page)
-  return "\n".join(pdf_pages)
+      if pdf_page.rstrip().endswith(('.', '!', '?', '."', '!"', '?"')):
+        full_text += pdf_page
+      else:
+        full_text += "\n" + pdf_page
+  full_text = re.sub(r"\s+", " ", full_text)
+  if full_text.startswith("\n***\n"):
+    full_text = full_text.lstrip("\n***\n")
+
+  return full_text
