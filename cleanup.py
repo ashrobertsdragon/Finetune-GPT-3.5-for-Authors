@@ -16,6 +16,8 @@ def cleanup_directory(UPLOAD_FOLDER):
         try:
           shutil.rmtree(folder_path)
           del training_status[folder_name]
+        except TypeError:
+          pass
         except Exception as e:
           creation_time = os.path.getctime(folder_path)
           time_passed = now - creation_time
