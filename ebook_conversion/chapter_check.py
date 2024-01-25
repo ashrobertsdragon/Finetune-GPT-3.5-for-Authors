@@ -106,14 +106,12 @@ def is_chapter(s: str) -> bool:
       return True
     except ValueError:
       return False
+
   lower_s = s.lower()
-  return lower_s.startswith("chapter") or (len(lower_s.split()) == 1 and is_number(lower_s))
+  return lower_s.startswith("chapter") or lower_s.startswith ("echapter") or (len(lower_s.split()) == 1 and is_number(lower_s))
 
 def is_not_chapter(paragraph: str, metadata: dict) -> bool:
   """
   Checks if the given line is not a chapter.
   """
-  title = metadata.get("title", "no title found")
-  author = metadata.get("author", "no author found")
-  paragraph = paragraph.lower()
-  return any(paragraph.startswith(title.lower()) or paragraph.startswith(author.lower()) or paragraph.endswith(title.lower()) or paragraph.endswith(author.lower()) or paragraph.startswith(not_chapter_word) for not_chapter_word in NOT_CHAPTER)
+  return any(value.lower() in paragraph.lower() for _, value in metadata.items()) or any(paragraph.lower().startswith(not_chapter_word) for not_chapter_word in NOT_CHAPTER)
