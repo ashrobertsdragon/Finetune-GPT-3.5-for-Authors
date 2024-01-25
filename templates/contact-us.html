@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="header">
+    <div id="logo">Logo</div>
+    <div id="toggle">
+      <p>Dark Mode</p>
+      <label class="switch">
+        <input type="checkbox">
+        <span class="slider round"></span>
+      </label>
+    </div>
+  </div>
+
+  <div class="contact-form">
+    <h1>Contact Us</h1>
+      <form action="/send-email" method="post">
+        <label for="name">Your Name:</label>
+          <input type="text" id="name" name="name" required>
+
+          <label for="email">Your Email:</label>
+          <input type="text" id="email" name="email" required>
+
+          <label for="message">Your Message:</label>
+          <textarea id="message" name="message" required></textarea>
+
+          <input type="submit" value="Send Message">
+      </form>
+  </div>
+
+  <footer>
+    &copy; 2024 ProsePal
+  </footer>
+  <script src="{{ url_for('static', filename="dark-mode.js") }}"></script>
+</body>
+</html>
