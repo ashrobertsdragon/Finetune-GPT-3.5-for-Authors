@@ -1,4 +1,5 @@
 import base64
+import logging
 import os
 
 import requests
@@ -6,15 +7,62 @@ from dotenv import load_dotenv
 
 
 load_dotenv()
+error_logger = logging.getLogger("error_logger")
 
 def encode_image(image_path):
   with open(image_path, "rb") as image_file:
     return base64.b64encode(image_file.read()).decode('utf-8')
 
+def call_api(payload: dict) -> str:
+  "Call OpenAI's ChatCompletions API endopoint for OCR or double-checking response"
+  
+  api_key = os.getenv("OPENAI_API_KEY")
+  headers = {
+    "Content-Type": "application/json",
+    "Authorization": f"Bearer {api_key}"
+  }
+
+  try:
+    response = requests.post(
+        "https://api.openai.com/v1/chat/completions",
+        headers=headers,
+        json=payload
+    )
+    if response.json()["choices"]:
+      answer = response.json()["choices"][0]["message"]["content"]
+      return answer
+    if response.json()["error"]:
+      error = response.json()["error"]["message"]
+      raise Exception(error)
+  except KeyError as e:
+    error_logger.exception(f"Error: {e}\nResponse: {response.text}")
+    return ""
+  except Exception as e:
+    error_logger.exception(f"Error: {e}")
+    return ""
+
+def double_check_answer(ocr_text: str) -> str:
+  "Use GPT 3.5 to translate garbled OCR response"
+
+  payload = {
+    "model": "gpt-3.5-turbo",
+    "messages": [
+      {"role": "system", "content": (
+        "You are double checking the output of an OCR application, which may be "
+        "garbled. Based on the text below, please respond with what the text should "
+        "actually be, without any additional commentary."
+      )},
+      {"role": "user", "content": ocr_text},
+    ],
+    "max_tokens": 10
+  }
+  return call_api(payload)
+
 def run_ocr(base64_images: list) -> str:
   """
-  Perform optical character recognition (OCR) on a list of base64-encoded 
-  images using the OpenAI API.
+  Create payload for OpenAI API call to GPT-4 Vision for OCR, based on list of
+  base64 encoded images. Call API for OCR and then again with GPT-3.5 to double
+  check response.
 
   Arguments:
     base64_images (list): A list of base64-encoded images.
@@ -22,12 +70,8 @@ def run_ocr(base64_images: list) -> str:
   Returns str: The recognized text from the images.
   """
 
-  api_key = os.getenv("OPENAI_API_KEY")
   image_role_list = []
-  headers = {
-    "Content-Type": "application/json",
-    "Authorization": f"Bearer {api_key}"
-  }
+
   for base64_image in base64_images:
     image_role_list.append({
       "type": "image_url",
@@ -54,19 +98,8 @@ def run_ocr(base64_images: list) -> str:
     }],
     "max_tokens": 10
   }
-  try:
-    response = requests.post(
-        "https://api.openai.com/v1/chat/completions",
-        headers=headers,
-        json=payload
-    )
-    if response.json()["choices"]:
-      answer = response.json()["choices"][0]["message"]["content"]
-      return answer
-    if response.json()["error"]:
-      error = response.json()["error"]["message"]
-      raise Exception(error)
-  except KeyError as e:
-    print(f"KeyError: {e}")
-    print("Response:", response.text)
-    return None
+  ocr_text = call_api(payload)
+  if ocr_text:
+    return double_check_answer(ocr_text)
+  else:
+    return ""
