@@ -116,4 +116,4 @@ def is_not_chapter(paragraph: str, metadata: dict) -> bool:
   title = metadata.get("title", "no title found")
   author = metadata.get("author", "no author found")
   paragraph = paragraph.lower()
-  return any(paragraph.startswith(title.lower()) or paragraph.startswith(author.lower()) or paragraph.startswith(not_chapter_word) for not_chapter_word in NOT_CHAPTER)
+  return any(paragraph.startswith(title.lower()) or paragraph.startswith(author.lower()) or paragraph.endswith(title.lower()) or paragraph.endswith(author.lower()) or paragraph.startswith(not_chapter_word) for not_chapter_word in NOT_CHAPTER)
