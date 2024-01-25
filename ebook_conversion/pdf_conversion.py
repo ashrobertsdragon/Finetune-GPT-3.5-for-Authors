@@ -12,14 +12,15 @@ from pdfminer.layout import LTChar, LTContainer, LTText
 from pdfminer.high_level import extract_pages
 from PIL import Image
 
-from ebook_conversion.chapter_check import is_chapter, is_not_chapter
+from ebook_conversion.chapter_check import is_chapter, is_not_chapter, CHAPTER_MARKER
 from ebook_conversion.ocr import run_ocr
 from ebook_conversion.text_conversion import desmarten_text
-from file_handling import write_to_file
 
 
 error_logger = logging.getLogger("error_logger")
 info_logger = logging.getLogger("info_logger")
+
+END_PARAGRAPH = ('.', '!', '?', '."', '!"', '?"')
 
 def create_image_from_binary(binary_data, width: int, height: int) -> str:
   """
@@ -108,7 +109,7 @@ def parse_img_obj(file_path: str, obj_nums: list) -> str:
   text = run_ocr(base64_images) if base64_images else ""
   return text
 
-def process_element(element: Any) -> [Tuple[str, Any], None]:
+def process_element(element: Any) -> Tuple[str, Any]:
   """
   Processes a PDF layout element to identify its type and extract relevant
   data.
@@ -142,83 +143,97 @@ def parse_pdf_page(page: str, metadata: dict) -> str:
     page: A pdf page.
   Returns the pdf page as a string.
   """
+  print("entering function")
+  
+  def remove_extra_spaces(line: str) -> str:
+    "Remove extra spaces in middle of string"
+    return " ".join(line.split())
+
+  def concatenate_paragraph(paragraph_list: list) -> str:
+    "Concatenate lines of paragraph after extra spaces removed"
+    return " ".join(remove_extra_spaces(line) for line in paragraph_list)
+
+  def is_end_of_paragraph(paragraph_list: list) -> bool:
+    "Check if previous line was end of paragraph"
+    return paragraph_list[-1].rstrip().endswith(END_PARAGRAPH)
+
+  def check_beginning_of_page(text_lines: int, metadata: dict, line: str) -> Tuple[int, str]:
+    """
+    Checks line at beginning of page for chapter or non-chapter identifiers, cleans
+    line and increments line counter
+    """
+
+    if is_not_chapter(line, metadata):
+      return text_lines, ""
+    elif is_chapter(line):
+      line = CHAPTER_MARKER
+    text_lines += 1
+    return text_lines, desmarten_text(line)
 
   page_list = []
   paragraph_list = []
-
-  def parse_paragraph(paragraph_list: list) -> str:
-    """
-    Check if the first three lines of text contain a identifier for a page
-    unrelated to the chapter, or a chapter heading.
-    If not a chapter, return an empty list. If a chapter heading, replace with
-    three asterisks. Otherwise concantate line to paragraph string and add to
-    page list
-    """
-
-    text_lines = 0
-    paragraph = ""
-
-    for line in paragraph_list:
-      if line.strip() or text_lines < 3:
-        if is_not_chapter(paragraph, metadata):
-          return ""
-        elif is_chapter(paragraph):
-          return "\n***\n"
-      paragraph += line
-      text_lines += 1
-    return paragraph
-
   lines = page.split("\n")
+  text_lines = 0
 
   for line in lines:
     if line.strip():
-      paragraph_list.append(desmarten_text(line))
+      if text_lines < 3:
+        text_lines, plain_text = check_beginning_of_page(line, metadata)
+        if plain_text == "":
+          return plain_text
+      paragraph_list.append(plain_text)
     elif paragraph_list:
-      paragraph = parse_paragraph(paragraph_list)
-      if paragraph:
-        page_list.append(paragraph)
-        paragraph_list = []
-      else:
-        return ""
+      if not is_end_of_paragraph:
+        continue
+      page_list.append(concatenate_paragraph(paragraph_list))
+      paragraph_list = []
 
   if paragraph_list:
-    paragraph = parse_paragraph(paragraph_list)
-    if paragraph:
-      page_list.append(paragraph)
-    else:
-      return ""
-
+    page_list.append(concatenate_paragraph(paragraph_list))
   return "\n".join(page_list)
 
 def read_pdf(file_path: str, metadata: dict) -> str:
   """
-  Reads the contents of a pdf file and returns it as a string.
-  Arguments:
-    file_path: Path to the pdf file.
-    metadata: Dictionary containing the title and author of the file.
-  Returns the contents of the pdf file as a string.
+  Reads the contents of a PDF file and returns it as a string.
+
+  Args:
+    file_path: The path to the PDF file.
+    metadata: A dictionary containing the title and author of the file.
+
+  Returns:
+    A string representing the processed contents of the PDF file.
   """
 
-  full_text = ""
-  for page in extract_pages(file_path):
+  def append_page_text(page_text: str, full_text: str) -> str:
+    "Append the processed page text to the full text."
+
+    if page_text.rstrip().endswith(END_PARAGRAPH):
+      return full_text + page_text + "\n"
+    else:
+      return full_text + page_text + " "
+
+  def process_page_elements(page) -> Tuple[str, str]:
+    "Processes the elements of a PDF page."
+
     pdf_text = ""
     obj_nums = []
     for element in page:
-      obj_tuple = process_element(element)
-      if obj_tuple[0] == "image":
-        obj_nums.append(obj_tuple[1])
-      elif obj_tuple[0] == "text":
-        pdf_text += obj_tuple[1] + "\n" if obj_tuple[1] != "No text found" else ""
+      obj_type, content = process_element(element)
+      if obj_type == "image":
+        obj_nums.append(content)
+      elif obj_type == "text" and content != "No text found":
+        pdf_text += content + "\n"
     ocr_text = parse_img_obj(file_path, obj_nums)
-    page_text = ocr_text + "\n" + pdf_text if ocr_text is not None else pdf_text
-    pdf_page = parse_pdf_page(page_text, metadata)
-    if pdf_page:
-      if pdf_page.rstrip().endswith(('.', '!', '?', '."', '!"', '?"')):
-        full_text += pdf_page
-      else:
-        full_text += "\n" + pdf_page
-  full_text = re.sub(r"\s+", " ", full_text)
-  if full_text.startswith("\n***\n"):
-    full_text = full_text.lstrip("\n***\n")
+    return ocr_text, pdf_text
 
-  return full_text
+  full_text = ""
+  for page in extract_pages(file_path):
+    ocr_text, pdf_text = process_page_elements(page)
+    page_text = ocr_text + "\n\n" + pdf_text if ocr_text is not None else pdf_text
+    pdf_page = parse_pdf_page(page_text, metadata)
+    full_text = append_page_text(pdf_page, full_text)
+
+  if full_text.startswith(CHAPTER_MARKER):
+    return full_text.lstrip(CHAPTER_MARKER)
+  else:
+    return full_text
