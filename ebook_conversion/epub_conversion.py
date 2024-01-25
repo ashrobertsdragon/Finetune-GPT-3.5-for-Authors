@@ -2,7 +2,7 @@ import ebooklib
 from bs4 import BeautifulSoup
 from ebooklib import epub
 
-from ebook_conversion.chapter_check import is_chapter, is_not_chapter, NOT_CHAPTER
+from ebook_conversion.chapter_check import is_chapter, is_not_chapter, NOT_CHAPTER, CHAPTER_MARKER
 from ebook_conversion.ocr import encode_image, run_ocr
 from ebook_conversion.text_conversion import desmarten_text
 
@@ -47,4 +47,4 @@ def read_epub(file_path: str, metadata: dict) -> str:
       if chapter_text:
         chapter_text = desmarten_text(chapter_text)
         chapter_contents.append(chapter_text)
-  return "\n***\n".join(chapter_contents)
+  return CHAPTER_MARKER.join(chapter_contents)

@@ -9,6 +9,8 @@ NOT_CHAPTER = [
   "warning"
 ]
 
+CHAPTER_MARKER = "\n***\n"
+
 def roman_to_int(roman: str) -> int:
   """
   Convert a Roman numeral to an integer.
@@ -108,7 +110,7 @@ def is_chapter(s: str) -> bool:
       return False
 
   lower_s = s.lower()
-  return lower_s.startswith("chapter") or lower_s.startswith ("echapter") or (len(lower_s.split()) == 1 and is_number(lower_s))
+  return lower_s.startswith("chapter") or (len(lower_s.split()) == 1 and is_number(lower_s))
 
 def is_not_chapter(paragraph: str, metadata: dict) -> bool:
   """

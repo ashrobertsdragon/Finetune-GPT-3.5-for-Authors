@@ -1,4 +1,4 @@
-from ebook_conversion.chapter_check import is_chapter
+from ebook_conversion.chapter_check import is_chapter, CHAPTER_MARKER
 
 def desmarten_text(book_content: str) -> str:
   """
@@ -24,5 +24,5 @@ def parse_text_file(book_content: str) -> str:
   Returns the processed book content as a string.
   """
   book_lines = book_content.split("\n")
-  parsed_lines = ["\n***\n" if is_chapter(line) else desmarten_text(line) for line in book_lines]
+  parsed_lines = [CHAPTER_MARKER if is_chapter(line) else desmarten_text(line) for line in book_lines]
   return "\n".join(parsed_lines)

@@ -3,7 +3,7 @@ from io import BytesIO
 
 import docx
 
-from ebook_conversion.chapter_check import is_chapter
+from ebook_conversion.chapter_check import is_chapter, is_not_chapter
 from ebook_conversion.ocr import run_ocr
 from ebook_conversion.text_conversion import desmarten_text
 
