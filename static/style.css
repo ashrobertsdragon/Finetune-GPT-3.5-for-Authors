@@ -121,14 +121,16 @@ body.dark-mode textarea {
   0 0.9px 1.5px rgba(44, 11, 25, 0.045),
   0 3.5px 6px rgba(44, 11, 25, 0.09) !important;
 }
-body.dark-mode input[type="submit"] {
+body.dark-mode input[type="submit"],
+body.dark-mode input::file-selector-button {
   box-shadow: inset 0 0 0.5px 1px rgba(219, 225, 231, 0.1),
   0 0 0 1px rgba(0, 100, 0, 0.075),
   0 0.3px 0.4px rgba(0, 100, 0, 0.02),
   0 0.9px 1.5px rgba(0, 100, 0, 0.045),
   0 3.5px 6px rgba(0, 100, 0, 0.09);
 }
-body.dark-mode input[type="submit"]:hover {
+body.dark-mode input[type="submit"]:hover,
+body.dark-mode input::file-selector-button:hover {
   box-shadow: inset 0 0 0.5px 1px rgba(219, 225, 231, 0.1),
   0 0 0 1px rgba(244, 238, 144, 0.075),
   0 0.3px 0.4px rgba(244, 238, 144, 0.02),
@@ -166,7 +168,7 @@ button {
   border: none;
   cursor: pointer;
   border-radius: 4px;
-  box-shadow:  0 0 3px #1C0B19;
+  box-shadow:  0 0 3px 1px #1C0B19;
 }
 
 /* Form container */
@@ -192,8 +194,11 @@ div {
   align-items: center;
 }
 #chunk, .metadata label {
-  margin-right: 10px;
+  margin-right: .25em;
   white-space: nowrap;
+}
+select {
+  margin-left: .25em;
 }
 
 .metadata label {
@@ -257,24 +262,33 @@ select {
 #key {
   display: flex;
   align-items: center;
-  width: 100%
+  width: 100%;
+  position: relative;
 }
 #user_key {
   flex-grow: 1;
-  margin-right: 5px;
+  margin-right: -18px;
 }
 /* Show Button with Eye Icon */
 button#showButton {
-  flex: 0;
-  position: relative;
+  position: absolute;
+  right: -14px;
+  top: 41%;
+  transform: translateY(-50%);
   margin: 0;
   background-color: #DBE1E7;
   border: none;
-  padding: 8px;
-  box-shadow: 0 0 10px rgba(63, 92, 125, 1);
+  border-radius: 2px;
+  padding:  0 8px;
+  height: 66%;
+  width: 6%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
 }
 button#showButton:hover {
-  background-color: #BBE5ED !important;
+  background-color: hsl(210, 20%, 95%) !important;
 }
 image#VisibilityIcon {
   background-color: #DBE1E7;
@@ -287,7 +301,7 @@ input[type="submit"] {
   display: block;
   text-align: center;
   width: auto;
-  background-color: #5C946E;
+  background-color: hsl(120, 100%, 20%);
   color: #DBE1E7;
   padding: 14px 20px;
   margin: 8px auto;
@@ -297,10 +311,29 @@ input[type="submit"] {
   box-shadow: 0 0 3px #1C0B19;
 }
 input[type="submit"]:hover {
-    background-color: darkgreen;
+  background-color: hsl(120, 90%, 30%);
+}
+input::file-selector-button {
+  background-color: hsl(210, 20%, 88%);
+  padding: 14px 20px;
+  margin: 8px auto;
+  margin-right: .25em;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: inset 0 0 0.5px 1px rgba(219, 225, 231, 0.1),
+  0 0 0 1px rgba(0, 100, 0, 0.075),
+  0 0.3px 0.4px rgba(0, 100, 0, 0.02),
+  0 0.9px 1.5px rgba(0, 100, 0, 0.045),
+  0 3.5px 6px rgba(0, 100, 0, 0.09);
+}
+input::file-selector-button:hover {
+  background-color: hsl(210, 20%, 95%)
 }
 
 footer {
+  display: block;
+  text-align: center;
   font-size: .75em;
   text-align: center;
   padding: 15px 0;
@@ -318,26 +351,109 @@ footer.dark-mode {
 }
 
 @media screen and (max-width: 600px) {
-  .form-container {
+  html, body {
+    max-width: 95%;
+  }
+  .form-container,
+  #user_key {
       width: 100%;
       box-shadow: none;
       padding: 10px;
   }
 
-  .switch {
-      width: 48px;
-      height: 24px;
-  }
-  .switch span:before {
-      width: 24px;
-      height: 22px;
-  }
   input[type="text"],
   input[type="password"],
-  input[type="checkbox"],
-  input[type="file"],
-  textarea,
-  select {
+  select,
+  textarea {
+    height: 60px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  input[type="file"] {
+    width: 100%;
+    height: 60px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+  }
+  input::file-selector-button {
     height: 48px;
+    margin-right: 10px;
+  }
+  input[type="checkbox"] {
+    height: 40px;
+    width: 40px;
+  }
+  #checkboxes label {
+    display: block;
+    align-items: center;
+    font-size: 16px;
+    line-height: normal;
+    margin: 8px 0;
+  }
+  #upload label {
+    margin-top: .5em;
+    margin-bottom: .5em;;
+  }
+  #chunk, .metadata, #key {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .header {
+    justify-content: space-between;
+    height: auto;
+    padding: 10px;
+  }
+  #logo {
+    order: -1;
+    height: 48px;
+    width: 48px;
+  }
+  #toggle {
+    order: 1;
+    padding: 0;
+    position: static;
+  }
+  .switch {
+    width: 72px;
+    height: 48px;
+    margin: 0;
+    position: relative;
+  }
+
+  .slider {
+    width: 100%;
+    height: 44px;
+    border-radius: 44px;
+  }
+
+  .slider:before {
+    width: 40px;
+    height: 36px;
+    position: absolute;
+    left: 4px;
+    bottom: 4px;
+
+  }
+  input:checked + .slider:before {
+    -webkit-transform: translateX(24px);
+    -ms-transform: translateX(24px);
+    transform: translateX(24px);
+  }
+  button#showButton {
+    width: 48px;
+    height: 48px;
+    margin: auto;
+    padding: 8px;
+    margin-top: .25em;
+    margin-right: 1.4em;
+  }
+
+  input[type="submit"],
+  button {
+    min-height: 48px;
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
   }
 }

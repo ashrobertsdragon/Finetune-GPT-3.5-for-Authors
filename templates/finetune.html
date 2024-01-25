@@ -2,8 +2,9 @@
 <html>
 <head>
   <title>Fine-tuning GPT-3.5 for Authors</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
-  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <script>
@@ -39,6 +40,7 @@
         <div id="chunk">
           <label for="chunk_type">Fine tuning method</label>
           <select name="chunk_type" id="chunk_type">
+            <option value="" disabled selected>Choose one</option>
             <option value="sliding_window_small">Sliding Window (chapter-level)</option>
             <option value="sliding_window_large">Sliding Window (book-level)</option>
             <option value="dialogue_prose">Dialogue/Prose</option>
@@ -56,12 +58,12 @@
         </div>
         <div id="upload">
           <label for="file">Upload Text File(s) (limit 2MB per file, must be text file with three asterisks *** for chapter breaks):</label>
-          <input type="file" name="file" id="file" multiple accept=".txt,.text">
+          <input type="file" name="file" id="file" multiple accept="text/plaint">
         </div>
         <div id="checkboxes">
           <div id="rights">
             <input type="checkbox" id="rights_confirmation" name="rights_confirmation" required>
-            <label for="rights_confirmation">I confirm that I have the rights to these files <span class="required"> (Required)</span>x`</label>
+            <label for="rights_confirmation">I confirm that I have the rights to these files <span class="required"> (Required)</span></label>
           </div>
           <div id="terms">
             <input type="checkbox" id="terms_agreement" name="terms_agreement" required>
@@ -83,7 +85,8 @@
       <a href="/terms" target="_blank">Terms and Conditions</a>
       <span> | </span>
       <a href="/privacy" target="_blank">Privacy Policy</a>
-      <span> | </span>
+    </div>
+    <div>
       <a href="https://www.flaticon.com/free-icons/hide" title="hide icons">Hide icons created by Google - Flaticon</a>
     </div>
   </footer>

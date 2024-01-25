@@ -2,6 +2,7 @@
 <html>
 <head>
   <title>Convert Ebook to Text</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
@@ -22,7 +23,7 @@
     <form id="conversionForm" action="{{ url_for('convert_ebook') }}" method="post" enctype="multipart/form-data">
       <div class="form" id="upload">
         <label for="ebook">Upload ebook (must be epub, pdf, docx, or text file)</label>
-        <input id="file-upload" type="file" name="ebook">
+        <input id="file-upload" type="file" name="ebook" accept="application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/epub+zip, application/pdf, text/plain">
       </div>
       <div class="form" id=""metadata">
         <div class="metadata" id="title">
