@@ -33,6 +33,25 @@ def favicon():
 def apple_favicon():
   return send_from_directory(os.path.join(app.root_path, "static"), 
                             "apple-touch-icon.png", mimetype="image/png")
+@app.route("/finetune/instructions")
+def instructions():
+  return send_from_directory(os.join.path(app.root_path, "static"),
+                            "instructions.html", mimetype="text/html")
+
+@app.route("/privacy")
+def instructions():
+  return send_from_directory(os.join.path(app.root_path, "static"),
+                            "privacy.html", mimetype="text/html")
+
+@app.route("/terms")
+def instructions():
+  return send_from_directory(os.join.path(app.root_path, "static"),
+                            "terms.html", mimetype="text/html")
+@app.route("contact-us", methods=["GET", "POST"])
+def send_email():
+  if request.method == "POST":
+    pass
+  render_template("contact-us.html")
 
 @app.route("/convert-ebook", methods=["GET", "POST"])
 def convert_ebook():
