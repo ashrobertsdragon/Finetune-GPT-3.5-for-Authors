@@ -3,6 +3,7 @@ import os
 import threading
 import uuid
 
+import requests
 from flask import Flask, render_template, request, jsonify, send_file, send_from_directory
 
 from cleanup import cleanup_directory
@@ -11,6 +12,7 @@ from ebook_conversion.convert_file import convert_file
 from file_handling import is_utf8
 from finetune.shared_resources import training_status
 from finetune.training_management import train
+from send_email import send_mail
 
 
 start_loggers()
@@ -47,11 +49,31 @@ def instructions():
 def instructions():
   return send_from_directory(os.join.path(app.root_path, "static"),
                             "terms.html", mimetype="text/html")
-@app.route("contact-us", methods=["GET", "POST"])
+
+@app.route("/contact-us", methods=["GET", "POST"])
 def send_email():
+  def check_email(user_email: str) -> bool:
+    api_key =  os.getenv("abstract_api_key")
+    url = f"https://emailvalidation.abstractapi.com/v1/?api_key={api_key}&{user_email}"
+    response = requests.get(url).json()
+    if response.get("deliverability") != "DELIVERABLE":
+      return False
+    if not response.get("is_valid_format", {}).get("value"):
+      return False
+    if not response.get("is_smtp_valid", {}).get("value"):
+      return False
+    return True
+  def send_message(name, user_email, message) -> None:
+    if check_email(user_email):
+      send_mail(name, user_email, message)
+  
   if request.method == "POST":
-    pass
-  render_template("contact-us.html")
+    name = request.form.get("name")
+    user_email = request.form.get("email")
+    message = request.form.get("message")
+    threading.Thread(target=send_message, args=(name, user_email, message)).start()
+
+  return render_template("contact-us.html")
 
 @app.route("/convert-ebook", methods=["GET", "POST"])
 def convert_ebook():
