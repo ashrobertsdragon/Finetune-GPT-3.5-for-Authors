@@ -37,7 +37,7 @@
       <script>checkStatus("{{ folder_name }}");</script>
     {% else %}
       <form method="POST" enctype="multipart/form-data">
-        <p style="text-align: center"><a href="/finetune/instructions" target="_blank">Instructions</a></p>
+        <p><a href="{{ url_for('instructions') }}" target="_blank">INSTRUCTIONS</a></p>
         <label for="user_key">OpenAI API key:</label>
         <div id="key">
           <input type="password" name="user_key" id="user_key" size="60" maxlength="60" required>
@@ -65,11 +65,11 @@
         <div id="checkboxes">
           <div id="rights">
             <input type="checkbox" id="rights_confirmation" name="rights_confirmation" required>
-            <label for="rights_confirmation">I confirm that I have the rights to these files <span class="required"> (Required)</span></label>
+            <label for="rights_confirmation">I confirm that I have the rights to these files</label>
           </div>
           <div id="terms">
             <input type="checkbox" id="terms_agreement" name="terms_agreement" required>
-            <label for="terms_agreement">I agree to the  <a href="/terms" target="_blank">terms and conditions</a> <span class="required"> (Required)</span></label>
+            <label for="terms_agreement">I agree to the  <a href="/terms" target="_blank">terms and conditions</a></label>
           </div>
         </div>
         <input type="submit" value="Submit">
