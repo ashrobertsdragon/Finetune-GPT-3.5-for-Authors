@@ -28,7 +28,6 @@ def send_mail(name: str, user_email: str, message: str) -> None:
   server = "prosepal.io"
   port = 465
 
-
   email_body = f"Name: {name}\nMessage: {message}"
 
   try:
