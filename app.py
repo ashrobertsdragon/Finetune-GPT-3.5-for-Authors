@@ -35,18 +35,19 @@ def favicon():
 def apple_favicon():
   return send_from_directory(os.path.join(app.root_path, "static"), 
                             "apple-touch-icon.png", mimetype="image/png")
+
 @app.route("/finetune/instructions")
 def instructions():
   return send_from_directory(os.join.path(app.root_path, "static"),
                             "instructions.html", mimetype="text/html")
 
 @app.route("/privacy")
-def instructions():
+def privacy_page():
   return send_from_directory(os.join.path(app.root_path, "static"),
                             "privacy.html", mimetype="text/html")
 
 @app.route("/terms")
-def instructions():
+def terms_of_service():
   return send_from_directory(os.join.path(app.root_path, "static"),
                             "terms.html", mimetype="text/html")
 
