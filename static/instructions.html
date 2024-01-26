@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Fine-tuning GPT-3.5 for Authors</title>
+  <title>Instructions for Fine-tuning GPT-3.5 for Authors</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -32,50 +32,6 @@
         </label>
       </div>
     </div>
-    {% if folder_name %}
-      <p id="status">Fine-tuning started</p>
-      <script>checkStatus("{{ folder_name }}");</script>
-    {% else %}
-      <form method="POST" enctype="multipart/form-data">
-        <p style="text-align: center"><a href="/finetune/instructions" target="_blank">Instructions</a></p>
-        <label for="user_key">OpenAI API key:</label>
-        <div id="key">
-          <input type="password" name="user_key" id="user_key" size="60" maxlength="60" required>
-          <button id="showButton" type="button" onclick="toggleVisibility()"><img id="visibilityImage" style="height: 1.2em; width: 1.5em" src="static/visibility.png" alt="show key"></button>
-        </div>
-        <div id="upload">
-          <p><a href="{{ url_for('convert_ebook') }}" target="_blank">Convert your ebooks here</a></p>
-          <label for="file">Upload Text File(s) (limit 2MB per file, must be text file with three asterisks *** for chapter breaks):</label>
-          <input type="file" name="file" id="file" multiple accept="text/plaint">
-        </div>
-        <div id="sys_role">
-          <label for="role">System message:</label>
-          <textarea name="role" id="role" rows=5 required></textarea>
-        </div>
-        <div id="chunk">
-          <label for="chunk_type">Fine tuning method</label>
-          <select name="chunk_type" id="chunk_type">
-            <option value="" disabled selected>Choose one</option>
-            <option value="sliding_window_small">Sliding Window (chapter-level)</option>
-            <option value="sliding_window_large">Sliding Window (book-level)</option>
-            <option value="dialogue_prose">Dialogue/Prose</option>
-            <option value="generate_beats">Generate Beats (extra cost)</option>
-          </select>
-        </div>
-        <div id="checkboxes">
-          <div id="rights">
-            <input type="checkbox" id="rights_confirmation" name="rights_confirmation" required>
-            <label for="rights_confirmation">I confirm that I have the rights to these files <span class="required"> (Required)</span></label>
-          </div>
-          <div id="terms">
-            <input type="checkbox" id="terms_agreement" name="terms_agreement" required>
-            <label for="terms_agreement">I agree to the  <a href="/terms" target="_blank">terms and conditions</a> <span class="required"> (Required)</span></label>
-          </div>
-        </div>
-        <input type="submit" value="Submit">
-        </form>
-    {% endif %}
-  </div>
 
   <!-- Footer -->
   <footer style="bottom: 0; width: 100%; text-align: center; padding: 10px">
