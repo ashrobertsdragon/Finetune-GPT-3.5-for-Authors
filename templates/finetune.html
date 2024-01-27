@@ -8,13 +8,13 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <script>
-    function checkStatus(folderName) {
-      fetch(`/status/${folderName}`)
+    function checkStatus(userFolder) {
+      fetch(`/status/${userFolder}`)
         .then(response => response.json())
         .then(data => {
           document.getElementById("status").innerText = data.status;
           if (data.status !== "Training complete.") {
-            setTimeout(() => checkStatus(folderName), 1000);
+            setTimeout(() => checkStatus(userFolder), 1000);
           }
         });
     }
@@ -32,10 +32,10 @@
         </label>
       </div>
     </div>
-    {% if folder_name %}
+    {% if user_folder %}
       <h2>Fine tuning status:</h2>
       <p id="status"></p>
-      <script>checkStatus("{{ folder_name }}");</script>
+      <script>checkStatus("{{ user_folder }}");</script>
     {% else %}
       <form method="POST" enctype="multipart/form-data">
         <p><a href="{{ url_for('instructions') }}" target="_blank">INSTRUCTIONS</a></p>

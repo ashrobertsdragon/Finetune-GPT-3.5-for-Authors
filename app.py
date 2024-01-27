@@ -10,7 +10,7 @@ from cleanup import cleanup_directory
 from logging_config import start_loggers
 from ebook_conversion.convert_file import convert_file
 from file_handling import is_utf8
-from finetune.shared_resources import initialize_dictionary, training_status
+from finetune.shared_resources import training_status
 from finetune.training_management import train
 from send_email import send_mail
 
@@ -24,7 +24,7 @@ MAX_FILE_SIZE = 2 * 1024 * 1024  # 2 MB
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["MAX_CONTENT_LENGTH"] = MAX_FILE_SIZE
-initialize_dictionary()
+
 cleanup_thread = threading.Thread(target=cleanup_directory, args=(UPLOAD_FOLDER,), daemon=True).start()
 
 @app.route("/favicon.ico")
@@ -138,15 +138,17 @@ def finetune():
           os.remove(file_path)
           error_logger.error(f"{file_path} is not UTF-8")
           return "File is not UTF-8 encoded", 400
-  
+      else:
+        error_logger.error("File is not text file")
+
     threading.Thread(target=train, args=(folder_name, user_key, role, chunk_type)).start()
-    return render_template("finetune.html", folder_name=folder_name.split("/")[-1])
+    return render_template("finetune.html", user_folder=folder_name.split("/")[-1])
 
   return render_template("finetune.html")
 
-@app.route("/status/<folder_name>")
-def status(folder_name: str):
-  return jsonify({"status": training_status.get(folder_name, "Not started")})
+@app.route("/status/<user_folder>")
+def status(user_folder: str):
+  return jsonify({"status": training_status.get(user_folder, "Not started")})
 
 @app.route("/download/<path:download_path>")
 def download_file(download_path):

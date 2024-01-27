@@ -7,15 +7,15 @@ from finetune.openai_client import client, set_client
 from finetune.shared_resources import training_status
 
 
-def psuedo_animation(folder_name: str, message: str):
+def psuedo_animation(user_folder: str, message: str):
   """Simulate a animation by updating the training status with a message and
     a cyclically changing number dots."""
 
   for i in range(1,4):
-    training_status[folder_name] = f"{message}{'.' * i}"
+    training_status[user_folder] = f"{message}{'.' * i}"
     time.sleep(1)
 
-def fine_tune(folder_name: str):
+def fine_tune(folder_name: str, user_folder: str):
   """
   Fine-tunes a language model using the specified data.
 
@@ -37,13 +37,13 @@ def fine_tune(folder_name: str):
     purpose = "processing"
   )
 
-  training_status[folder_name] = f"Uploaded file id {JSONL_file.id}"
+  training_status[user_folder] = f"Uploaded file id {JSONL_file.id}"
   message = "processing"
   while True:
     upload_file = client.fine_tuning.jobs.retrieve(id=JSONL_file.id)
     psuedo_animation(folder_name, message)
     if upload_file.status == "processed":
-      training_status[folder_name] = "File processed"
+      training_status[user_folder] = "File processed"
       break
 
   fine_tune_job = client.fine_tuning.jobs.create(training_file=JSONL_file.id, model="gpt-3.5-turbo-1105")
@@ -52,14 +52,14 @@ def fine_tune(folder_name: str):
     fine_tune_info = client.fine_tuning.jobs.retrieve(id=fine_tune_job.id)
     psuedo_animation(message)
     if fine_tune_info.status == "succeeded":
-      training_status[folder_name] = (
+      training_status[user_folder] = (
         f"{fine_tune_info.status}"
         f"Fine-tuned model info {fine_tune_info}"
         f"Model id {fine_tune_info.fine_tuned_model}"
       )
       break
 
-def process_files(folder_name: str, role: str, chunk_type: str) -> str:
+def process_files(folder_name: str, role: str, chunk_type: str, user_folder: str) -> str:
   """
   Process book files into formatted messages for fine-tuning.
 
@@ -86,10 +86,10 @@ def process_files(folder_name: str, role: str, chunk_type: str) -> str:
           content = read_text_file(file_path)
           formatted_messages = split_into_chunks(content, role, chunk_type)
           fine_tune_messages.extend(formatted_messages)
-          training_status[folder_name] = f"{file} processed"
+          training_status[user_folder] = f"{file} processed"
   fine_tune_path = os.path.join(folder_name, "fine_tune.jsonl")
   write_jsonl_file(fine_tune_messages, fine_tune_path)
-  training_status[folder_name] = "All files processed"
+  training_status[user_folder] = "All files processed"
   return fine_tune_path
 
 def train(folder_name: str, role: str, user_key: str, chunk_type: str):
@@ -112,12 +112,11 @@ def train(folder_name: str, role: str, user_key: str, chunk_type: str):
     None
   """
 
-
-  training_status[folder_name] = "Processing files"
-  print(training_status)
+  user_folder=folder_name.split("/")[-1]
+  training_status[user_folder] = "Processing files"
   set_client(user_key)
-  fine_tune_path = process_files(folder_name, role, chunk_type)
-  fine_tune(folder_name)
+  fine_tune_path = process_files(folder_name, role, chunk_type, user_folder)
+  fine_tune(folder_name, user_folder)
   download_path = os.path.relpath(fine_tune_path, start=os.path.join("app", "upload_folder"))
-  training_status[folder_name] = f"Download <a href='/download/{download_path}'>JSONL file here</a>."
+  training_status[user_folder] = f"Download <a href='/download/{download_path}'>JSONL file here</a>."
   del user_key
