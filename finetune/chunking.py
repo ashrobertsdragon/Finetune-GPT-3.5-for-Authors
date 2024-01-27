@@ -1,24 +1,28 @@
+import os
+import math
+import time
 from typing import Tuple
 
 from finetune.api_management import call_gpt_api
 from finetune.data_preparation import adjust_to_newline, count_tokens, format_for_finetuning, separate_into_chapters, sliding_window_format, TOKENIZER
+from file_handling import read_text_file
 
 
-def generate_beats(book: str, role: str) -> list:
+def generate_beats(book: str) -> list:
 
-  user_message = []
-  chunks = []
+  user_message_list = []
+  chunk_list = []
   chapters = separate_into_chapters(book)
 
   for chapter in chapters:
     words = len(chapter.split(" "))
     prompt = f"Chapter: {chapter}"
     chapter_beats = call_gpt_api(prompt)
-    user_message.append(
+    user_message_list.append(
       f"Write {words} words for a chapter with the following scene beats:\n{chapter_beats}"
     )
-    chunks.append(chapter)
-    return format_for_finetuning(chunks, role, user_message)
+    chunk_list.append(chapter)
+    return chunk_list, user_message_list
 
 def extract_dialogue(paragraph: str) -> Tuple[str, str]:
 
@@ -52,10 +56,10 @@ def extract_dialogue(paragraph: str) -> Tuple[str, str]:
       end_sentence = False
   return prose, dialogue
 
-def dialogue_prose(book: str, role: str) -> list:
+def dialogue_prose(book: str) -> list:
 
-  chunks = []
-  user_message = []
+  chunk_list = []
+  user_message_list = []
   punctuation = [".", "?", "!"]
   prose_sentences = 0
   dialogue_sentences = 0
@@ -69,12 +73,12 @@ def dialogue_prose(book: str, role: str) -> list:
         prose_sentences += prose.count(mark)
         dialogue_sentences += dialogue.count(mark)
       if prose:
-        chunks.append(prose)
-        user_message.append(f"Write {prose_sentences} sentences of description action")
+        chunk_list.append(prose)
+        user_message_list.append(f"Write {prose_sentences} sentences of description action")
       if dialogue:
-        chunks.append(dialogue)
-        user_message.append(f"Write {dialogue_sentences} sentences of dialogue")
-  return format_for_finetuning(chunks, role, user_message)
+        chunk_list.append(dialogue)
+        user_message_list.append(f"Write {dialogue_sentences} sentences of dialogue")
+  return chunk_list, user_message_list
 
 def sliding_window_large(book: str) -> list:
 
@@ -94,13 +98,14 @@ def sliding_window_large(book: str) -> list:
   return chunk_list
 
 def sliding_window_small(book: str) -> list:
-
+  print("starting_chunking")
   chunk_list = []
+
   chapters = separate_into_chapters(book)
 
   for chapter in chapters:
     tokens, chapter_token_count = count_tokens(chapter)
-    chunk_size = min(chapter_token_count / 3, 4096)
+    chunk_size = min(math.ceil(chapter_token_count / 3), 4096)
     start_index = 0
 
     while start_index < chapter_token_count:
@@ -111,17 +116,36 @@ def sliding_window_small(book: str) -> list:
       chunk_tokens = tokens[start_index:end_index]
       chunk_list.append(TOKENIZER.decode(chunk_tokens))
       start_index = end_index
+      print("chapter processed")
   return chunk_list
 
-def split_into_chunks(content: str, role: str, chunk_type: str) -> list:
-    
-  if chunk_type == "sliding_window_small":
-    chunks = sliding_window_small(content)
-    formatted_messages = sliding_window_format(chunks, role, chunk_type)
-  if chunk_type == "sliding_window_large":
-    formatted_messages = sliding_window_format(chunks, role, chunk_type)
-  if chunk_type == "dialogue_pass":
-    formatted_messages = dialogue_prose(chunks, role, chunk_type)
-  if chunk_type == "generate_beats":
-    formatted_messages = generate_beats(chunks, role, chunk_type)
+def split_into_chunks(folder_name: str, role: str, chunk_type: str) -> list:
+  start_time = time.time()
+
+  chunk_list = []
+  for file in os.listdir(folder_name):
+    book = read_text_file(os.path.join(folder_name, file))
+    if "sliding" in chunk_type:
+      if chunk_type == "sliding_window_small":
+        chunk_list.extend(sliding_window_small(book))
+      if chunk_type == "sliding_window_large":
+        chunk_list.extend(sliding_window_large(book))
+    else:
+      user_message_list = []
+      if chunk_type == "dialogue_prose":
+        chunks, user_messages = dialogue_prose(book)
+        chunk_list.extend(chunks)
+        user_message_list.extend(user_messages)
+      if chunk_type == "generate_beats":
+        chunks, user_messages = generate_beats(book)
+        chunk_list.extend(chunks)
+        user_message_list.extend(user_messages)
+        formatted_messages = (
+          sliding_window_format(chunk_list, role, chunk_type)
+          if "sliding" in chunk_type else 
+          format_for_finetuning(chunk_list, user_message_list, role)
+        )
+  end_time = time.time()
+  total_time = end_time - start_time
+  print(f"Chunking time: {total_time // 60} minutes and {int(total_time % 60)} seconds")
   return formatted_messages
