@@ -5,7 +5,7 @@ import time
 from file_handling import read_text_file, write_jsonl_file
 from finetune.chunking import split_into_chunks
 from finetune.openai_client import client, set_client
-from finetune.shared_resources import initialize_dictionary, training_status
+from finetune.shared_resources import training_status
 
 
 def psuedo_animation(folder_name: str, message: str):
@@ -114,7 +114,6 @@ def train(folder_name: str, role: str, user_key: str, chunk_type: str):
   """
 
   set_client(user_key)
-  initialize_dictionary()
   fine_tune_path = process_files(folder_name, role, chunk_type)
   fine_tune(folder_name)
   download_path = os.path.relpath(fine_tune_path, start=os.path.join("app", "upload_folder"))

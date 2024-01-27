@@ -10,7 +10,7 @@ from cleanup import cleanup_directory
 from logging_config import start_loggers
 from ebook_conversion.convert_file import convert_file
 from file_handling import is_utf8
-from finetune.shared_resources import training_status
+from finetune.shared_resources import initialize_dictionary, training_status
 from finetune.training_management import train
 from send_email import send_mail
 
@@ -24,6 +24,7 @@ MAX_FILE_SIZE = 2 * 1024 * 1024  # 2 MB
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["MAX_CONTENT_LENGTH"] = MAX_FILE_SIZE
+initialize_dictionary()
 cleanup_thread = threading.Thread(target=cleanup_directory, args=(UPLOAD_FOLDER,), daemon=True).start()
 
 @app.route("/favicon.ico")
