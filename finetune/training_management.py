@@ -1,5 +1,4 @@
 import os
-import shutil
 import time
 
 from file_handling import read_text_file, write_jsonl_file
@@ -113,6 +112,9 @@ def train(folder_name: str, role: str, user_key: str, chunk_type: str):
     None
   """
 
+
+  training_status[folder_name] = "Processing files"
+  print(training_status)
   set_client(user_key)
   fine_tune_path = process_files(folder_name, role, chunk_type)
   fine_tune(folder_name)
