@@ -33,7 +33,8 @@
       </div>
     </div>
     {% if folder_name %}
-      <p id="status">Fine-tuning started</p>
+      <h2>Fine tuning status:</h2>
+      <p id="status"></p>
       <script>checkStatus("{{ folder_name }}");</script>
     {% else %}
       <form method="POST" enctype="multipart/form-data">
