@@ -18,6 +18,8 @@ def cleanup_directory(UPLOAD_FOLDER):
           del training_status[folder_name]
         except TypeError:
           pass
+        except KeyError:
+          pass
         except Exception as e:
           creation_time = os.path.getctime(folder_path)
           time_passed = now - creation_time
