@@ -18,6 +18,25 @@
           }
         });
     }
+
+    function showErrorModal() {
+      var modal = document.getElementById("errorModal");
+      modal.style.display = "block";
+      var closeBtn = document.getElementsByClassName("close")[0];
+      closeBtn.onclick = function() {
+        closeModal();
+      }
+      window.onclick = function(event) {
+        if (event.target == modal) {
+          closeModal();
+        }
+      }
+    }
+
+    function closeModal() {
+      var modal = document.getElementById("errorModal");
+      modal.style.display = "none";
+    }
   </script>
 </head>
 <body class="light-mode">
@@ -39,6 +58,12 @@
         <script>checkStatus("{{ user_folder }}");</script>
       </div>
     {% else %}
+      <div id="errorModal" class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <p id="errorMessage">{{ error_message }}</p>
+        </div>
+      </div>
       <form class="box" method="POST" enctype="multipart/form-data">
         <p><a href="{{ url_for('instructions') }}" target="_blank">INSTRUCTIONS</a></p>
         <label for="user_key">OpenAI API key:</label>

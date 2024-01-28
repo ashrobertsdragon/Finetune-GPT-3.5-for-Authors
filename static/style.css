@@ -401,6 +401,42 @@ footer.dark-mode {
   height: 5em; /* Adjust the height as needed */
 }
 
+/* Add this CSS within your stylesheet */
+.modal {
+  display: none; /* Hide the modal by default */
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+  background-color: #DBE1E7;
+  color: #1C0B19;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #BBE5ED;
+  width: 50%;
+  text-align: center;
+}
+body.dark-mode .modal-content {
+  background-color: #1C0B19;
+  color: #DBE1E7;
+  border: 1px solid #3F5C7D
+}
+
+.close {
+  color: #BBE5ED;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+
 @media screen and (max-width: 600px) {
   html, body {
     max-width: 95%;

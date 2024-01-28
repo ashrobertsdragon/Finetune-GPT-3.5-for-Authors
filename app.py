@@ -1,7 +1,8 @@
 import logging
 import os
+import secrets
+import string
 import threading
-import uuid
 
 import requests
 from flask import Flask, render_template, request, jsonify, send_file, send_from_directory
@@ -27,6 +28,9 @@ app.config["MAX_CONTENT_LENGTH"] = MAX_FILE_SIZE
 
 cleanup_thread = threading.Thread(target=cleanup_directory, args=(UPLOAD_FOLDER,), daemon=True).start()
 
+def random_str():
+  return "".join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(4))
+
 @app.route("/favicon.ico")
 def favicon():
   return send_from_directory(os.path.join(app.root_path, "static"),
@@ -51,6 +55,10 @@ def privacy_page():
 def terms_of_service():
   return send_from_directory(os.join.path(app.root_path, "static"),
                             "terms.html", mimetype="text/html")
+
+@app.errorhandler(400)
+def handle_bad_request(error):
+  return render_template("finetune.html", error_message=error), 400
 
 @app.route("/contact-us", methods=["GET", "POST"])
 def send_email():
@@ -86,6 +94,7 @@ def convert_ebook():
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     "text/plain"
   ]
+
   if request.method == "POST":
     uploaded_file = request.files.get("ebook")
     title = request.form.get("title")
@@ -93,9 +102,8 @@ def convert_ebook():
     if uploaded_file:
       if uploaded_file.mimetype not in supported_mimetypes:
         return jsonify({"error": "Unsupported file type"}), 400
-      
-      unique_folder = str(uuid.uuid4())
-      flask_folder_name = os.path.join("upload_folder", unique_folder)
+
+      flask_folder_name = os.path.join("upload_folder", random_str())
       absolute_folder_name = os.path.join("app", flask_folder_name)
       os.makedirs(absolute_folder_name, exist_ok=True)
       absolute_filepath = os.path.join(absolute_folder_name, uploaded_file.filename)
@@ -121,7 +129,7 @@ def finetune():
       error_logger.error("invalid key")
       return "Invalid user key", 400
 
-    folder_name = os.path.join(UPLOAD_FOLDER, str(uuid.uuid4()))
+    folder_name = os.path.join(UPLOAD_FOLDER, random_str())
     os.makedirs(folder_name, exist_ok=True)
 
     for file in request.files.getlist("file"):
@@ -130,7 +138,7 @@ def finetune():
         and file.filename.endswith(("txt", "text"))
         and file.mimetype == "text/plain"
       ):
-        random_filename = f"{str(uuid.uuid4())}.txt"
+        random_filename = f"{random_str()}.txt"
         file_path = os.path.join(folder_name, random_filename)
         file.save(file_path)
 
@@ -151,7 +159,7 @@ def status(user_folder: str):
   return jsonify({"status": training_status.get(user_folder, "Not started")})
 
 @app.route("/download/<path:download_path>")
-def download_file(download_path):
+def download_file(download_path:str):
   flask_path = os.path.join("upload_folder", download_path)
   return send_file(flask_path, as_attachment=True)
 
