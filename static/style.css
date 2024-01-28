@@ -104,7 +104,7 @@ body.dark-mode label {
 body.light-mode label {
   color: inherit;
 }
-body.dark-mode form {
+body.dark-mode .box {
   background-color: #3F5C7D;
   box-shadow: inset 0 0 5px #DBE1E7; /* White shadow */
 } 
@@ -171,8 +171,8 @@ button {
   box-shadow:  0 0 3px 1px #1C0B19;
 }
 
-/* Form container */
-form {
+/*box container */
+.box {
   margin: 0 auto;
   padding: 20px 40px;
   box-shadow: 0 0 10px rgba(0, 0, 0.1);
@@ -199,6 +199,10 @@ div {
 }
 select {
   margin-left: .25em;
+}
+
+#box {
+  text-align: center;
 }
 
 .metadata label {
