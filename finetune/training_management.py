@@ -80,13 +80,11 @@ def process_files(folder_name: str, role: str, chunk_type: str, user_folder: str
   fine_tune_messages = []
   for file_name in os.listdir(folder_name):
     if file_name.endswith("txt"):
-      for root, _, files in os.walk(folder_name):
-        for file in files:
-          file_path = os.path.join(root, file)
-          content = read_text_file(file_path)
-          formatted_messages = split_into_chunks(content, role, chunk_type)
-          fine_tune_messages.extend(formatted_messages)
-          training_status[user_folder] = f"{file} processed"
+      file_path = os.path.join(folder_name, file_name)
+      book = read_text_file(file_path)
+      formatted_messages = split_into_chunks(book, role, chunk_type)
+      fine_tune_messages.extend(formatted_messages)
+      training_status[user_folder] = f"{file_name} processed"
   fine_tune_path = os.path.join(folder_name, "fine_tune.jsonl")
   write_jsonl_file(fine_tune_messages, fine_tune_path)
   training_status[user_folder] = "All files processed"
