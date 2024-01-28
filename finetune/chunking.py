@@ -119,32 +119,25 @@ def sliding_window_small(book: str) -> list:
       print("chapter processed")
   return chunk_list
 
-def split_into_chunks(folder_name: str, role: str, chunk_type: str) -> list:
+def split_into_chunks(book: str, role: str, chunk_type: str) -> list:
   start_time = time.time()
 
-  chunk_list = []
-  for file in os.listdir(folder_name):
-    book = read_text_file(os.path.join(folder_name, file))
-    if "sliding" in chunk_type:
-      if chunk_type == "sliding_window_small":
-        chunk_list.extend(sliding_window_small(book))
-      if chunk_type == "sliding_window_large":
-        chunk_list.extend(sliding_window_large(book))
-    else:
-      user_message_list = []
-      if chunk_type == "dialogue_prose":
-        chunks, user_messages = dialogue_prose(book)
-        chunk_list.extend(chunks)
-        user_message_list.extend(user_messages)
-      if chunk_type == "generate_beats":
-        chunks, user_messages = generate_beats(book)
-        chunk_list.extend(chunks)
-        user_message_list.extend(user_messages)
-        formatted_messages = (
-          sliding_window_format(chunk_list, role, chunk_type)
-          if "sliding" in chunk_type else 
-          format_for_finetuning(chunk_list, user_message_list, role)
-        )
+  if chunk_type == "sliding_window_small":
+    chunks = sliding_window_small(book)
+  if chunk_type == "sliding_window_large":
+    chunks = sliding_window_large(book)
+
+  if chunk_type == "dialogue_prose":
+    chunks, user_messages = dialogue_prose(book)
+  if chunk_type == "generate_beats":
+    chunks, user_messages = generate_beats(book)
+
+
+  formatted_messages = (
+    sliding_window_format(chunks, role, chunk_type)
+    if "sliding" in chunk_type else 
+    format_for_finetuning(chunks, user_messages, role)
+  )
   end_time = time.time()
   total_time = end_time - start_time
   print(f"Chunking time: {total_time // 60} minutes and {int(total_time % 60)} seconds")
