@@ -98,9 +98,8 @@ def sliding_window_large(book: str) -> list:
   return chunk_list
 
 def sliding_window_small(book: str) -> list:
-  print("starting_chunking")
-  chunk_list = []
 
+  chunk_list = []
   chapters = separate_into_chapters(book)
 
   for chapter in chapters:
@@ -112,11 +111,11 @@ def sliding_window_small(book: str) -> list:
       end_index = min(start_index + chunk_size, chapter_token_count)
       # Adjust end_index to the last newline token in the chunk
       if end_index < chapter_token_count:
-        end_index = adjust_to_newline(tokens, end_index)
+        #end_index = adjust_to_newline(tokens, end_index)
+        pass
       chunk_tokens = tokens[start_index:end_index]
       chunk_list.append(TOKENIZER.decode(chunk_tokens))
       start_index = end_index
-      print("chapter processed")
   return chunk_list
 
 def split_into_chunks(book: str, role: str, chunk_type: str) -> list:
@@ -126,18 +125,17 @@ def split_into_chunks(book: str, role: str, chunk_type: str) -> list:
     chunks = sliding_window_small(book)
   if chunk_type == "sliding_window_large":
     chunks = sliding_window_large(book)
-
   if chunk_type == "dialogue_prose":
     chunks, user_messages = dialogue_prose(book)
   if chunk_type == "generate_beats":
     chunks, user_messages = generate_beats(book)
 
-
   formatted_messages = (
-    sliding_window_format(chunks, role, chunk_type)
+    sliding_window_format(chunks, role)
     if "sliding" in chunk_type else 
     format_for_finetuning(chunks, user_messages, role)
   )
+
   end_time = time.time()
   total_time = end_time - start_time
   print(f"Chunking time: {total_time // 60} minutes and {int(total_time % 60)} seconds")

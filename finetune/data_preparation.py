@@ -13,8 +13,8 @@ def count_tokens(text: str) -> Tuple[List[int], int]:
 
 def adjust_to_newline(tokens: List[int], end_index: int) -> int:
 
-  newline = 198 # token id for a newline character
-  while end_index > 0 and tokens[end_index - 1] != newline:
+  end_paragraph_tokens = [198, 627, 4999, 5380, 702, 10246, 25765, 48469, 34184, 1270, 7058, 7233, 11192]
+  while end_index > 0 and tokens[end_index - 1] not in end_paragraph_tokens:
     end_index -= 1
   return end_index
 
