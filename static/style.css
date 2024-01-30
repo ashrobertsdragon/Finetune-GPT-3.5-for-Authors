@@ -401,7 +401,6 @@ footer.dark-mode {
   height: 5em; /* Adjust the height as needed */
 }
 
-/* Add this CSS within your stylesheet */
 .modal {
   display: none; /* Hide the modal by default */
   position: fixed;

@@ -7,36 +7,73 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="{{ url_for('static', filename="dark-mode.js") }}"></script>
   <script>
-    function checkStatus(userFolder) {
-      fetch(`/status/${userFolder}`)
-        .then(response => response.json())
-        .then(data => {
-          document.getElementById("status").innerText = data.status;
-          if (data.status !== "Training complete.") {
-            setTimeout(() => checkStatus(userFolder), 1000);
-          }
-        });
+    function checkStatus() {
+      const userFolder = sessionStorage.getItem('userFolder'); // Retrieve from session storage
+      fetch('/status', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ user_folder: userFolder }),
+      })
+      .then(response => response.json())
+      .then(data => {
+      })
+      .catch(error => console.error('Error fetching status:', error));
     }
 
+
+  document.addEventListener("DOMContentLoaded", function() {
+    var form = document.querySelector("form.box");
+    form.onsubmit = function(e) {
+      e.preventDefault();  // Prevent the normal form submission
+
+      var formData = new FormData(form);
+
+      fetch("/finetune", {
+        method: "POST",
+        body: formData
+      })
+      .then(response => {
+        const contentType = response.headers.get("Content-Type");
+        if (!contentType || !contentType.includes("application/json")) {
+          throw new Error("Received non-JSON response from server");
+        }
+        return response.json().then(data => {
+          if (!response.ok) {
+            throw new Error(data.error || `Server responded with status ${response.status}`);
+          }
+          return data;  // Proceed with normal processing for successful response
+        });
+      })
+      .then(data => {
+        sessionStorage.setItem('userFolder', data.user_folder);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        document.getElementById("errorMessage").innerText = error.message;
+        showErrorModal();
+      });
+    };
     function showErrorModal() {
       var modal = document.getElementById("errorModal");
+      console.log("Before displaying the modal", modal.style.display);  // Log the current display value
       modal.style.display = "block";
-      var closeBtn = document.getElementsByClassName("close")[0];
-      closeBtn.onclick = function() {
-        closeModal();
+      console.log("After attempting to display the modal", modal.style.display);
+
+      var closeButton = modal.querySelector(".close");
+      closeButton.onclick = function() {
+        modal.style.display = "none";
       }
       window.onclick = function(event) {
         if (event.target == modal) {
-          closeModal();
+          modal.style.display = "none";
         }
       }
     }
-
-    function closeModal() {
-      var modal = document.getElementById("errorModal");
-      modal.style.display = "none";
-    }
+  });
   </script>
 </head>
 <body class="light-mode">
@@ -54,14 +91,13 @@
     {% if user_folder %}
         <div class="box" id="status">
         <h2>Fine tuning status:</h2>
-        <p id="status"></p>
-        <script>checkStatus("{{ user_folder }}");</script>
+        <p id="statusMessage"></p>
       </div>
     {% else %}
-      <div id="errorModal" class="modal">
+      <div id="errorModal" class="modal" style="display:none;">
         <div class="modal-content">
           <span class="close">&times;</span>
-          <p id="errorMessage">{{ error_message }}</p>
+          <p id="errorMessage"></p>
         </div>
       </div>
       <form class="box" method="POST" enctype="multipart/form-data">
@@ -120,7 +156,6 @@
       <a href="https://www.flaticon.com/free-icons/hide" target="_blank" title="hide icons">Hide icons created by Google - Flaticon</a>
     </div>
   </footer>
-  <script src="{{ url_for('static', filename="dark-mode.js") }}"></script>
   <script>
     function toggleVisibility() {
       var apiKeyInput = document.getElementById("user_key");

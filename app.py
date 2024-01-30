@@ -56,10 +56,6 @@ def terms_of_service():
   return send_from_directory(os.join.path(app.root_path, "static"),
                             "terms.html", mimetype="text/html")
 
-@app.errorhandler(400)
-def handle_bad_request(error):
-  return render_template("finetune.html", error_message=error), 400
-
 @app.route("/contact-us", methods=["GET", "POST"])
 def send_email():
   def check_email(user_email: str) -> bool:
@@ -127,7 +123,7 @@ def finetune():
     # Validate user key
     if not (user_key.startswith("sk-") and 50 < len(user_key) < 60):
       error_logger.error("invalid key")
-      return "Invalid user key", 400
+      return jsonify({"error": "Invalid user key"}), 400
 
     folder_name = os.path.join(UPLOAD_FOLDER, random_str())
     os.makedirs(folder_name, exist_ok=True)
@@ -145,17 +141,20 @@ def finetune():
         if not is_utf8(file_path):
           os.remove(file_path)
           error_logger.error(f"{file_path} is not UTF-8")
-          return "File is not UTF-8 encoded", 400
+          return jsonify({"error": "Text file is not correct"}), 400
       else:
         error_logger.error("File is not text file")
 
     threading.Thread(target=train, args=(folder_name, user_key, role, chunk_type)).start()
-    return render_template("finetune.html", user_folder=folder_name.split("/")[-1])
+    return jsonify({"success": True, "user_folder": folder_name.split("/")[-1]}) 
 
   return render_template("finetune.html")
 
-@app.route("/status/<user_folder>")
-def status(user_folder: str):
+@app.route('/status', methods=['POST'])
+def status():
+  data = request.get_json()
+  user_folder = data.get('user_folder')
+  print(training_status[user_folder])
   return jsonify({"status": training_status.get(user_folder, "Not started")})
 
 @app.route("/download/<path:download_path>")
