@@ -400,6 +400,10 @@ footer.dark-mode {
   height: 5em; /* Adjust the height as needed */
 }
 
+.status {
+  display: none; /* Hides the status containder by default */
+}
+
 .modal {
   display: none; /* Hide the modal by default */
   position: fixed;
