@@ -138,10 +138,18 @@ def finetune():
         file_path = os.path.join(folder_name, random_filename)
         file.save(file_path)
 
+        file_size = os.path.getsize(file_path)
+        min_size = 1024 # 1 KB
+        max_size = 1024 * 1024 # 1 MB
+        if file_size < min_size or file_size > max_size:
+          os.remove(file_path)
+          error_logger.error(f"{file_path} has an invalid size")
+          return jsonify({"error": "Invalid file size"}), 400
+
         if not is_utf8(file_path):
           os.remove(file_path)
           error_logger.error(f"{file_path} is not UTF-8")
-          return jsonify({"error": "Text file is not correct"}), 400
+          return jsonify({"error": "Not correct kind of text file. Please resave as UTF-8"}), 400
       else:
         error_logger.error("File is not text file")
 
