@@ -4,9 +4,17 @@ from typing import Any, Optional
 
 import openai
 
-from finetune.openai_client import client
+from finetune.openai_client import get_client
 
 error_logger = logging.getLogger("error_logger")
+
+def check_json_response(response: Any) -> dict:
+  """Attempt to parse JSON safely. Return None if parsing fails."""
+
+  try:
+    return response.json()
+  except ValueError:
+    return {} 
 
 def error_handle(e: Any, retry_count: int) -> int:
   """
@@ -31,7 +39,11 @@ def error_handle(e: Any, retry_count: int) -> int:
   ]
 
   error_code = getattr(e, "status_code", None)
-  error_details = getattr(e, "response", {}).json().get("error", {})
+  error_details = {}
+  if hasattr(e, "response"):
+    json_data = check_json_response(e.response)
+    if json_data is not {}:
+      error_details = json_data.get("error", {})
   error_message = error_details.get("message", "Unknown error")
 
   if isinstance(e, tuple(unresolvable_errors)) or error_code == 401 or "exceeded your current quota" in error_message:
@@ -59,6 +71,8 @@ def call_gpt_api(prompt: str, retry_count: Optional[int] = 0) -> str:
     str: The generated content from the OpenAI GPT-3 model.
   """
   
+  client = get_client()
+
   role_script = (
     "You are an expert develompental editor who specializes in writing scene beats "
     "that are clear and concise. For the following chapter, please reverse engineer "
