@@ -293,7 +293,9 @@ button#showButton {
 button#showButton:hover {
   background-color: hsl(210, 20%, 95%) !important;
 }
-image#VisibilityIcon {
+#visibilityImage {
+  height: 15px;
+  width: 15px;
   background-color: #DBE1E7;
 }
 input[type="file"] {
@@ -400,8 +402,12 @@ footer.dark-mode {
   height: 5em; /* Adjust the height as needed */
 }
 
-.status {
-  display: none; /* Hides the status containder by default */
+.hidden {
+  display: none; /* Hides a container */
+}
+
+.shown {
+  display: block; /* Displays a container */
 }
 
 .modal {

@@ -68,9 +68,9 @@
         })
         .then(data => {
           sessionStorage.setItem('userFolder', data.user_folder);
+          var statusContainer = document.getElementById("status"); // Get the existing "status" element
           document.querySelector(".form-container form.box").style.display = "none"; // Hide the form
           statusContainer.style.display = "block"; // Show the status container
-          var statusContainer = document.getElementById("status"); // Get the existing "status" element
           var statusMessageElement = statusContainer.querySelector("p#statusMessage");
           statusMessageElement.innerHTML = "Processing...";
           fetchStatusUpdate();
@@ -96,7 +96,7 @@
         </label>
       </div>
     </div>
-    <div class="box" id="status" role="status updates" aria-label="Status Updates">
+    <div class="box hidden" id="status" role="status updates" aria-label="Status Updates">
       <h2>Fine tuning status:</h2>
       <p id="statusMessage"></p>
     </div>
@@ -143,20 +143,20 @@
           <label for="terms_agreement" id="termsLabel">I agree to the  <a href="/terms" target="_blank">terms and conditions</a></label>
         </div>
       </div>
-      <input type="submit" value="Submit" aria-label="Submit form for finetuning">
+      <input type="submit" value="Finetune GPT-3.5" aria-label="Submit form for finetuning">
       </form>
   </div>
 
   <footer">
     <nav aria-label="External Links">
       <div>
-        © <a href="https://prosepal.io" rel="noopener" target="_blank">ProsePal</a>
+        © <a href="https://prosepal.io" rel="noopener" target="_blank" title="ProsePal homepage">ProsePal</a>
         <span> | </span>
-        <a href ="https://github.com/ashrobertsdragon/Finetune-GPT-3.5-for-Authors">Code available on GitHub under MIT License</a>
+        <a href ="https://github.com/ashrobertsdragon/Finetune-GPT-3.5-for-Authors" rel="noopener" targer="_blank" title="GitHub code repository for Finetuning GPT-3.5 for Authors">Code available on GitHub under MIT License</a>
         <span> | </span>
-        <a href="/terms" target="_blank">Terms and Conditions</a>
+        <a href="/terms" target="_blank" title="Terms and Conditions">Terms and Conditions</a>
         <span> | </span>
-        <a href="/privacy" target="_blank">Privacy Policy</a>
+        <a href="/privacy" target="_blank" title="Privacy Policy">Privacy Policy</a>
       </div>
       <div>
         <a href="https://www.flaticon.com/free-icons/hide" rel="noopener" target="_blank" title="hide icons">Hide icons created by Google - Flaticon</a>
