@@ -18,11 +18,11 @@ def adjust_to_newline(tokens: List[int], end_index: int) -> int:
     end_index -= 1
   return end_index
 
-def format_for_finetuning(chunks: list, role: str, user_message: str) -> list:
+def format_for_finetuning(chunks: list, user_messages: list, role: str) -> list:
 
   formatted_data = []
   for i, chunk in enumerate(chunks):
-    user_content = user_message[i]
+    user_content = user_messages[i]
     message = {
       "messages": [
         {"role": "system", "content": role},
