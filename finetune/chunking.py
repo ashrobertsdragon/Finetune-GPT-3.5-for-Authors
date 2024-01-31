@@ -60,23 +60,25 @@ def dialogue_prose(book: str) -> list:
   chunk_list = []
   user_message_list = []
   punctuation = [".", "?", "!"]
-  prose_sentences = 0
-  dialogue_sentences = 0
   chapters = separate_into_chapters(book)
 
   for chapter in chapters:
     paragraphs = chapter.split("\n")
     for paragraph in paragraphs:
+      prose_sentences = 0
+      dialogue_sentences = 0
       prose, dialogue = extract_dialogue(paragraph)
       for mark in punctuation:
         prose_sentences += prose.count(mark)
+        p_sentence = "sentence" if prose_sentences == 1 else "sentences"
         dialogue_sentences += dialogue.count(mark)
+        d_sentence = "sentence" if dialogue_sentences == 1 else "sentences"
       if prose:
         chunk_list.append(prose)
-        user_message_list.append(f"Write {prose_sentences} sentences of description action")
+        user_message_list.append(f"Write {prose_sentences} {p_sentence} of description and action")
       if dialogue:
         chunk_list.append(dialogue)
-        user_message_list.append(f"Write {dialogue_sentences} sentences of dialogue")
+        user_message_list.append(f"Write {dialogue_sentences} {d_sentence} of dialogue")
   return chunk_list, user_message_list
 
 def sliding_window_large(book: str) -> list:
@@ -118,7 +120,6 @@ def sliding_window_small(book: str) -> list:
   return chunk_list
 
 def split_into_chunks(book: str, role: str, chunk_type: str) -> list:
-  start_time = time.time()
 
   if chunk_type == "sliding_window_small":
     chunks = sliding_window_small(book)
@@ -135,7 +136,4 @@ def split_into_chunks(book: str, role: str, chunk_type: str) -> list:
     format_for_finetuning(chunks, user_messages, role)
   )
 
-  end_time = time.time()
-  total_time = end_time - start_time
-  print(f"Chunking time: {total_time // 60} minutes and {int(total_time % 60)} seconds")
   return formatted_messages
