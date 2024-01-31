@@ -145,7 +145,7 @@ def finetune():
       else:
         error_logger.error("File is not text file")
 
-    threading.Thread(target=train, args=(folder_name, user_key, role, chunk_type)).start()
+    threading.Thread(target=train, args=(folder_name, role, user_key, chunk_type)).start()
     return jsonify({"success": True, "user_folder": folder_name.split("/")[-1]}) 
 
   return render_template("finetune.html")
