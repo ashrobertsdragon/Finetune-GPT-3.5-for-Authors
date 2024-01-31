@@ -5,7 +5,6 @@ from typing import Tuple
 
 from finetune.api_management import call_gpt_api
 from finetune.data_preparation import adjust_to_newline, count_tokens, format_for_finetuning, separate_into_chapters, sliding_window_format, TOKENIZER
-from file_handling import read_text_file
 
 
 def generate_beats(book: str) -> list:
