@@ -4,17 +4,11 @@ import time
 import openai
 
 from file_handling import read_text_file, write_jsonl_file
+from send_email import email_admin
 from finetune.chunking import split_into_chunks
 from finetune.openai_client import get_client, set_client
-from finetune.shared_resources import training_status
+from finetune.shared_resources import training_status, thread_local_storage
 
-
-def email_admin(e):
-  from dotenv import load_dotenv
-  from send_email import send_mail
-
-  load_dotenv()
-  send_mail(name="Admin", user_email = os.environ("mail_username"), message = "fIrrecoverable error from OpenAI: {e}")
 
 def psuedo_animation(user_folder: str, message: str):
   """Simulate a animation by updating the training status with a message and
@@ -127,9 +121,10 @@ def train(folder_name: str, role: str, user_key: str, chunk_type: str):
     None
   """
 
-  user_folder=folder_name.split("/")[-1]
+  user_folder = folder_name.split("/")[-1]
   training_status[user_folder] = "Processing files"
   set_client(user_key)
+  thread_local_storage.user_folder = user_folder
   fine_tune_path = process_files(folder_name, role, chunk_type, user_folder)
   #fine_tune(folder_name, user_folder)
   download_path = os.path.relpath(fine_tune_path, start=os.path.join("app", "upload_folder"))

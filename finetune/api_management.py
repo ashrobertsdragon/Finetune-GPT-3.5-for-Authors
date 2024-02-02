@@ -5,8 +5,10 @@ from typing import Any, Optional
 import openai
 
 from finetune.openai_client import get_client
+from shared_resources import training_status, thread_local_storage
 
 error_logger = logging.getLogger("error_logger")
+
 
 def check_json_response(response: Any) -> dict:
   """Attempt to parse JSON safely. Return None if parsing fails."""
@@ -16,7 +18,7 @@ def check_json_response(response: Any) -> dict:
   except ValueError:
     return {} 
 
-def error_handle(e: Any, retry_count: int) -> int:
+def error_handle(e: Any, retry_count: int = 0) -> int:
   """
   Determines whether error is unresolvable or should be retried. If unresolvable,
   error is logged and administrator is emailed before exit. Otherwise, exponential
@@ -30,14 +32,14 @@ def error_handle(e: Any, retry_count: int) -> int:
     retry_count: the number of attemps so far
   """
 
-  unresolvable_errors = [
+  unresolvable_user_errors = [
     openai.BadRequestError,
     openai.AuthenticationError,
     openai.NotFoundError,
-    openai.PermissionDeniedError,
-    openai.UnprocessableEntityError
+    openai.PermissionDeniedError
   ]
-
+  error_image = '<img src="/static/alert-light.png" alt="error icon">'
+  user_folder = getattr(thread_local_storage, "user_folder", None)
   error_code = getattr(e, "status_code", None)
   error_details = {}
   if hasattr(e, "response"):
@@ -45,15 +47,21 @@ def error_handle(e: Any, retry_count: int) -> int:
     if json_data is not {}:
       error_details = json_data.get("error", {})
   error_message = error_details.get("message", "Unknown error")
+  error_logger.error(f"{e}. Error code: {error_code}. Error message: {error_message}")
 
-  if isinstance(e, tuple(unresolvable_errors)) or error_code == 401 or "exceeded your current quota" in error_message:
-    error_logger(f"{e}. Error code: {error_code}. Error message: {error_message}")
-    exit(1)
+  if isinstance(e, tuple(unresolvable_user_errors)) or error_code == 401 or "exceeded your current quota" in error_message:
+    if user_folder:
+      training_status[user_folder] = f"{error_image} {error_message}"
+
+  if(isinstance(e, openai.UnprocessableEntityError)):
+    if user_folder:
+      training_status[user_folder] = f"{error_image} A critical error has occured. The administrator has been contacted. Sorry for the inconvience"
 
   retry_count += 1
-  if retry_count == 5:
+  if retry_count > 5:
     error_logger("Retry count exceeded")
-    exit(1)
+    if user_folder:
+      training_status[user_folder] = "A critical error has occured. The administrator has been contacted. Sorry for the inconvience"
   else:
     sleep_time = (5 - retry_count)  + (retry_count ** 2)
     time.sleep(sleep_time)
