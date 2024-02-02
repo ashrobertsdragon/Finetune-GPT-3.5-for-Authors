@@ -5,7 +5,7 @@ from typing import Any, Optional
 import openai
 
 from finetune.openai_client import get_client
-from shared_resources import training_status, thread_local_storage
+from finetune.shared_resources import training_status, thread_local_storage
 
 error_logger = logging.getLogger("error_logger")
 
@@ -38,7 +38,7 @@ def error_handle(e: Any, retry_count: int = 0) -> int:
     openai.NotFoundError,
     openai.PermissionDeniedError
   ]
-  error_image = '<img src="/static/alert-light.png" alt="error icon">'
+  error_image = '<img src="/static/alert-light.png" alt="error icon" id="endError">'
   user_folder = getattr(thread_local_storage, "user_folder", None)
   error_code = getattr(e, "status_code", None)
   error_details = {}

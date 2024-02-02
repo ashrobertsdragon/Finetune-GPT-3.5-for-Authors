@@ -5,8 +5,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
   function updateLogo() {
     if (document.body.classList.contains("dark-mode")) {
       logo.src = 'static/logo-dark.png';
+      endError.src = "static/alert-dark.png";
     } else {
       logo.src = 'static/logo.png';
+      endError.src = "static/alert-light.png"
     }
   }
 
