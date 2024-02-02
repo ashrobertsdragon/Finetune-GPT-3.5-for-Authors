@@ -5,12 +5,13 @@ import smtplib
 from dotenv import load_dotenv
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from email.mime.base import MIMEBase
-from email import encoders
 
 
 load_dotenv()
 error_logger = logging.getLogger("error_logger")
+
+def email_admin(e):
+  send_mail(name="Admin", user_email = os.environ("mail_username"), message = "fIrrecoverable error from OpenAI: {e}")
   
 def send_mail(name: str, user_email: str, message: str) -> None:
   """
