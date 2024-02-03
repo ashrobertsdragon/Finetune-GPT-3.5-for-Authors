@@ -10,7 +10,16 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Exo:wght@300&family=Fira+Sans:ital,wght@0,100;1,200&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="static/landing.css">
-  <script src="static/dark-mode.js"></script> 
+  <script src="static/dark-mode.js"></script>
+  <!-- MailerLite Universal -->
+  <script>
+    (function(w,d,e,u,f,l,n){w[f]=w[f]||function(){(w[f].q=w[f].q||[])
+    .push(arguments);},l=d.createElement(e),l.async=1,l.src=u,
+    n=d.getElementsByTagName(e)[0],n.parentNode.insertBefore(l,n);})
+    (window,document,'script','https://assets.mailerlite.com/js/universal.js','ml');
+    ml('account', '811253');
+  </script>
+  <!-- End MailerLite Universal -->
 </head>
 <body class="light-mode">
 
@@ -31,7 +40,7 @@
       <h1>Bring Your Story's Universe to Life with LoreBinders</h1>
       <h2>Effortlessly Organize Your Story's World</h2>
       <p>Dive into a seamless experience where your manuscript evolves into a beautifully structured story bible. With LoreBinders, every character, location, and narrative thread is meticulously organized, giving you the freedom to focus on what you love most – storytelling.</p>
-      <button class="cta">Create My LoreBinder</button>
+      <a href="#waitlist-form" title="Join waitlist"><button class="cta">Join the waitlist</button></a>
       <div class="illustration-placeholder">Visual Illustration Placeholder</div>
     </section>
 
@@ -99,11 +108,11 @@
     <section class="call-to-action">
       <h1>Ready to Revolutionize Your Writing Process?</h1>
       <p>Join the growing community of storytellers who are embracing the future of narrative organization. With LoreBinders, you're not just organizing a story; you're crafting a world. Start your journey towards more structured, imaginative storytelling today.</p>
-      <button class="cta">Join the waitlist</button>
+      <a href="#waitlist-form" title="Join waitlist"><button class="cta">Join the waitlist</button></a>
     </section>
 
     <!-- FAQ Section -->
-    <section class="faq">
+    <a id="faq"></a><section class="faq">
       <h1>Frequently Asked Questions</h1>
       <div class="faq-item">
         <h2>What exactly does LoreBinders do?</h2>
@@ -141,6 +150,7 @@
   </main>
 
   <footer>
+    <a id="waitlist-form"></a><div class="ml-embedded" data-form="2XFg0N"></div>
     <nav class="footer-nav">
       <a href="/contact-us">Contact</a>
       <a href="/static/terms">Terms of Service</a>
@@ -152,11 +162,7 @@
       <a href="https://github.com/ashrobertsdragon">GitHub</a>
       <a href="https://www.linkedin.com/company/prosepal">LinkedIn</a>
     </div>
-    <form class="newsletter-signup">
-      <label for="newsletter-email">Subscribe to our newsletter</label>
-      <input type="email" id="newsletter-email" name="email" placeholder="Enter your email">
-      <button type="submit">Subscribe</button>
-    </form>
+
     <p>© 2024 ProsePal. All rights reserved.</p>
   </footer>
 

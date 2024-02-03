@@ -316,7 +316,7 @@ input[type="submit"] {
   box-shadow: 0 0 3px #1C0B19;
 }
 input[type="submit"]:hover {
-  background-color: hsl(120, 90%, 30%);
+  background-color: #089108;
 }
 input::file-selector-button {
   background-color: hsl(210, 20%, 88%);
