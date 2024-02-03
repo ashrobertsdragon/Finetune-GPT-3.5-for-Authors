@@ -1,0 +1,172 @@
+header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 64px;
+  position: relative;
+}
+
+#logo {
+  height: 64px;
+  width: 64px;
+  margin: auto;
+} 
+/* Toggle Switch */
+#toggle {
+  position: absolute;
+  right: 0;
+  display: flex;
+  align-items: center;
+  padding: 15px 0;
+}
+#toggle p {
+  margin: 0;
+  padding-right: 10px; 
+}
+.switch {
+  position: relative;
+  display: inline-block;
+  margin: 0;
+  width: 60px;
+  height: 34px;
+  padding-bottom: 0;
+}
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  -webkit-transition: .4s;
+  transition: .4s;
+  border-radius: 34px;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  border-radius: 50%;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+input:checked + .slider {
+  background-color: #3F5C7D;
+  box-shadow: inset 0 0 3px #DBE1E7;;
+}
+input:checked + .slider:before {
+  background-color: #DBE1E7;
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+input:not(:checked) + .slider {
+  background-color: #DBE1E7;
+  box-shadow: 0 0 3px #1C0B19;
+}
+input:not(:checked) + .slider:before {
+  background-color: #3F5C7D;  
+} 
+.slider.round {
+  border-radius: 34px;
+}
+.slider.round:before {
+  border-radius: 50%;
+}
+
+/* Dark Mode and Light Mode */
+body.dark-mode {
+  background-color: #1C0B19;
+  color: #DBE1E7;
+}
+body.light-mode {
+  background-color: #DBE1E7;
+  color: #1C0B19;
+  
+}
+a {
+  transition: color 0.3s ease;
+  color: inherit;
+  text-decoration: underline;
+}
+a:hover {
+  color: darkgreen;
+}
+
+button {
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  box-shadow:  0 0 3px 1px #1C0B19;
+}
+
+footer {
+  display: block;
+  text-align: center;
+  font-size: .75rem;
+  text-align: center;
+  padding: 15px 0;
+  position: relative;
+  bottom: 0;
+  width: 100%;
+}
+footer.light-mode {
+  background-color: #DBE1E7;
+  color: #3F5C7D;
+}
+footer.dark-mode {
+  background-color: #1C0B19;
+  color: #DBE1E7;
+}
+
+body, button {
+  font-family: 'Exo', sans-serif;
+}
+
+h1, h2 {
+  font-family: 'Fira Sans', sans-serif;
+}
+
+h1 {
+  font-weight: 200;
+  font-style: normal;
+  font-size: 48px;
+}
+
+h2 {
+  font-weight: 100;
+  font-style: italic;
+  font-size: 30px;
+}
+
+.hero, .features, .call-to-action {
+  position: relative;
+  background-size: cover;
+  background-position: center;
+}
+
+.hero::after, .features::after, .call-to-action::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5); /* Adding overlay for text readability */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header, .hero, .features, .call-to-action {
+    padding: 20px;
+  }
+}
