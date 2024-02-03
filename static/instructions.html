@@ -7,18 +7,7 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <script>
-    function checkStatus(folderName) {
-      fetch(`/status/${folderName}`)
-        .then(response => response.json())
-        .then(data => {
-          document.getElementById("status").innerText = data.status;
-          if (data.status !== "Training complete.") {
-            setTimeout(() => checkStatus(folderName), 1000);
-          }
-        });
-    }
-  </script>
+
 </head>
 <body class="light-mode">
   <div class="form-container">
