@@ -106,6 +106,9 @@ a {
 a:hover {
   color: darkgreen;
 }
+#button:hover {
+  background-color: #45b635;
+}
 
 button {
   padding: 10px 20px;
@@ -118,11 +121,11 @@ button {
   width: auto;
   margin: auto;
   text-transform: uppercase;
-  background-color: #006600;
+  background-color: #61b24f;
 }
 
 button:hover {
-  background-color: #089108;
+  background-color: #45b635;
 }
 
 footer {
@@ -162,18 +165,20 @@ h1, h2 {
 }
 
 h1 {
-  font-weight: 200;
+  font-weight: 500;
   font-style: normal;
   font-size: 2.5rem;
   margin-bottom: 20px;
   margin-top: 0;
 }
 
+
 h2 {
-  font-weight: 100;
+  font-weight: 300;
   text-transform: uppercase;
   font-size: 1.5rem;
   margin-bottom: 15px;
+  font-style: italic;
 }
 
 p {
@@ -183,6 +188,7 @@ p {
 }
 
 .hero, .features, .call-to-action {
+  background-color:#bbe5ed;
   position: relative;
   background-size: cover;
   background-position: center;
