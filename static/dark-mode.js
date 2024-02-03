@@ -3,14 +3,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
   const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
 
   function updateModeElements() {
-    if (document.body.classList.contains("dark-mode")) {
-      logo.src = 'static/logo-dark.png';
-      endError.src = "static/alert-dark.png";
-      toggleLabel.textContent = "Light mode";
-    } else {
-      logo.src = 'static/logo.png';
-      endError.src = "static/alert-light.png"
-      toggleLabel.textContent = "Dark mode";
+    logo.src = document.body.classList.contains("dark-mode") ? 'static/logo-dark.png' : 'static/logo.png';
+    toggleLabel.textContent = document.body.classList.contains("dark-mode") ? "Light mode" : "Dark mode";
+    const endError = document.getElementById('endError');
+    if (endError) {
+      endError.src = document.body.classList.contains("dark-mode") ? "static/alert-dark.png" : "static/alert-light.png";
     }
   }
 
