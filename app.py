@@ -41,6 +41,10 @@ def apple_favicon():
   return send_from_directory(os.path.join(app.root_path, "static"), 
                             "apple-touch-icon.png", mimetype="image/png")
 
+@app.route('/')
+def landing_page():
+  return send_from_directory('static', 'index.html')
+
 @app.route("/finetune/instructions")
 def instructions():
   return send_from_directory(os.join.path(app.root_path, "static"),
