@@ -43,22 +43,21 @@ def apple_favicon():
 
 @app.route('/')
 def landing_page():
-  return send_from_directory('static', 'index.html')
+  return send_from_directory('static', 'html/index.html')
 
 @app.route("/finetune/instructions")
 def instructions():
-  return send_from_directory(os.join.path(app.root_path, "static"),
-                            "instructions.html", mimetype="text/html")
+  return render_template("instructions.html")
 
 @app.route("/privacy")
 def privacy_page():
   return send_from_directory(os.join.path(app.root_path, "static"),
-                            "privacy.html", mimetype="text/html")
+                            "html/privacy.html", mimetype="text/html")
 
 @app.route("/terms")
 def terms_of_service():
   return send_from_directory(os.join.path(app.root_path, "static"),
-                            "terms.html", mimetype="text/html")
+                            "html/terms.html", mimetype="text/html")
 
 @app.route("/contact-us", methods=["GET", "POST"])
 def send_email():

@@ -15,60 +15,8 @@
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-  <div class="form-container">
-    <div class="header">
-      <img src="static/logo.png" alt="ProsePal logo" id="logo">
-      <div id="toggle">
-        <p>Dark mode</p>
-        <label class="switch">
-          <input type="checkbox" id="darkModeToggle">
-          <span class="slider round"></span>
-        </label>
-      </div>
-    </div>
-    <form id="conversionForm" action="{{ url_for('convert_ebook') }}" method="post" enctype="multipart/form-data">
-      <div class="form" id="upload">
-        <label for="ebook">Upload ebook (must be epub, pdf, docx, or text file)</label>
-        <input id="file-upload" type="file" name="ebook" accept="application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/epub+zip, application/pdf, text/plain">
-      </div>
-      <div class="form" id=""metadata">
-        <div class="metadata" id="title">
-          <label for="title">Title:</label>
-          <input type="text" name="title">
-        </div>
-        <div class="metadata" id="author">
-          <label for="author">Author:</label>
-          <input type="text" name="author"><br>
-        </div>
-      </div>
-      <div class="form" id="checkboxes">
-        <div id="rights">
-          <input type="checkbox" id="rights_confirmation" name="rights_confirmation" required>
-          <label for="rights_confirmation">I confirm that I have the rights to these files <span class="required">(Required)</span></label>
-        </div>
-        <div id="terms">
-          <input type="checkbox" id="terms_agreement" name="terms_agreement" required>
-          <label for="terms_agreement">I agree to the <a href="/terms" target="_blank">terms and conditions</a> <span class="required"> (Required)</span></label>
-        </div>
-      <input type="submit" value="Convert">
-    </form>
-    <div id="loadingMessage" style="display: none;">Converting file, please wait...</div>
-  </div>
-  <footer style="bottom: 0; width: 100%; text-align: center; padding: 10px">
-    <div>
-      © <a href="https://prosepal.io" target="_blank">ProsePal</a>
-      <span> | </span>
-      <a href ="https://github.com/ashrobertsdragon/convert_ebook_files">Code available on GitHub under MIT License</a>
-      <span> | </span>
-      <a href="/terms" target="_blank">Terms and Conditions</a>
-      <span> | </span>
-      <a href="/privacy" target="_blank">Privacy Policy</a>
-    </div>
-  </footer>
-  <script src="{{ url_for('static', filename="dark-mode.js") }}"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
   <script>
     document.addEventListener('DOMContentLoaded', (event) => {
       const form = document.getElementById('conversionForm');
@@ -105,5 +53,57 @@
       alert(error.error);
     });
   </script>
+</head>
+<body>
+  <div class="form-container">
+    <div class="header">
+      <img src="{{ url_for('static', filename='/icons/logo.png') }}" alt="ProsePal logo" id="logo">
+      <div id="toggle">
+        <p>Dark mode</p>
+        <label class="switch">
+          <input type="checkbox" id="darkModeToggle">
+          <span class="slider round"></span>
+        </label>
+      </div>
+    </div>
+    <form id="conversionForm" action="{{ url_for('convert_ebook') }}" method="post" enctype="multipart/form-data">
+      <div class="form" id="upload">
+        <label for="ebook">Upload ebook (must be epub, pdf, docx, or text file)</label>
+        <input id="file-upload" type="file" name="ebook" accept="application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/epub+zip, application/pdf, text/plain">
+      </div>
+      <div class="form" id=""metadata">
+        <div class="metadata" id="title">
+          <label for="title">Title:</label>
+          <input type="text" name="title">
+        </div>
+        <div class="metadata" id="author">
+          <label for="author">Author:</label>
+          <input type="text" name="author"><br>
+        </div>
+      </div>
+      <div class="form" id="checkboxes">
+        <div id="rights">
+          <input type="checkbox" id="rights_confirmation" name="rights_confirmation" required>
+          <label for="rights_confirmation">I confirm that I have the rights to these files <span class="required">(Required)</span></label>
+        </div>
+        <div id="terms">
+          <input type="checkbox" id="terms_agreement" name="terms_agreement" required>
+          <label for="terms_agreement">I agree to the <a href="{{ url for('static', filename='html/terms') }}" target="_blank">terms and conditions</a> <span class="required"> (Required)</span></label>
+        </div>
+      <input type="submit" value="Convert">
+    </form>
+    <div id="loadingMessage" style="display: none;">Converting file, please wait...</div>
+  </div>
+  <footer style="bottom: 0; width: 100%; text-align: center; padding: 10px">
+    <div>
+      © <a href="https://prosepal.io" target="_blank">ProsePal</a>
+      <span> | </span>
+      <a href ="https://github.com/ashrobertsdragon/convert_ebook_files">Code available on GitHub under MIT License</a>
+      <span> | </span>
+      <a href="{{ get_url('static', filename='html/terms') }} target="_blank">Terms and Conditions</a>
+      <span> | </span>
+      <a href="{{ get_url('static', filename='html/privacy') }}" target="_blank">Privacy Policy</a>
+    </div>
+  </footer>
 </body>
 </html>
