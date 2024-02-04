@@ -60,21 +60,21 @@ header {
   transition: .4s;
 }
 input:checked + .slider {
-  background-color: #3F5C7D;
-  box-shadow: inset 0 0 3px #DBE1E7;;
+  background-color: #070307;
+  box-shadow: inset 0 0 3px #c2ccd6;
 }
 input:checked + .slider:before {
-  background-color: #DBE1E7;
+  background: radial-gradient(circle at 50% 50%, #dbe1e7, #8599ad);
   -webkit-transform: translateX(26px);
   -ms-transform: translateX(26px);
   transform: translateX(26px);
 }
 input:not(:checked) + .slider {
-  background-color: #DBE1E7;
-  box-shadow: 0 0 3px #1C0B19;
+  background-color: #c2ccd6;
+  box-shadow: 0 0 3px #1d0b1a;
 }
 input:not(:checked) + .slider:before {
-  background-color: #3F5C7D;  
+  background: radial-gradient(circle at 50% 50%, #1d0b1a, #2c2941);
 } 
 .slider.round {
   border-radius: 34px;
@@ -90,11 +90,13 @@ main {
 
 /* Dark Mode and Light Mode */
 body.dark-mode {
-  background-color: #1C0B19;
+  background: linear-gradient(0deg, #251126, #1c0b19);
+  background-attachment: fixed;
   color: #DBE1E7;
 }
 body.light-mode {
-  background-color: #DBE1E7;
+  background: radial-gradient(circle at 40% 40%, #d7e1e9, #dbe1e7);
+  background-attachment: fixed;
   color: #1C0B19;
   
 }
@@ -143,7 +145,7 @@ footer.light-mode {
   color: #3F5C7D;
 }
 footer.dark-mode {
-  background-color: #1C0B19;
+  background: linear-gradient(0deg, #1c0b19, #2c2941);
   color: #DBE1E7;
 }
 
@@ -164,13 +166,12 @@ main {
   justify-content: space-around;
 }
 
-.left-box {
+.text-box {
   flex: 2;
   padding: 20px;
-
 }
 
-.right-box {
+.image-box {
   flex: 1.5;
   padding: 10px;
   display: flex;
@@ -227,7 +228,17 @@ p {
 }
 
 body.dark-mode .hero, .solution, .features, .call-to-action {
-  background: linear-gradient(180deg, #2a4969, #2b4767, #2c4362, #2d3c5a, #2e3551, #2d2c46, #2b243a, #271c30, #231626, #1f111f, #1d0d1b, #1c0b19);;
+  background: linear-gradient(180deg, #2a4969, #1c0b19);;
+}
+
+.problem, .anticipation {
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  padding-top: 10px;
+  padding-bottom: 20px;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 
@@ -245,10 +256,12 @@ body.dark-mode .hero, .solution, .features, .call-to-action {
   0 0.9px 1.5px rgba(44, 11, 25, 0.045),
   0 3.5px 6px rgba(44, 11, 25, 0.09) !important;
 }
-
+h1 .feature {
+  color: #DBE1E7;
+}
 body.dark-mode .feature{
   background: #1C0B19;
-color: #DBE1E7
+  color: #DBE1E7
 }
 
 .feature:hover {
@@ -262,6 +275,7 @@ body.dark-mode .hero::after, .features::after, .call-to-action::after {
 img {
   max-width: 100%;
   height: auto;
+  border-radius: 4px;
 }
 
 /* Responsive Design */
