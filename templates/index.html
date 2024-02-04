@@ -17,7 +17,7 @@
   <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='icons/apple-touch-icon.png') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Exo:wght@300&family=Raleway:wght@700&family=Share+Tech&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Exo:wght@300;500&family=Raleway:wght@700&family=Share+Tech&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
   <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
   <!-- MailerLite Universal -->
@@ -111,15 +111,21 @@
     <!-- Pricing and Packages Section -->
     <section class="pricing">
       <h1>Flexible LoreBinder Pricing Plans</h1>
-      <div class="pricing-option">
-        <h2>Single LoreBinder</h2>
-        <p>Price: $10. Ideal for focusing on one project at a time. Receive a detailed story bible for your current manuscript.</p>
+      <div class="pricing-plans">
+        <div class="pricing-option">
+          <h2>Single LoreBinder</h2>
+          <div class="single-LoreBinder">
+          <p>Price: $10.</p><p>Ideal for focusing on one project at a time. Receive a detailed story bible for your current manuscript.</p>
+          </div>
+        </div>
+        <div class="pricing-option">
+          <h2>Bundle Savings</h2>
+          <div class="single-LoreBinder">
+          <p>The more you buy, the more you save. When purchased together, each additional LoreBinder is $1 less than the previous one (up to a maximum of 10). LoreBinders never expire—save your unused LoreBinders for future projects, whether they're in a week, a month, a year, or more. Ideal for authors managing multiple projects or series.</p>
+          </div>
+        </div>
       </div>
-      <div class="pricing-option">
-        <h2>Bundle Savings</h2>
-        <p>The more you buy, the more you save. When purchased together, each additional LoreBinder is $1 less than the previous one (up to a maximum of 10). LoreBinders never expire—save your unused LoreBinders for future projects, whether they're in a week, a month, a year, or more. Ideal for authors managing multiple projects or series.</p>
-      </div>
-      <div class="illustration-placeholder">Pricing Chart Placeholder</div>
+      <div class="illustration" id="chart">Pricing Chart Placeholder</div>
     </section>
 
     <!-- Call to Action Section -->
