@@ -159,36 +159,56 @@ main {
 
 .section {
   margin-top: 5em;
-}
-h1, h2 {
-  font-family: 'Fira Sans', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
 }
 
+.left-box {
+  flex: 2;
+  padding: 20px;
+
+}
+
+.right-box {
+  flex: 1.5;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+section {
+  margin-top: 30px;
+}
 h1 {
-  font-weight: 500;
+  font-family: 'Share Tech', sans-serif;
+  font-weight: 400;
   font-style: normal;
-  font-size: 2.5rem;
-  margin-bottom: 20px;
-  margin-top: 0;
+  font-size: 30px;
+  margin-bottom: 25px;
+  margin-top: 25px;
 }
-
 
 h2 {
-  font-weight: 300;
+  font-family: 'Raleway', sans-serif;
+  font-weight: 700;
   text-transform: uppercase;
-  font-size: 1.5rem;
-  margin-bottom: 15px;
-  font-style: italic;
+  font-size: 16px;
+  margin-bottom: 20px;
+  letter-spacing: 0.1em;
+  opacity: .8;
 }
 
 p {
-  font-size: 1rem;
-  line-height: 1.6;
-  margin-bottom: 20px;
+  font-size: 18px;
+  line-height: 26px;
+  margin-bottom: 10px;
+  max-width: 600px;
 }
 
-.hero, .features, .call-to-action {
-  background-color:#bbe5ed;
+.hero, .solution, .features, .call-to-action {
+  background: linear-gradient(0deg, #bbe5ed, #dbe1e7);
   position: relative;
   background-size: cover;
   background-position: center;
@@ -196,6 +216,8 @@ p {
   padding-bottom: 20px;
   padding-left: 10px;
   padding-right: 10px;
+
+  box-sizing:border-box;
   border-radius: 4px;
   box-shadow: inset 0 0 0.5px 1px rgba(219, 225, 231, 0.1),
   0 0 0 1px rgba(44, 11, 25, 0.075),
@@ -204,8 +226,8 @@ p {
   0 3.5px 6px rgba(44, 11, 25, 0.09) !important;
 }
 
-body.dark-mode .hero, .features, .call-to-action {
-  background-color: #2a4969;
+body.dark-mode .hero, .solution, .features, .call-to-action {
+  background: linear-gradient(180deg, #2a4969, #2b4767, #2c4362, #2d3c5a, #2e3551, #2d2c46, #2b243a, #271c30, #231626, #1f111f, #1d0d1b, #1c0b19);;
 }
 
 
@@ -235,6 +257,11 @@ color: #DBE1E7
 
 body.dark-mode .hero::after, .features::after, .call-to-action::after {
   background: #bbe5ed;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
 }
 
 /* Responsive Design */
