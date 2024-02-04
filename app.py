@@ -31,19 +31,9 @@ cleanup_thread = threading.Thread(target=cleanup_directory, args=(UPLOAD_FOLDER,
 def random_str():
   return "".join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(4))
 
-@app.route("/favicon.ico")
-def favicon():
-  return send_from_directory(os.path.join(app.root_path, "static"),
-                            "favicon.ico", mimetype="image/vnd.microsoft.icon")
-
-@app.route("/apple-touch-icon.png")
-def apple_favicon():
-  return send_from_directory(os.path.join(app.root_path, "static"), 
-                            "apple-touch-icon.png", mimetype="image/png")
-
 @app.route('/')
 def landing_page():
-  return send_from_directory('static', 'html/index.html')
+  return render_template("index.html")
 
 @app.route("/finetune/instructions")
 def instructions():
@@ -51,13 +41,11 @@ def instructions():
 
 @app.route("/privacy")
 def privacy_page():
-  return send_from_directory(os.join.path(app.root_path, "static"),
-                            "html/privacy.html", mimetype="text/html")
+  return send_from_directory("static","html/privacy.html")
 
 @app.route("/terms")
 def terms_of_service():
-  return send_from_directory(os.join.path(app.root_path, "static"),
-                            "html/terms.html", mimetype="text/html")
+  return send_from_directory("static", "html/terms.html")
 
 @app.route("/contact-us", methods=["GET", "POST"])
 def send_email():

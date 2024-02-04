@@ -13,13 +13,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LoreBinders</title>
-  <link rel="icon" href="/favicon.ico" type="image/x-icon">
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="icon" href="{{ url_for('static', filename='icons/favicon.ico') }}" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='icons/apple-touch-icon.png') }}">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Exo:wght@300&family=Fira+Sans:ital,wght@0,100;1,200;1,300;0,500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="static/css/landing.css">
-  <script src="static/js/dark-mode.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Exo:wght@300&family=Fira+Sans:ital,wght@0,500;1,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', 'css/landing.css') }}">
+  <script src="{{ url_for('static', 'js/dark-mode.js') }}"></script>
   <!-- MailerLite Universal -->
   <script>
     (function(w,d,e,u,f,l,n){w[f]=w[f]||function(){(w[f].q=w[f].q||[])
@@ -33,7 +32,7 @@
 <body class="light-mode">
 
   <header>
-    <img src="static/icons/logo.png" alt="ProsePal logo" id="logo">
+    <img src="{{ url_for('static', filename='icons/logo.png') }}" alt="ProsePal logo" id="logo">
     <div id="toggle">
       <p id="toggleLabel">Dark mode</p>
       <label class="switch">
@@ -51,7 +50,7 @@
       <p>Dive into a seamless experience where your manuscript evolves into a beautifully structured story bible. With LoreBinders, every character, location, and narrative thread is meticulously organized, giving you the freedom to focus on what you love most – storytelling.</p>
       <a href="#waitlist-form" title="Join waitlist" id="button"><button class="cta">Join the waitlist</button></a>
     </section>
-    <div class="illustration-placeholder">Visual Illustration Placeholder</div>
+    <div class="illustration"><img src="{{ url_for('static', filename='images/hero-image.png') }}" alt="A manuscript opens, pages transforming into organized documents with story elements like characters and maps. Icons from the story float above, set in a cozy nook with a quill and ink pot." title="hero image"></div>
 
     <!-- Problem Section -->
     <section class="section problem">
@@ -162,8 +161,8 @@
     <a id="waitlist-form"></a><div class="ml-embedded" data-form="2XFg0N"></div>
     <nav class="footer-nav">
       <a href="/contact-us">Contact</a>
-      <a href="static/html/terms">Terms of Service</a>
-      <a href="static/html/privacy">Privacy Policy</a>
+      <a href="{{ url_for('static', filename='html/terms') }}">Terms of Service</a>
+      <a href="{{ url_for('static', filename='html/privacy') }}">Privacy Policy</a>
       <a href="#faq">FAQ</a>
     </nav>
     <div class="social-media-links">
