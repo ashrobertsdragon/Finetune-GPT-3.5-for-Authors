@@ -209,6 +209,9 @@ main {
   align-items: center;
   justify-content: space-between;
 }
+.pricing h2 {
+  padding-top: 20px;
+}
 .pricing-text {
   flex: 1;
   padding-right: 10px;
@@ -232,22 +235,25 @@ main {
 
 .pricing-plans h2 {
   grid-column: 1 / 2;
-  grid-row: span 2;
+  grid-row: span 4;
 }
 
-.single-text, #bundle {
+.single-text, .bundle {
   grid-column: 2 / 3;
 }
 
 .single-text {
   display: flex;
   flex-direction: column;
+  margin-bottom: 15px;
 }
-#single1, #single2 {
+#single1, #single2, #bundle1, #bundle2 {
   margin-bottom: 5px;
   margin-top: 5px;
 }
-
+#single1 {
+  font-weight: 500;
+}
 .ml-form {
   transform: none;
   padding-bottom: 20px;
