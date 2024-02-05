@@ -85,7 +85,6 @@ input:not(:checked) + .slider:before {
 main {
   max-width: 95%;
   padding-left: auto;
-
 }
 
 /* Dark Mode and Light Mode */
@@ -98,7 +97,6 @@ body.light-mode {
   background: radial-gradient(circle at 40% 40%, #d7e1e9, #dbe1e7);
   background-attachment: fixed;
   color: #1C0B19;
-  
 }
 a {
   transition: color 0.3s ease;
@@ -163,6 +161,13 @@ main {
   margin: 0 auto;
 }
 
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 24
+}
 .section {
   margin-top: 5em;
   display: flex;
@@ -171,53 +176,68 @@ main {
 }
 
 .text-box {
-  flex: 2;
+  flex: 4;
   padding: 20px;
 }
 
 .image-box {
-  flex: 1.5;
+  flex: 3;
   padding: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.pricing-plans {
-  margin-top: 5em;
+.pricing {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
   justify-content: space-between;
-}
-
-.pricing-option {
-  width: 50%;
-  display: grid;
-  grid-template-rows: auto 1fr;
-  box-sizing: border-box;
-  padding: 0 20px;
-  margin-bottom: 10px;
-}
-
-.single-LoreBinder {
-  align-self: center;
 }
 .pricing-text {
   flex: 1;
+  padding-right: 10px;
+  margin-left: 20px;
+}
+#binder {
+  flex: 0 0 300px;
+  max-width: 300px;
+  margin-right: 20px;
+  margin-top: 10px;
+}
+#binderImage {
+  max-height: 75%;
+}
+.pricing-plans {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  grid-auto-rows: auto;
+  margin: 0 auto;
+}
+
+.pricing-plans h2 {
+  grid-column: 1 / 2;
+  grid-row: span 2;
+}
+
+.single-text, #bundle {
+  grid-column: 2 / 3;
+}
+
+.single-text {
   display: flex;
   flex-direction: column;
-  justify-content: center;
 }
-.pricing-option h2 {
-  margin: 0 0 20px;
+#single1, #single2 {
+  margin-bottom: 5px;
+  margin-top: 5px;
 }
+
 h1 {
   font-family: 'Share Tech', sans-serif;
   font-weight: 400;
   font-style: normal;
   font-size: 30px;
   margin-bottom: 25px;
-  margin-top: 25px;
 }
 
 h2 {
@@ -237,6 +257,15 @@ p {
   max-width: 600px;
 }
 
+ul {
+  margin-left: -1em;
+}
+
+li {
+  padding-bottom: 10px;
+  max-width: 600px
+}
+
 .hero, .solution, .features, .call-to-action {
   background: linear-gradient(0deg, #bbe5ed, #dbe1e7);
   position: relative;
@@ -246,7 +275,6 @@ p {
   padding-bottom: 20px;
   padding-left: 10px;
   padding-right: 10px;
-
   box-sizing:border-box;
   border-radius: 4px;
   box-shadow: inset 0 0 0.5px 1px rgba(219, 225, 231, 0.1),
@@ -269,6 +297,18 @@ body.dark-mode .hero, .solution, .features, .call-to-action {
   padding-left: 10px;
   padding-right: 10px;
 }
+.problem .text-box,
+.anticipation .text-box {
+  display: contents;
+  margin: auto;
+
+}
+.inner-text {
+  display: block;
+  text-align: left;
+  padding-left: 15px;
+  padding-right: 15px;
+}
 .call-to-action {
   text-align: center;
   padding: 50px 10px;
@@ -283,10 +323,15 @@ body.dark-mode .hero, .solution, .features, .call-to-action {
   margin-bottom: 30px
 }
 
+.features {
+  max-width: 800px;
+  margin: 0 auto;
+}
 .feature {
+  max-width: 600px;
+  margin: 20px auto;
   background: #DBE1E7; /* Light background for the feature cards */
   color: #1C0B19;
-  margin: 20px;
   padding: 20px;
   padding-bottom: 10px;
   border-radius: 8px;
@@ -297,8 +342,9 @@ body.dark-mode .hero, .solution, .features, .call-to-action {
   0 0.9px 1.5px rgba(44, 11, 25, 0.045),
   0 3.5px 6px rgba(44, 11, 25, 0.09) !important;
 }
-h1 .feature {
+h1 .features {
   color: #DBE1E7;
+  text-align: center;
 }
 body.dark-mode .feature{
   background: #1C0B19;
@@ -323,6 +369,43 @@ img {
   margin: 20px;
 }
 
+.faq {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+.faq-item {
+  margin-bottom: 0;
+  margin-top: 10px;
+}
+.faq-question {
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  margin-bottom: 0;
+  border-radius: 4px;
+}
+
+.faq-question .material-symbols-outlined {
+  margin-right: 8px;
+}
+
+.faq-answer {
+  max-height: 0;
+  overflow: hidden; 
+  transition: max-height 0.3s ease-out; 
+}
+
+body.light-mode .faq-question {
+  background-color: #bbe5ed; 
+}
+
+body.dark-mode .faq-question {
+  background-color: #3F5C7D; 
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .header, .hero, .features, .call-to-action {
@@ -345,10 +428,41 @@ img {
   .feature {
     margin: 10px;
   }
+
   .pricing-plans {
+    grid-template-columns: 1fr;
+  }
+  .pricing-plans h2, .single-text, #bundle {
+    grid-column: 1;
+  }
+  .pricing-plans h2 {
+    grid-row: auto;
+  }
+  .single-text {
+    display: block;
     flex-direction: column;
   }
   .pricing-option {
     width: 100%;
+  }
+
+  .section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .text-box, .image-box {
+    flex: none;
+    width: 100%;
+  }
+  #binder {
+    display: none;
+  }
+  .faq {
+    max-width: 100%;
+    padding: 0 10px;
+  }
+  .faq-question {
+    height: 48px;
   }
 }
