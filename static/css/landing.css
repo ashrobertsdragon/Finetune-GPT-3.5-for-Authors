@@ -104,7 +104,8 @@ a {
   text-decoration: none;
 }
 a:hover {
-  color: darkgreen;
+  color: #c3cbd3;
+  transform: scale(1.05);
 }
 #button:hover {
   background-color: #45b635;
@@ -120,7 +121,7 @@ button {
   display: block;
   text-align: center;
   width: auto;
-  margin: auto;
+  margin: 1em auto;
   font-weight: 500;
   text-transform: uppercase;
   background-color: #61b24f;
@@ -133,14 +134,15 @@ button:hover {
 }
 
 footer {
-  display: block;
-  text-align: center;
-  font-size: .75rem;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
   padding: 15px 0;
   position: relative;
   bottom: 0;
   width: 100%;
+  gap: 10px;
 }
 footer.light-mode {
   background-color: #DBE1E7;
@@ -150,10 +152,24 @@ footer.dark-mode {
   background: linear-gradient(0deg, #1c0b19, #2c2941);
   color: #DBE1E7;
 }
+.footer-nav,
+.copyright,
+.social-media-links {
+  display: flex;
+  gap: 15px;
+  flex-wrap:wrap;
+  justify-content: center;
+
+}
+.footer-nav a,
+.social-media-links a {
+  padding: 5px 10px;
+}
+
 
 body, button {
   font-family: 'Exo', sans-serif;
-  font-size: 18px;
+  font-size: 1.125rem;
   padding-bottom: 6px;
 }
 
@@ -232,26 +248,32 @@ main {
   margin-top: 5px;
 }
 
+.ml-form {
+  transform: none;
+  padding-bottom: 20px;
+}
+
 h1 {
   font-family: 'Share Tech', sans-serif;
   font-weight: 400;
   font-style: normal;
-  font-size: 30px;
+  font-size: 1.875rem;
   margin-bottom: 25px;
+  text-align: center;
 }
 
 h2 {
   font-family: 'Raleway', sans-serif;
   font-weight: 700;
   text-transform: uppercase;
-  font-size: 16px;
+  font-size: 1rem;
   margin-bottom: 20px;
   letter-spacing: 0.1em;
   opacity: .8;
 }
 
 p {
-  font-size: 18px;
+  font-size: 1.125rem;
   line-height: 26px;
   margin-bottom: 10px;
   max-width: 600px;
@@ -266,8 +288,8 @@ li {
   max-width: 600px
 }
 
-.hero, .solution, .features, .call-to-action {
-  background: linear-gradient(0deg, #bbe5ed, #dbe1e7);
+.hero, .solution, .features, .call-to-action, .waitlist, .faq-question {
+  background: linear-gradient(0deg, #bbe5ed, #c4e1eb, #ccdfe9);
   position: relative;
   background-size: cover;
   background-position: center;
@@ -276,7 +298,7 @@ li {
   padding-left: 10px;
   padding-right: 10px;
   box-sizing:border-box;
-  border-radius: 4px;
+  border-radius: 6px;
   box-shadow: inset 0 0 0.5px 1px rgba(219, 225, 231, 0.1),
   0 0 0 1px rgba(44, 11, 25, 0.075),
   0 0.3px 0.4px rgba(44, 11, 25, 0.02),
@@ -284,8 +306,13 @@ li {
   0 3.5px 6px rgba(44, 11, 25, 0.09) !important;
 }
 
-body.dark-mode .hero, .solution, .features, .call-to-action {
-  background: linear-gradient(180deg, #2a4969, #1c0b19);;
+body.dark-mode .hero, 
+body.dark-mode .solution, 
+body.dark-mode .features, 
+body.dark-mode .call-to-action, 
+body.dark-mode .waitlist, 
+body.dark-mode .faq-question {
+  background: linear-gradient(180deg, #2a4969, #222656, #281a43);;
 }
 
 .problem, .anticipation {
@@ -355,7 +382,19 @@ body.dark-mode .feature{
   transform: translateY(-5px);
 }
 
-body.dark-mode .hero::after, .features::after, .call-to-action::after {
+.waitlist {
+  display: block;
+  max-width: 600px;
+  margin: 5em auto 2em;
+}
+.waitlist h1 {
+  text-align: center;
+}
+body.dark-mode .hero::after, 
+body.dark-mode .features::after, 
+body.dark-mode .call-to-action::after, 
+body.dark-mode .waitlist::after, 
+body.dark-mode .faq-question::after {
   background: #bbe5ed;
 }
 
@@ -398,27 +437,19 @@ img {
   transition: max-height 0.3s ease-out; 
 }
 
-body.light-mode .faq-question {
-  background-color: #bbe5ed; 
-}
-
-body.dark-mode .faq-question {
-  background-color: #3F5C7D; 
-}
-
 /* Responsive Design */
 @media (max-width: 768px) {
-  .header, .hero, .features, .call-to-action {
-    padding: 20px;
-  }
+
   h1 {
     font-size: 2rem;
   }
-
   h2 {
     font-size: 1.5rem;
   }
 
+  .header, .hero, .features, .call-to-action {
+    padding: 20px;
+  }
   .header, .hero, .features, .call-to-action {
     padding: 20px;
   }
@@ -464,5 +495,11 @@ body.dark-mode .faq-question {
   }
   .faq-question {
     height: 48px;
+  }
+  .footer-nav,
+  .copyright,
+  .social-media-links {
+    flex-direction: column;
+    align-items: center;
   }
 }

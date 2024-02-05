@@ -148,7 +148,7 @@
         <p id="bundle">The more you buy, the more you save. When purchased together, each additional LoreBinder is $1 less than the previous one (up to a maximum of 10). LoreBinders never expire—save your unused LoreBinders for future projects, whether they're in a week, a month, a year, or more. Ideal for authors managing multiple projects or series.</p>
       </div>
       </div>
-      <div class="photo" id="binder"><img src="{{ url_for('static', filename='images/pricing-photo.jpg') }}" title="LoreBinders image" alt="A stack of colored binders" id="binderImage"></div>
+      <div class="photo" id="binder"><img src="{{ url_for('static', filename='images/pricing-photo.png') }}" title="LoreBinders image" alt="A stack of colored binders" id="binderImage"></div>
     </section>
     <div class="illustration" id="chart">Pricing Chart Placeholder</div>
 
@@ -219,10 +219,14 @@
       <p>Our bundle offers are ideal for authors with multiple projects. Purchase LoreBinders at a discounted rate, and use them whenever you're ready—they never expire.</p>
       </div>
     </section>
+    <section class="section waitlist">
+      <h1>Join the Waitlist</h1>
+      <a id="waitlist-form"><div class="ml-embedded mf-form" data-form="2XFg0N"></div></a>
+    </section>
+    
   </main>
 
   <footer>
-    <a id="waitlist-form"></a><div class="ml-embedded" data-form="2XFg0N"></div>
     <nav class="footer-nav">
       <a href="/contact-us">Contact</a>
       <a href="{{ url_for('static', filename='html/terms') }}">Terms of Service</a>
@@ -234,9 +238,7 @@
       <a href="https://github.com/ashrobertsdragon">GitHub</a>
       <a href="https://www.linkedin.com/company/prosepal">LinkedIn</a>
     </div>
-
-    <p>© 2024 ProsePal. All rights reserved.</p>
-
+    <div class="copyright"><p>© 2024 ProsePal. All rights reserved.</p></div>
   </footer>
 
 </body>
