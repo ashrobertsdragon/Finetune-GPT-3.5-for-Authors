@@ -29,7 +29,7 @@ app.config["MAX_CONTENT_LENGTH"] = MAX_FILE_SIZE
 cleanup_thread = threading.Thread(target=cleanup_directory, args=(UPLOAD_FOLDER,), daemon=True).start()
 
 def random_str():
-  return "".join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(4))
+  return "".join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(6))
 
 @app.route('/')
 def landing_page():
@@ -160,6 +160,3 @@ def status():
 def download_file(download_path:str):
   flask_path = os.path.join("upload_folder", download_path)
   return send_file(flask_path, as_attachment=True)
-
-if __name__ == "__main__":
-  app.run(host="0.0.0.0", debug=True)
