@@ -153,7 +153,11 @@
       </div>
       <div class="photo" id="binder"><img src="{{ url_for('static', filename='images/pricing-photo.png') }}" title="LoreBinders image" alt="A stack of colored binders" id="binderImage"></div>
     </section>
-    <div class="illustration" id="chart">Pricing Chart Placeholder</div>
+    <div class="illustration" id="chart">
+      <img src="{{ url_for('static', filename='images/pricing-table-horizontal.jpg') }}" class="horizontal-chart" title="pricing chart" alt="A pricing table for LoreBinder showing the cost savings at different quantities. Below are three rows and ten columns. The first row, labeled 'Quantity', has the numbers 1 through 10. The second row, labeled 'Price', lists prices from $10 to $55 in increments correlating to the quantity above. The third row, labeled 'Savings', shows the amount saved at each quantity, starting from '-' for 1 item, to '$45' savings for 10 items. The prices and savings increase progressively as the quantity increases.">
+      <img src="{{ url_for('static', filename='images/pricing-table-vertical.jpg') }}" class="vertical-chart" title="pricing chart" alt="A pricing table for LoreBinder showing the cost savings at different quantities. Below are three rows and ten columns. The first row, labeled 'Quantity', has the numbers 1 through 10. The second row, labeled 'Price', lists prices from $10 to $55 in increments correlating to the quantity above. The third row, labeled 'Savings', shows the amount saved at each quantity, starting from '-' for 1 item, to '$45' savings for 10 items. The prices and savings increase progressively as the quantity increases.">
+    </div>
+    
 
     <!-- Call to Action Section -->
     <section class="call-to-action">
