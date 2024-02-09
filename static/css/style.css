@@ -1,5 +1,38 @@
+h1 {
+  font-family: 'Share Tech', sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 1.875rem;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+h2 {
+  font-family: 'Raleway', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 1rem;
+  margin-bottom: 20px;
+  letter-spacing: 0.1em;
+  opacity: .8;
+}
+
+p {
+  font-family: 'Exo', sans-serif;
+  font-weight: 300;
+  font-size: 1.125rem;
+  line-height: 26px;
+  margin-bottom: 10px;
+  max-width: 600px;
+}
+
 .form-container {
   max-width: 600px;
+  margin: 0 auto;
+}
+
+.body-container {
+  max-width: 1200 px;
   margin: 0 auto;
 }
 
@@ -157,10 +190,10 @@ label a {
 body, button, label, 
 select input[type="submit"],
 input[type="checkbox"] {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Exo', sans-serif;
 }
 input, textarea {
-  font-family: 'Lato', sans-serif;
+  font-family: 'Source Sans 3', sans-serif;
 }
 button {
   padding: 10px 20px;
@@ -443,12 +476,18 @@ body.dark-mode .modal-content {
   font-weight: bold;
   cursor: pointer;
 }
-
+#convert-link {
+  text-align: center;
+}
+.info-list a {
+  font-style: italic;
+}
 
 @media screen and (max-width: 600px) {
   html, body {
     max-width: 95%;
   }
+
   .form-container,
   #user_key {
       width: 100%;

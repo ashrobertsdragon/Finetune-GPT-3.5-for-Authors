@@ -15,7 +15,9 @@
   <meta charset="utf-8">
   <link rel="icon" href="{{ url_for('static', filename='icons/favicon.ico') }}" type="image/x-icon">
   <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='icons/apple-touch-icon.png') }}">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Exo:wght@300;500&family=Raleway:wght@700&family=Share+Tech&family=Source+Sans+3:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <script src="{{ url_for('static', filename="js/dark-mode.js") }}"></script>
   <script>
@@ -102,9 +104,11 @@
 <body class="light-mode">
   <div class="form-container">
     <div class="header">
-      <img src="static/logo.png" alt="ProsePal logo" id="logo">
+      <a href="/" title="homepage">
+        <img src="{{ url_for('static', filename='icons/logo.png') }}" alt="ProsePal logo" id="logo">
+      </a>
       <div id="toggle">
-        <p>Dark mode</p>
+        <p id="toggleLabel">Dark mode</p>
         <label class="switch">
           <input type="checkbox" id="darkModeToggle" aria-label="Enable dark mode">
           <span class="slider round"></span>
@@ -123,14 +127,17 @@
       </div>
     </div>
     <form class="box" method="POST" enctype="multipart/form-data" role=""main">
-      <p><a href="{{ url_for('instructions') }}" target="_blank" aria-label="Read detailed instructions">INSTRUCTIONS</a></p>
+      <div class="opening-info">
+        <p class="info-link"><a href="{{ url_for('instructions') }}" target="_blank" aria-label="Read detailed instructions">Instructions</a></p>
+        <p class="info-link"><a href="https://platform.openai.com/api-keys target="_blank" rel="noopener" title="OpenAI API keys" aria-label="Get API key from OpenAI">Get API key from OpenAI</a></p>
+      </div>
       <label for="user_key">OpenAI API key:</label>
       <div id="key">
         <input type="password" name="user_key" id="user_key" size="60" maxlength="60" required>
-        <button id="showButton" type="button" onclick="toggleVisibility()" aria-label="Show or hide API key text"><img id="visibilityImage" src="static/visibility.png" alt="show key"></button>
+        <button id="showButton" type="button" onclick="toggleVisibility()" aria-label="Show or hide API key text"><img id="visibilityImage" src="{{ url_for('static', filename='icons/visibility.png') }}" alt="show key"></button>
       </div>
       <div id="upload">
-        <p><a href="{{ url_for('convert_ebook') }}" target="_blank">Convert your ebooks here</a></p>
+        <p class="info-link" id="convert-link"><a href="{{ url_for('convert_ebook') }}" target="_blank">Convert your ebooks here</a></p>
         <label for="file">Upload Text File(s) (limit 2MB per file, must be text file with three asterisks *** for chapter breaks):</label>
         <input type="file" name="file" id="file" multiple accept="text/plain" aria-label="Upload text files for processing">
       </div>
@@ -162,16 +169,16 @@
       </form>
   </div>
 
-  <footer">
+  <footer>
     <nav aria-label="External Links">
       <div>
         © <a href="https://prosepal.io" rel="noopener" target="_blank" title="ProsePal homepage">ProsePal</a>
         <span> | </span>
         <a href ="https://github.com/ashrobertsdragon/Finetune-GPT-3.5-for-Authors" rel="noopener" targer="_blank" title="GitHub code repository for Finetuning GPT-3.5 for Authors">Code available on GitHub under MIT License</a>
         <span> | </span>
-        <a href="/terms" target="_blank" title="Terms and Conditions">Terms and Conditions</a>
+        <a href="{{ url_for('static', filename='html/terms.html') }}" target="_blank" title="Terms and Conditions">Terms and Conditions</a>
         <span> | </span>
-        <a href="/privacy" target="_blank" title="Privacy Policy">Privacy Policy</a>
+        <a href="{{ url_for('static', filename='html/privacy.html') }}" target="_blank" title="Privacy Policy">Privacy Policy</a>
       </div>
       <div>
         <a href="https://www.flaticon.com/free-icons/hide" rel="noopener" target="_blank" title="icons attribution">Icons created by Google - Flaticon</a>
@@ -186,11 +193,11 @@
       var visibilityImage = document.getElementById("visibilityImage");
       if (currentType === "password") {
     // If the password is visible, set the image to invisible.png
-        visibilityImage.src = "static/invisible.png";
+        visibilityImage.src = "static/icons/invisible.png";
         visibilityImage.alt = "hide key"
       } else {
     // If the password is hidden, set the image to visibility.png
-        visibilityImage.src = "static/visibility.png";
+        visibilityImage.src = "static/icons/visibility.png";
         visibilityImage.alt = "show key"
       }
     }
