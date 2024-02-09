@@ -119,7 +119,6 @@ a:hover {
 
 button {
   padding: 11px 20px;
-  margin-top: 20px;
   border: none;
   cursor: pointer;
   border-radius: 4px;
@@ -127,7 +126,7 @@ button {
   display: block;
   text-align: center;
   width: auto;
-  margin: 1em auto;
+  margin: 0 auto;
   font-weight: 500;
   font-size: 1.125rem;
   line-height: 26px;
@@ -318,6 +317,9 @@ body.dark-mode .faq-question {
   background: linear-gradient(180deg, #2a4969, #222656, #281a43);;
 }
 
+.hero p, .call-to-action p {
+  margin-bottom: 20px;
+}
 .problem, .anticipation {
   position: relative;
   background-size: cover;
