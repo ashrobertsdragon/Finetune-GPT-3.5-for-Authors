@@ -161,5 +161,3 @@ def download_file(download_path:str):
   flask_path = os.path.join("upload_folder", download_path)
   return send_file(flask_path, as_attachment=True)
 
-if __name__ == "__main__":
-  app.run(host="0.0.0.0", debug=True)
