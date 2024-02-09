@@ -98,6 +98,12 @@ body.light-mode {
   background-attachment: fixed;
   color: #1C0B19;
 }
+
+
+body, button {
+  font-family: 'Exo', sans-serif;
+}
+
 a {
   transition: color 0.3s ease;
   color: inherit;
@@ -107,13 +113,12 @@ a:hover {
   color: #c3cbd3;
   transform: scale(1.05);
 }
-#button:hover {
+.button:hover {
   background-color: #45b635;
 }
 
 button {
-  padding: 10px 20px;
-  margin-top: 20px;
+  padding: 11px 20px;
   border: none;
   cursor: pointer;
   border-radius: 4px;
@@ -121,8 +126,10 @@ button {
   display: block;
   text-align: center;
   width: auto;
-  margin: 1em auto;
+  margin: 0 auto;
   font-weight: 500;
+  font-size: 1.125rem;
+  line-height: 26px;
   text-transform: uppercase;
   background-color: #61b24f;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -137,7 +144,6 @@ footer {
   display: flex;
   flex-direction: column;
   justify-content: center;
-
   padding: 15px 0;
   position: relative;
   bottom: 0;
@@ -164,13 +170,6 @@ footer.dark-mode {
 .footer-nav a,
 .social-media-links a {
   padding: 5px 10px;
-}
-
-
-body, button {
-  font-family: 'Exo', sans-serif;
-  font-size: 1.125rem;
-  padding-bottom: 6px;
 }
 
 main {
@@ -240,9 +239,6 @@ main {
 
 .single-text, .bundle {
   grid-column: 2 / 3;
-}
-
-.single-text {
   display: flex;
   flex-direction: column;
   margin-bottom: 15px;
@@ -321,6 +317,9 @@ body.dark-mode .faq-question {
   background: linear-gradient(180deg, #2a4969, #222656, #281a43);;
 }
 
+.hero p, .call-to-action p {
+  margin-bottom: 20px;
+}
 .problem, .anticipation {
   position: relative;
   background-size: cover;
@@ -411,7 +410,26 @@ img {
 }
 
 #chart {
-  margin: 20px;
+  margin: 20px auto;
+  max-width: 80%;
+  text-align: center;
+}
+
+#chart img {
+  box-shadow:
+    inset 0 0 0.5px 0.5px rgba(255, 255, 255, 0.5),
+    0 0 0.5px 1px rgba(219, 225, 231, 0.5),
+    0 0 0 1px rgba(44, 11, 25, 0.15),
+    0 0.9px 1.5px rgba(44, 11, 25, 0.15),
+    0 3.5px 6px rgba(44, 11, 25, 0.2);
+}
+
+#chart .horizontal-chart {
+  display: block;
+}
+
+#chart .vertical-chart {
+  display: none;
 }
 
 .faq {
@@ -469,13 +487,13 @@ img {
   .pricing-plans {
     grid-template-columns: 1fr;
   }
-  .pricing-plans h2, .single-text, #bundle {
+  .pricing-plans h2, .single-text, .bundle {
     grid-column: 1;
   }
   .pricing-plans h2 {
     grid-row: auto;
   }
-  .single-text {
+  .single-text, .bundle {
     display: block;
     flex-direction: column;
   }
@@ -500,12 +518,18 @@ img {
     padding: 0 10px;
   }
   .faq-question {
-    height: 48px;
+    padding: 16px 10px;
   }
   .footer-nav,
   .copyright,
   .social-media-links {
     flex-direction: column;
     align-items: center;
+  }
+  #chart .horizontal-chart {
+    display: none; /* Hide the horizontal chart on smaller screens */
+  }
+  #chart .vertical-chart {
+    display: block; /* Show the vertical chart on smaller screens */
   }
 }
