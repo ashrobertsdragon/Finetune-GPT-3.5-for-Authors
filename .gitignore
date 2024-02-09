@@ -1,5 +1,6 @@
 __pycache__/
 .env
+.git
 run_dev_server.py
 /upload_folder/
 temp.py
