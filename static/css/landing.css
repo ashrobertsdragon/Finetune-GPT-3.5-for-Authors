@@ -98,6 +98,12 @@ body.light-mode {
   background-attachment: fixed;
   color: #1C0B19;
 }
+
+
+body, button {
+  font-family: 'Exo', sans-serif;
+}
+
 a {
   transition: color 0.3s ease;
   color: inherit;
@@ -107,12 +113,12 @@ a:hover {
   color: #c3cbd3;
   transform: scale(1.05);
 }
-#button:hover {
+.button:hover {
   background-color: #45b635;
 }
 
 button {
-  padding: 10px 20px;
+  padding: 11px 20px;
   margin-top: 20px;
   border: none;
   cursor: pointer;
@@ -123,6 +129,8 @@ button {
   width: auto;
   margin: 1em auto;
   font-weight: 500;
+  font-size: 1.125rem;
+  line-height: 26px;
   text-transform: uppercase;
   background-color: #61b24f;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -137,7 +145,6 @@ footer {
   display: flex;
   flex-direction: column;
   justify-content: center;
-
   padding: 15px 0;
   position: relative;
   bottom: 0;
@@ -164,13 +171,6 @@ footer.dark-mode {
 .footer-nav a,
 .social-media-links a {
   padding: 5px 10px;
-}
-
-
-body, button {
-  font-family: 'Exo', sans-serif;
-  font-size: 1.125rem;
-  padding-bottom: 6px;
 }
 
 main {
@@ -240,9 +240,6 @@ main {
 
 .single-text, .bundle {
   grid-column: 2 / 3;
-}
-
-.single-text {
   display: flex;
   flex-direction: column;
   margin-bottom: 15px;
@@ -488,13 +485,13 @@ img {
   .pricing-plans {
     grid-template-columns: 1fr;
   }
-  .pricing-plans h2, .single-text, #bundle {
+  .pricing-plans h2, .single-text, .bundle {
     grid-column: 1;
   }
   .pricing-plans h2 {
     grid-row: auto;
   }
-  .single-text {
+  .single-text, .bundle {
     display: block;
     flex-direction: column;
   }
@@ -519,7 +516,7 @@ img {
     padding: 0 10px;
   }
   .faq-question {
-    height: 48px;
+    padding: 16px 10px;
   }
   .footer-nav,
   .copyright,
@@ -527,10 +524,10 @@ img {
     flex-direction: column;
     align-items: center;
   }
-  .horizontal-chart {
+  #chart .horizontal-chart {
     display: none; /* Hide the horizontal chart on smaller screens */
   }
-  .vertical-chart {
+  #chart .vertical-chart {
     display: block; /* Show the vertical chart on smaller screens */
   }
 }
