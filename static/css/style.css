@@ -1,6 +1,88 @@
+a {
+  transition: color 0.3s ease;
+  color: inherit;
+  text-decoration: underline;
+}
+a:hover {
+  color: darkgreen;
+}
+
+label a {
+  padding-left: .25em;
+}
+/* General Styling */
+body, button, label, 
+select input[type="submit"],
+input[type="checkbox"] {
+  font-family: 'Exo', sans-serif;
+}
+input, textarea {
+  font-family: 'Source Sans 3', sans-serif;
+}
+button {
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  box-shadow:  0 0 3px 1px #1C0B19;
+}
+
+h1 {
+  font-family: 'Share Tech', sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 1.875rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  transform: scale(1, 1.25);
+  letter-spacing: .05em;
+}
+
+h2 {
+  font-family: 'Raleway', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 1rem;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  letter-spacing: 0.1em;
+  opacity: .8;
+}
+
+p {
+  font-family: 'Exo', sans-serif;
+  font-weight: 300;
+  font-size: 1.125rem;
+  line-height: 26px;
+  margin-top: 0;
+  margin-bottom: 10px;
+  text-align: justify;
+}
+
+ul {
+  list-style-type: '- ';
+  padding-right: 40px;
+}
+ul li {
+  margin-bottom: 20px;
+  text-align: justify;
+}
+
+section {
+  margin-top: 3rem;
+  margin-bottom: 30px;
+}
+
 .form-container {
   max-width: 600px;
   margin: 0 auto;
+}
+
+.body-container {
+  max-width: 600px;
+  margin: 0 auto;
+  margin-top: 20px;
+  padding: 0 20px;
 }
 
 .header {
@@ -139,35 +221,6 @@ body.dark-mode input::file-selector-button:hover {
 
 button, input[type="submit"] {
   transition: background-color 0.3s ease;
-}
-
-a {
-  transition: color 0.3s ease;
-  color: inherit;
-  text-decoration: underline;
-}
-a:hover {
-  color: darkgreen;
-}
-
-label a {
-  padding-left: .25em;
-}
-/* General Styling */
-body, button, label, 
-select input[type="submit"],
-input[type="checkbox"] {
-  font-family: 'Roboto', sans-serif;
-}
-input, textarea {
-  font-family: 'Lato', sans-serif;
-}
-button {
-  padding: 10px 20px;
-  border: none;
-  cursor: pointer;
-  border-radius: 4px;
-  box-shadow:  0 0 3px 1px #1C0B19;
 }
 
 /*box container */
@@ -443,12 +496,22 @@ body.dark-mode .modal-content {
   font-weight: bold;
   cursor: pointer;
 }
+#convert-link {
+  text-align: center;
+}
+.info-list a {
+  font-style: italic;
+}
 
+#closing {
+  margin-top: 50px;
+}
 
 @media screen and (max-width: 600px) {
   html, body {
     max-width: 95%;
   }
+
   .form-container,
   #user_key {
       width: 100%;
