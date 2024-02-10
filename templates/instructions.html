@@ -13,28 +13,74 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="{{ url_for('static', filename='icons/favicon.ico') }}" type="image/x-icon">
   <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='icons/apple-touch-icon.png') }}">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Exo:wght@300;500&family=Raleway:wght@700&family=Share+Tech&family=Source+Sans+3:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <script src="{{ url_for('static', filename="js/dark-mode.js") }}"></script>
 
 </head>
 <body class="light-mode">
-  <div class="form-container">
+  <div class="body-container">
     <div class="header">
-      <img src="static/logo.png" alt="ProsePal logo" id="logo">
+      <a href="/" title="homepage">
+        <img src="{{ url_for('static', filename='icons/logo.png') }}" alt="ProsePal logo" id="logo">
+      </a>
       <div id="toggle">
-        <p>Dark mode</p>
+        <p id="toggleLabel">Dark mode</p>
         <label class="switch">
-          <input type="checkbox" id="darkModeToggle">
+          <input type="checkbox" id="darkModeToggle" aria-label="Enable dark mode">
           <span class="slider round"></span>
         </label>
       </div>
     </div>
-
+    <section>
+      <h1>How to Finetune GPT 3.5 using<br />ProsePal Finetuner</h1>
+      
+      <h2>1. Sign Up for OpenAI</h2>
+      <p>If you haven't already, the first thing you'll need to do is create an OpenAI account by going to <a href="https://platform.openai.com/login?launch" target="_blank" rel="noopener" title="OpenAI singup page" aria-label="OpenAI signup page">OpenAI's signup page</a> and follow the prompts to register.</p>
+      
+      <h2>2. Acquire Your API Key</h2>
+      <p>If you haven't already, generate your OpenAI API key. This is a code that identifies you when using OpenAI's API. Visit the <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" title="OpenAI API keys" aria-label="get API key from OpenAI">API keys page</a>, click on "Create new secret key", and make sure to store this key in a safe place—you won't be able to retrieve it from the site again for security reasons.</p>
+      <p>Note: ProsePal does not save your key either. As soon as finetuning is complete, the key is deleted from memory so you won't have to worry about it being stolen.</p>
+      
+      <h2>3. Prepare Your Manuscripts</h2>
+      <p>Your books need to be in text format, with chapters separated by three asterisks (***). If your texts aren't formatted this way, we can help with that. Click on <a href="{{ url_for('convert_ebook') }}" title="Convert ebooks" aria-label="free tool to convert ebooks for finetuning">"Convert your ebooks here"</a> to get started.</p>
+      
+      <h2>4. Upload Your Texts</h2>
+      <p>Once your files are ready, use the "Choose files" button to upload them.</p>
+      
+      <h2>5. Enter a System Message</h2>
+      <p>In the system message box, you'll need to provide a description of your writing style. This might look something like, "You are a junior writer who writes in the style of [Author Name], known for [describe the style]." If you need a bit of help, our  <a href="https://chat.openai.com/g/g-2RpK5YKxY-prosepal-s-writing-style-describer" target="_blank" rel="noopener">ProsePal's Writing Style Describer is available for ChatGPT Plus (the paid version) subscribers</a>.</p>
+      
+      <h2>6. Choose Your Fine-Tuning Method</h2>
+      <p>You'll see a few options for how the finetuner should split your text, such as "sliding window" at chapter or book level, or "Dialogue/Prose." These options will create a fine tuned model that understands slightly different things.</p>
+      <ul>
+        <li>
+          <p>The "sliding window" methods focus on small sections at a time. It takes one piece, called a chunk, as the input and then the next as the response. But for the next set, the response chunk becomes the input chunk, and the chunk after that is the new response. And so on down the line. The chapter level does this within each chapter, while the book level option does this with the chapters themselves.</p>
+          <p>Warning, this method causes your fine tuning instructions to be twice as long, which doubles the cost of fine tuning.</p>
+        </li>
+        <li><p>The "Dialogue/Prose" option splits each paragraph between the dialogue and narrative sections and tells GPT 3.5 to write as many sentences as there were of each kind in the paragraph.</p></li>
+        <li>
+          <p>There's also an experimental "generate beats" option that will read the book files you upload and attempt to create scene beats for each chapter, and then direct the fine tuned model to write the chapter based on those beats, with the correct response being the orginal text.</p>
+          <p>This also winds up having a little extra cost, but uses the base GPT 3.5 model which is pretty inexpensive these days, and will wind up being around 4 to 5 cents (in US dollars) per hundred thousand words uploaded. It will also take a bit longer to process, but again, it's pretty fast for AI.</p>
+        </li>
+      </ul>
+      
+      <h2>7. Confirm Rights and Agree to Terms</h2>
+      <p>You have to confirm that you hold the rights to the content you're uploading and to agree to the terms and conditions. If you want to teach the AI to write like somebody else, you are looking for a different tool. The whole point is to train the AI to sound like <em>you</em>, so why would you upload someone elses books?</p>
+      
+      <h2>8. Begin Fine-Tuning</h2>
+      <p>Finally, hit the "Fine tune GPT 3.5" button. You'll see updates on the screen about the fine-tuning process, and once it's completed, you'll receive a message along with the name of your fine-tuned fodel which will start with "ft:gpt-3.5-turbo-0613".</p>
+      <p>A file will also automatically download. This file, formatted in something called JSONL or JSON lines, contains all the instructions that were used for finetuning GPT 3.5 and can be used for further fine-tuning or modifications in the future.</p>
+      
+      <p id="closing">Your fine-tuned AI model will then be listed on your OpenAI account and can be used in various anywhere you can use your own versions of GPT 3.5 like OpenAI Playground, Rexy, or Novelcrafter.</p>
+    </section>
+  </div>
   <!-- Footer -->
   <footer style="bottom: 0; width: 100%; text-align: center; padding: 10px">
     <div>
-      © <a href="https://prosepal.io" target="_blank">ProsePal</a>
+      © <a href="https://prosepal.io" target="_blank" rel="noopener">ProsePal</a>
       <span> | </span>
       <a href ="https://github.com/ashrobertsdragon/Finetune-GPT-3.5-for-Authors">Code available on GitHub under MIT License</a>
       <span> | </span>
@@ -43,7 +89,7 @@
       <a href="/privacy" target="_blank">Privacy Policy</a>
     </div>
     <div>
-      <a href="https://www.flaticon.com/free-icons/hide" target="_blank" title="hide icons">Hide icons created by Google - Flaticon</a>
+      <a href="https://www.flaticon.com/free-icons/hide" target="_blank" rel="noopener" title="hide icons">Hide icons created by Google - Flaticon</a>
     </div>
   </footer>
   <script>
