@@ -2,6 +2,7 @@ import base64
 import logging
 import os
 
+import openai
 from dotenv import load_dotenv
 from openai import OpenAI
 
@@ -29,6 +30,11 @@ def call_api(payload: dict) -> str:
   except KeyError as e:
     error_logger.exception(f"Error: {e}\nResponse: {response.text}")
     return ""
+  except openai.APIStatusError as e:
+    if e.status_code==429:
+      client.close()
+      client = OpenAI(api_key=os.environ("PROSEPAL_OCR_KEY_FALLBACK"))
+      return call_api(payload)
   except Exception as e:
     error_logger.exception(f"Error: {e}")
     return ""
