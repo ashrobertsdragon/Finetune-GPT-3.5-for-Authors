@@ -90,17 +90,16 @@ def convert_ebook():
       if uploaded_file.mimetype not in supported_mimetypes:
         return jsonify({"error": "Unsupported file type"}), 400
 
-      flask_folder_name = os.path.join("upload_folder", random_str())
-      absolute_folder_name = os.path.join("app", flask_folder_name)
-      os.makedirs(absolute_folder_name, exist_ok=True)
-      absolute_filepath = os.path.join(absolute_folder_name, uploaded_file.filename)
-      uploaded_file.save(absolute_filepath)
+      folder_name = os.path.join("upload_folder", random_str())
+      os.makedirs(folder_name, exist_ok=True)
+      filepath = os.path.join(folder_name, uploaded_file.filename)
+      uploaded_file.save(filepath)
 
       metadata = {"title": title, "author": author}
-      output_file = convert_file(absolute_filepath, metadata)
-      flask_output_filepath = os.path.join(flask_folder_name, output_file)
+      output_file = convert_file(filepath, metadata)
+      output_filepath = os.path.join(folder_name, output_file)
 
-      return send_file(path_or_file=flask_output_filepath, mimetype="text/plain", as_attachment="True", max_age=None)
+      return send_file(path_or_file=output_filepath, mimetype="text/plain", as_attachment="True", max_age=None)
 
   return render_template("convert-ebook.html")
 
