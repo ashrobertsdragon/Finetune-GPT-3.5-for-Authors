@@ -2,13 +2,14 @@ import base64
 import logging
 import os
 
-import requests
 from dotenv import load_dotenv
-
+from openai import OpenAI
 
 load_dotenv()
 error_logger = logging.getLogger("error_logger")
+api_key = os.getenv("PROSEPAL_OCR_KEY")
 
+client = OpenAI(api_key=api_key)
 def encode_image(image_path):
   with open(image_path, "rb") as image_file:
     return base64.b64encode(image_file.read()).decode('utf-8')
@@ -16,18 +17,9 @@ def encode_image(image_path):
 def call_api(payload: dict) -> str:
   "Call OpenAI's ChatCompletions API endopoint for OCR or double-checking response"
   
-  api_key = os.getenv("OPENAI_API_KEY")
-  headers = {
-    "Content-Type": "application/json",
-    "Authorization": f"Bearer {api_key}"
-  }
 
   try:
-    response = requests.post(
-        "https://api.openai.com/v1/chat/completions",
-        headers=headers,
-        json=payload
-    )
+    response = client.chat.completions.create(payload)
     if response.json()["choices"]:
       answer = response.json()["choices"][0]["message"]["content"]
       return answer
