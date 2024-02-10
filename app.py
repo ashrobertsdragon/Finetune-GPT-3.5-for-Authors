@@ -20,7 +20,7 @@ start_loggers()
 error_logger = logging.getLogger('error_logger')
 
 app = Flask(__name__)
-UPLOAD_FOLDER = os.path.join("app", "upload_folder")
+UPLOAD_FOLDER = "upload_folder"
 MAX_FILE_SIZE = 2 * 1024 * 1024  # 2 MB
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
