@@ -17,15 +17,17 @@
   <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='icons/apple-touch-icon.png') }}">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  <script src="{{ url_for('static', finetune='js/dark-mode.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
 </head>
 <body>
   <div class="header">
-    <div id="logo">Logo</div>
+    <a href="/" title="homepage">
+      <img src="{{ url_for('static', filename='icons/logo.png') }}" alt="ProsePal logo" id="logo">
+    </a>
     <div id="toggle">
-      <p>Dark Mode</p>
+      <p id="toggleLabel">Dark mode</p>
       <label class="switch">
-        <input type="checkbox">
+        <input type="checkbox" id="darkModeToggle" aria-label="Enable dark mode">
         <span class="slider round"></span>
       </label>
     </div>
