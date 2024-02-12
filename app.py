@@ -9,7 +9,7 @@ from flask import Flask, render_template, request, jsonify, send_file, send_from
 from flask_sslify import SSLify
 
 
-from forms import ContactForm
+from forms import ContactForm, EbookConversionForm
 from file_handling import is_utf8
 from logging_config import start_loggers
 from send_email import send_mail
@@ -84,16 +84,16 @@ def convert_ebook():
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     "text/plain"
   ]
-
-  if request.method == "POST":
-    uploaded_file = request.files.get("ebook")
-    title = request.form.get("title")
-    author = request.form.get("author")
+  form = EbookConversionForm()
+  if form.validate_on_submit():
+    uploaded_file = form.ebook.data
+    title = form.title.data
+    author = form.author.data
     if uploaded_file:
       if uploaded_file.mimetype not in supported_mimetypes:
         return jsonify({"error": "Unsupported file type"}), 400
 
-      folder_name = os.path.join("upload_folder", random_str())
+      folder_name = os.path.join(UPLOAD_FOLDER, random_str())
       os.makedirs(folder_name, exist_ok=True)
       filepath = os.path.join(folder_name, uploaded_file.filename)
       uploaded_file.save(filepath)
