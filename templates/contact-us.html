@@ -19,7 +19,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
 </head>
-<body>
+<body class="light-mode">
   <div class="header">
     <a href="/" title="homepage">
       <img src="{{ url_for('static', filename='icons/logo.png') }}" alt="ProsePal logo" id="logo">
@@ -35,18 +35,23 @@
 
   <div class="contact-form">
     <h1>Contact Us</h1>
-      <form action="/send-email" method="post">
-        <label for="name">Your Name:</label>
-          <input type="text" id="name" name="name" required>
-
-          <label for="email">Your Email:</label>
-          <input type="text" id="email" name="email" required>
-
-          <label for="message">Your Message:</label>
-          <textarea id="message" name="message" required></textarea>
-
-          <input type="submit" value="Send Message">
-      </form>
+    <form action="" method="post" novalidate>
+      {{ form.hidden_tag() }}
+      <p>
+        {{ form.name.label }}<br>
+        {{ form.name(size=20) }}<br>
+      </p>
+      <p>
+        {{ form.email.label }}<br>
+        {{ form.email(size=20) }}<br>
+      </p>
+      <p>
+        {{ form.message.label }}<br>
+        {{ form.message(rows=5, cols=20) }}
+      </p>
+      <p>{{ form.submit() }}</p>
+    </form>
+    
   </div>
 
   <footer>

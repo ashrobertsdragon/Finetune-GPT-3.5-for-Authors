@@ -8,13 +8,15 @@ import requests
 from flask import Flask, render_template, request, jsonify, send_file, send_from_directory
 from flask_sslify import SSLify
 
-from cleanup import cleanup_directory
-from logging_config import start_loggers
-from ebook_conversion.convert_file import convert_file
+
+from forms import ContactForm
 from file_handling import is_utf8
+from logging_config import start_loggers
+from send_email import send_mail
+from ebook_conversion.convert_file import convert_file
 from finetune.shared_resources import training_status
 from finetune.training_management import train
-from send_email import send_mail
+
 
 
 start_loggers()
@@ -22,13 +24,11 @@ error_logger = logging.getLogger('error_logger')
 
 app = Flask(__name__)
 sslify = SSLify(app, permanent=True)
-UPLOAD_FOLDER = "upload_folder"
+UPLOAD_FOLDER = os.path.join("tmp", "upload_folder")
 MAX_FILE_SIZE = 2 * 1024 * 1024  # 2 MB
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["MAX_CONTENT_LENGTH"] = MAX_FILE_SIZE
-
-cleanup_thread = threading.Thread(target=cleanup_directory, args=(UPLOAD_FOLDER,), daemon=True).start()
 
 def random_str():
   return "".join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(6))
@@ -52,8 +52,8 @@ def terms_of_service():
 @app.route("/contact-us", methods=["GET", "POST"])
 def send_email():
   def check_email(user_email: str) -> bool:
-    api_key =  os.getenv("abstract_api_key")
-    url = f"https://emailvalidation.abstractapi.com/v1/?api_key={api_key}&{user_email}"
+    api_key =  os.environ.get("abstract_api_key")
+    url = f"https://emailvalidation.abstractapi.com/v1/?api_key={api_key}&email={user_email}"
     response = requests.get(url).json()
     if response.get("deliverability") != "DELIVERABLE":
       return False
@@ -66,10 +66,11 @@ def send_email():
     if check_email(user_email):
       send_mail(name, user_email, message)
   
-  if request.method == "POST":
-    name = request.form.get("name")
-    user_email = request.form.get("email")
-    message = request.form.get("message")
+  form = ContactForm()
+  if form.validate_on_submit():
+    name = form.name.data
+    user_email = form.email.data
+    message = form.message.data
     threading.Thread(target=send_message, args=(name, user_email, message)).start()
 
   return render_template("contact-us.html")
