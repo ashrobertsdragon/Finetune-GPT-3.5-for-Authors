@@ -6,6 +6,7 @@ import threading
 
 import requests
 from flask import Flask, render_template, request, jsonify, send_file, send_from_directory
+from flask_sslify import SSLify
 
 from cleanup import cleanup_directory
 from logging_config import start_loggers
@@ -20,6 +21,7 @@ start_loggers()
 error_logger = logging.getLogger('error_logger')
 
 app = Flask(__name__)
+sslify = SSLify(app, permanent=True)
 UPLOAD_FOLDER = "upload_folder"
 MAX_FILE_SIZE = 2 * 1024 * 1024  # 2 MB
 
