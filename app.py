@@ -9,14 +9,13 @@ from flask import Flask, render_template, request, jsonify, send_file, send_from
 from flask_sslify import SSLify
 
 
-from forms import ContactForm, EbookConversionForm
+from forms import ContactForm, EbookConversionForm, FineTuneForm
 from file_handling import is_utf8
 from logging_config import start_loggers
 from send_email import send_mail
 from ebook_conversion.convert_file import convert_file
 from finetune.shared_resources import training_status
 from finetune.training_management import train
-
 
 
 start_loggers()
@@ -108,7 +107,8 @@ def convert_ebook():
 
 @app.route("/finetune", methods=["GET", "POST"])
 def finetune():
-  if request.method == "POST":
+  form = FineTuneForm()
+  if form.validate_on_submit():
     role = request.form["role"]
     chunk_type = request.form["chunk_type"]
     user_key = request.form["user_key"]

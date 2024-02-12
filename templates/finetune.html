@@ -126,47 +126,42 @@
         <p id="errorMessage"></p>
       </div>
     </div>
-    <form class="box" method="POST" enctype="multipart/form-data" role=""main">
+    <form class="box" method="POST" enctype="multipart/form-data" role="main">
+      {{ form.hidden_tag() }}
       <div class="opening-info">
         <p class="info-link"><a href="{{ url_for('instructions') }}" target="_blank" aria-label="Read detailed instructions">Instructions</a></p>
-        <p class="info-link"><a href="https://platform.openai.com/api-keys target="_blank" rel="noopener" title="OpenAI API keys" aria-label="Get API key from OpenAI">Get API key from OpenAI</a></p>
+        <p class="info-link"><a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" title="OpenAI API keys" aria-label="Get API key from OpenAI">Get API key from OpenAI</a></p>
       </div>
-      <label for="user_key">OpenAI API key:</label>
       <div id="key">
-        <input type="password" name="user_key" id="user_key" size="60" maxlength="60" required>
+        {{ form.user_key.label(for="user_key") }}
+        {{ form.user_key(id="user_key", class_="form-control") }}
         <button id="showButton" type="button" onclick="toggleVisibility()" aria-label="Show or hide API key text"><img id="visibilityImage" src="{{ url_for('static', filename='icons/visibility.png') }}" alt="show key"></button>
       </div>
       <div id="upload">
         <p class="info-link" id="convert-link"><a href="{{ url_for('convert_ebook') }}" target="_blank">Convert your ebooks here</a></p>
-        <label for="file">Upload Text File(s) (limit 2MB per file, must be text file with three asterisks *** for chapter breaks):</label>
-        <input type="file" name="file" id="file" multiple accept="text/plain" aria-label="Upload text files for processing">
+        {{ form.file.label(for="file") }}
+        {{ form.file(id="file", class_="form-control", multiple=true, accept="text/plain") }}
       </div>
-      <div id="sys_role" aria-labelledby="roleLabel">
-        <label for="role" id="roleLabel">System message:</label>
-        <textarea name="role" id="role" rows=5 required></textarea>
+      <div id="sys_role">
+        {{ form.role.label(for="role", id="roleLabel") }}
+        {{ form.role(id="role", class_="form-control", rows=5) }}
       </div>
       <div id="chunk">
-        <label for="chunk_type" aria-label="Select a fine tuning method">Fine tuning method</label>
-        <select name="chunk_type" id="chunk_type" required>
-          <option value="" disabled selected>Choose one</option>
-          <option value="sliding_window_small">Sliding Window (chapter-level)</option>
-          <option value="sliding_window_large">Sliding Window (book-level)</option>
-          <option value="dialogue_prose">Dialogue/Prose</option>
-          <option value="generate_beats">Generate Beats (extra cost)</option>
-        </select>
+        {{ form.chunk_type.label(for="chunk_type") }}
+        {{ form.chunk_type(id="chunk_type", class_="form-control") }}
       </div>
       <div id="checkboxes">
         <div id="rights">
-          <input type="checkbox" id="rights_confirmation" name="rights_confirmation" required aria-labelledby="rightsLabel">
-          <label for="rights_confirmation" id="rightsLabel">I confirm that I have the rights to these files</label>
+          {{ form.rights_confirmation(id="rights_confirmation") }}
+          {{ form.rights_confirmation.label(for="rights_confirmation") }}
         </div>
         <div id="terms">
-          <input type="checkbox" id="terms_agreement" name="terms_agreement" required aria-labelledby="termsLabel">
-          <label for="terms_agreement" id="termsLabel">I agree to the  <a href="/terms" target="_blank">terms and conditions</a></label>
+          {{ form.terms_agreement(id="terms_agreement") }}
+          <label for="terms_agreement">I agree to the <a href="{{ url_for('static', filename='html/terms.html') }}" target="_blank">terms and conditions</a></label>
         </div>
       </div>
-      <input type="submit" value="Finetune GPT-3.5" aria-label="Submit form for finetuning">
-      </form>
+      {{ form.submit(class_="btn btn-primary") }}
+    </form>    
   </div>
 
   <footer>
