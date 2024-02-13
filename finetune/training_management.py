@@ -45,7 +45,7 @@ def fine_tune(folder_name: str, user_folder: str, retry_count: int = 0):
     )
 
 
-    fine_tune_job = client.fine_tuning.jobs.create(training_file=JSONL_file.id, model="gpt-3.5-turbo")
+    fine_tune_job = client.fine_tuning.jobs.create(training_file=JSONL_file.id, model="gpt-3.5-turbo-1106")
     while True:
       fine_tune_info = client.fine_tuning.jobs.retrieve(fine_tune_job.id)
       psuedo_animation(user_folder, "Finetuning")
