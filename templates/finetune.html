@@ -21,6 +21,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
   <script>
+    var continuePolling = true;
     function fetchStatusUpdate() {
       if (!continuePolling) {
         return; // Stop the function from running if polling should not continue
@@ -40,7 +41,7 @@
           setTimeout(fetchStatusUpdate, 1000); 
         }
         if (data.status.includes("<img")) { // Clear polling interval when error iamge appears
-          continuePolling = False;
+          continuePolling = false;
         }
       })
       .catch(error => console.error('Error fetching status:', error));
