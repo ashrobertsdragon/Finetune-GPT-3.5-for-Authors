@@ -126,7 +126,7 @@ def train(folder_name: str, role: str, user_key: str, chunk_type: str):
   set_client(user_key)
   thread_local_storage.user_folder = user_folder
   fine_tune_path = process_files(folder_name, role, chunk_type, user_folder)
-  #fine_tune(folder_name, user_folder)
+  fine_tune(folder_name, user_folder)
   download_path = os.path.relpath(fine_tune_path, start=os.path.join("app", "upload_folder"))
   training_status[user_folder] = f"Download <a href='/download/{download_path}'>JSONL file here</a>."
   del user_key
