@@ -6,28 +6,26 @@ import threading
 
 import requests
 from flask import Flask, render_template, request, jsonify, send_file, send_from_directory
-from flask_sslify import SSLify
 
-
-from forms import ContactForm, EbookConversionForm, FineTuneForm
-from file_handling import is_utf8
 from logging_config import start_loggers
-from send_email import send_mail
 from ebook_conversion.convert_file import convert_file
+from file_handling import is_utf8
 from finetune.shared_resources import training_status
 from finetune.training_management import train
+from send_email import send_mail
 
 
 start_loggers()
 error_logger = logging.getLogger('error_logger')
 
 app = Flask(__name__)
-sslify = SSLify(app, permanent=True)
-UPLOAD_FOLDER = os.path.join("tmp", "upload_folder")
+UPLOAD_FOLDER = os.path.join("/tmp", "upload_folder")
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 MAX_FILE_SIZE = 2 * 1024 * 1024  # 2 MB
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["MAX_CONTENT_LENGTH"] = MAX_FILE_SIZE
+
 
 def random_str():
   return "".join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(6))
@@ -65,11 +63,10 @@ def send_email():
     if check_email(user_email):
       send_mail(name, user_email, message)
   
-  form = ContactForm()
-  if form.validate_on_submit():
-    name = form.name.data
-    user_email = form.email.data
-    message = form.message.data
+  if request.method == "POST":
+    name = request.form.get("name")
+    user_email = request.form.get("email")
+    message = request.form.get("message")
     threading.Thread(target=send_message, args=(name, user_email, message)).start()
 
   return render_template("contact-us.html")
@@ -83,22 +80,26 @@ def convert_ebook():
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     "text/plain"
   ]
-  form = EbookConversionForm()
-  if form.validate_on_submit():
-    uploaded_file = form.ebook.data
-    title = form.title.data
-    author = form.author.data
+
+  if request.method == "POST":
+    uploaded_file = request.files.get("ebook")
+    title = request.form.get("title")
+    author = request.form.get("author")
     if uploaded_file:
       if uploaded_file.mimetype not in supported_mimetypes:
         return jsonify({"error": "Unsupported file type"}), 400
 
       folder_name = os.path.join(UPLOAD_FOLDER, random_str())
       os.makedirs(folder_name, exist_ok=True)
-      filepath = os.path.join(folder_name, uploaded_file.filename)
-      uploaded_file.save(filepath)
+      file_path = os.path.join(folder_name, uploaded_file.filename)
+      uploaded_file.save(file_path)
+      if not is_utf8(file_path):
+        os.remove(file_path)
+        error_logger.error(f"{file_path} is not UTF-8")
+        return jsonify({"error": "Not correct kind of text file. Please resave as UTF-8"}), 400
 
       metadata = {"title": title, "author": author}
-      output_file = convert_file(filepath, metadata)
+      output_file = convert_file(file_path, metadata)
       output_filepath = os.path.join(folder_name, output_file)
 
       return send_file(path_or_file=output_filepath, mimetype="text/plain", as_attachment="True", max_age=None)
@@ -107,8 +108,7 @@ def convert_ebook():
 
 @app.route("/finetune", methods=["GET", "POST"])
 def finetune():
-  form = FineTuneForm()
-  if form.validate_on_submit():
+  if request.method == "POST":
     role = request.form["role"]
     chunk_type = request.form["chunk_type"]
     user_key = request.form["user_key"]
@@ -155,10 +155,14 @@ def finetune():
 def status():
   data = request.get_json()
   user_folder = data.get('user_folder')
-  print(training_status[user_folder])
   return jsonify({"status": training_status.get(user_folder, "Not started")})
 
 @app.route("/download/<path:download_path>")
 def download_file(download_path:str):
-  flask_path = os.path.join("upload_folder", download_path)
-  return send_file(flask_path, as_attachment=True)
+  flask_path = os.path.join(UPLOAD_FOLDER, download_path)
+  try:
+    return send_file(flask_path, as_attachment=True)
+  finally:
+    user_folder = os.path.dirname(download_path)
+    if training_status[user_folder]:
+      del training_status[user_folder]
