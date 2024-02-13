@@ -93,7 +93,7 @@ def convert_ebook():
       os.makedirs(folder_name, exist_ok=True)
       file_path = os.path.join(folder_name, uploaded_file.filename)
       uploaded_file.save(file_path)
-      if not is_utf8(file_path):
+      if uploaded_file.mimetype == "text/plain" and not is_utf8(file_path):
         os.remove(file_path)
         error_logger.error(f"{file_path} is not UTF-8")
         return jsonify({"error": "Not correct kind of text file. Please resave as UTF-8"}), 400
