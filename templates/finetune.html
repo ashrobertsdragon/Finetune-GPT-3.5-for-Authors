@@ -37,11 +37,7 @@
       .then(response => response.json())
       .then(data => {
         document.getElementById("statusMessage").innerHTML = data.status;
-        if (data.status.includes("Download")) { // Check if the status is the final one
-          continuePolling = false;
-        } else if (data.status.includes("<img")) { // Clear polling interval when error iamge appears
-          continuePolling = false;
-        } else {
+        if (!data.status.includes("Download")) { // Check if the status is not the final one
           setTimeout(fetchStatusUpdate, 1000); 
         }
       })
