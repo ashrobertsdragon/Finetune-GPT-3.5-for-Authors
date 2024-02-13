@@ -52,7 +52,7 @@ def read_docx(file_path: str, metadata: dict) -> str:
   doc = docx.Document(file_path)
   for paragraph in doc.paragraphs:
     if line_counter < max_lines_to_check:
-      ocr_text = extract_images(paragraph)
+      ocr_text = extract_images(paragraph, doc)
     paragraph_text = ocr_text if ocr_text else paragraph.text.strip()
     if contains_page_break(paragraph) and current_page:
       pages.append("\n".join(current_page))
