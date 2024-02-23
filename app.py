@@ -13,8 +13,9 @@ from file_handling import is_encoding
 from finetune.shared_resources import training_status
 from finetune.training_management import train
 from send_email import send_mail
+from forms import ContactForm, FinetuneForm, EbookConversionForm
 
-
+# Set up Logging
 start_loggers()
 error_logger = logging.getLogger('error_logger')
 
@@ -48,6 +49,7 @@ def terms_of_service():
 
 @app.route("/contact-us", methods=["GET", "POST"])
 def send_email():
+  form = ContactForm()
   def check_email(user_email: str) -> bool:
     api_key =  os.environ.get("abstract_api_key")
     url = f"https://emailvalidation.abstractapi.com/v1/?api_key={api_key}&email={user_email}"
@@ -63,10 +65,10 @@ def send_email():
     if check_email(user_email):
       send_mail(name, user_email, message)
   
-  if request.method == "POST":
-    name = request.form.get("name")
-    user_email = request.form.get("email")
-    message = request.form.get("message")
+  if form.validate_on_submit():
+    name = form.name.data
+    user_email = form.email.data
+    message = form.message.data
     threading.Thread(target=send_message, args=(name, user_email, message)).start()
 
   return render_template("contact-us.html")
@@ -74,6 +76,7 @@ def send_email():
 @app.route("/convert-ebook", methods=["GET", "POST"])
 def convert_ebook():
 
+  form=EbookConversionForm()
   supported_mimetypes = [
     "application/epub+zip", 
     "application/pdf", 
@@ -81,10 +84,11 @@ def convert_ebook():
     "text/plain"
   ]
 
-  if request.method == "POST":
-    uploaded_file = request.files.get("ebook")
-    title = request.form.get("title")
-    author = request.form.get("author")
+  if form.validate_on_submit():
+    uploaded_file = form.ebook.data
+    title = form.title.data
+    author = form.author.data
+
     if uploaded_file:
       if uploaded_file.mimetype not in supported_mimetypes:
         return jsonify({"error": "Unsupported file type"}), 400
@@ -108,10 +112,11 @@ def convert_ebook():
 
 @app.route("/finetune", methods=["GET", "POST"])
 def finetune():
-  if request.method == "POST":
-    role = request.form["role"]
-    chunk_type = request.form["chunk_type"]
-    user_key = request.form["user_key"]
+  form = FinetuneForm()
+  if form.validate_on_submit():
+    role = form.role.data
+    chunk_type = form.chunk_type.data
+    user_key = form.user_key.data
 
     # Validate user key
     if not (user_key.startswith("sk-") and 50 < len(user_key) < 60):
