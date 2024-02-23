@@ -13,7 +13,7 @@ from file_handling import is_encoding
 from finetune.shared_resources import training_status
 from finetune.training_management import train
 from send_email import send_mail
-from forms import ContactForm, FinetuneForm, EbookConversionForm
+from forms import ContactForm, FineTuneForm, EbookConversionForm
 
 # Set up Logging
 start_loggers()
@@ -112,7 +112,7 @@ def convert_ebook():
 
 @app.route("/finetune", methods=["GET", "POST"])
 def finetune():
-  form = FinetuneForm()
+  form = FineTuneForm()
   if form.validate_on_submit():
     role = form.role.data
     chunk_type = form.chunk_type.data
