@@ -29,10 +29,11 @@ def generate_url(gcs_file: str) -> str:
 def psuedo_animation(user_folder: str, message: str):
   """Simulate a animation by updating the training status with a message and
     a cyclically changing number dots."""
-
+  
+  original_message = training_status[user_folder]
   for i in range(1,4):
-    training_status[user_folder] = f"{message}{'.' * i}"
-    time.sleep(1)
+    training_status[user_folder] = f"{original_message}<p>{message}{'.' * i}<\p>"
+    time.sleep(5)
 
 def fine_tune(folder_name: str, user_folder: str, retry_count: int = 0):
   """
@@ -66,22 +67,22 @@ def fine_tune(folder_name: str, user_folder: str, retry_count: int = 0):
       fine_tune_info = client.fine_tuning.jobs.retrieve(fine_tune_job.id)
       psuedo_animation(user_folder, "Finetuning")
       if fine_tune_info.status == "succeeded":
-        training_status[user_folder] = (
-          f"{fine_tune_info.status}"
-          f"Fine-tuned model info {fine_tune_info}"
-          f"Model id {fine_tune_info.id }"
+        training_status[user_folder] += (
+          f"<p>{fine_tune_info.status}<\p>"
+          f"<p>Fine-tuned model info {fine_tune_info}<\p>"
+          f"<p>Model id {fine_tune_info.id }<\p>"
         )
         break
   except openai.NotFoundError as e:
     email_admin(e)
     return
   except (openai.AuthenticationError, openai.BadRequestError, openai.PermissionDeniedError, openai.RateLimitError)as e:
-    training_status[user_folder] = e.message
+    training_status[user_folder] += f"<p>{e.message}<\p>"
     return
   except (openai.APIConnectionError, openai.APITimeoutError, openai.ConflictError, openai.InternalServerError, openai.UnprocessableEntityError) as e:
     retry_count += 1
     if retry_count > 3:
-      training_status[user_folder] = "A critical error has occured. The administrator has been contacted. Sorry for the inconvience"
+      training_status[user_folder] += "<p>A critical error has occured. The administrator has been contacted. Sorry for the inconvience<\p>"
       email_admin(e)
       return
     fine_tune(folder_name, user_folder, retry_count)
@@ -111,11 +112,11 @@ def process_files(folder_name: str, role: str, chunk_type: str, user_folder: str
       book = read_text_file(file_path)
       formatted_messages = split_into_chunks(book, role, chunk_type)
       fine_tune_messages.extend(formatted_messages)
-      training_status[user_folder] = f"{file_name} processed"
+      training_status[user_folder] += f"<p>{file_name} processed<\p>"
   fine_tune_path = os.path.join(folder_name, "fine_tune.jsonl")
   write_jsonl_file(fine_tune_messages, fine_tune_path)
-  gcs_file =write_jsonl_to_gcs(fine_tune_messages, f"{folder_name}_fine_tune.jsonl")
-  training_status[user_folder] = "All files processed"
+  gcs_file = write_jsonl_to_gcs(fine_tune_messages, f"{folder_name}_fine_tune.jsonl")
+  training_status[user_folder] += "<p>All files processed<\p>"
   return gcs_file
 
 def train(folder_name: str, role: str, user_key: str, chunk_type: str, user_folder: str):
@@ -138,11 +139,11 @@ def train(folder_name: str, role: str, user_key: str, chunk_type: str, user_fold
     None
   """
 
-  training_status[user_folder] = "Processing files"
+  training_status[user_folder] = "<p>Processing files</p>"
   set_client(user_key)
   del user_key
   thread_local_storage.user_folder = user_folder
   gcs_file = process_files(folder_name, role, chunk_type, user_folder)
   download_path = generate_url(gcs_file)
-  training_status[user_folder] = f"Download <a href='{download_path}'>JSONL file here</a>."
+  training_status[user_folder] += f"<p>Download <a href='{download_path}'>JSONL file here</a>.</p>"
   fine_tune(folder_name, user_folder)
