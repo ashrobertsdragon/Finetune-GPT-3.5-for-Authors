@@ -20,6 +20,7 @@ start_loggers()
 error_logger = logging.getLogger('error_logger')
 
 app = Flask(__name__)
+app.config["SECRET_KEY"]=os.environ.get("FLASK_SECRET_KEY")
 UPLOAD_FOLDER = os.path.join("/tmp", "upload_folder")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 MAX_FILE_SIZE = 2 * 1024 * 1024  # 2 MB
@@ -71,7 +72,7 @@ def send_email():
     message = form.message.data
     threading.Thread(target=send_message, args=(name, user_email, message)).start()
 
-  return render_template("contact-us.html")
+  return render_template("contact-us.html", form=form)
 
 @app.route("/convert-ebook", methods=["GET", "POST"])
 def convert_ebook():
@@ -108,7 +109,7 @@ def convert_ebook():
 
       return send_file(path_or_file=output_filepath, mimetype="text/plain", as_attachment="True", max_age=None)
 
-  return render_template("convert-ebook.html")
+  return render_template("convert-ebook.html", form=form)
 
 @app.route("/finetune", methods=["GET", "POST"])
 def finetune():
@@ -154,7 +155,7 @@ def finetune():
     threading.Thread(target=train, args=(folder_name, role, user_key, chunk_type)).start()
     return jsonify({"success": True, "user_folder": folder_name.split("/")[-1]}) 
 
-  return render_template("finetune.html")
+  return render_template("finetune.html", form=form)
 
 @app.route('/status', methods=['POST'])
 def status():
