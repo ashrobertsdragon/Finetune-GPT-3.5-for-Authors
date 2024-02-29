@@ -2,6 +2,19 @@ import json
 import os
 
 import chardet
+from google.cloud import storage
+
+def initialize_GCStorage():
+  """
+  Initializes the Google Cloud Storage client.
+  """
+  os.environ["GOOGLE_APPLICATION_CREDENTIALS"]
+  storage_client = storage.Client()
+  bucket_name = 'finetuner_temp_files'
+  return storage_client.bucket(bucket_name)
+
+bucket = initialize_GCStorage()
+
 
 def is_encoding(file_path: str, encoding: str) -> bool:
   try:
@@ -31,21 +44,16 @@ def recode_text(original_file_path: str) -> str:
   with open(recoded_file_path, "w", encoding="utf-8") as f:
     f.write(content)
 
-
-
-  
 def read_text_file(file_path: str) -> str:
   with open(file_path, "r") as f:
     read_file = f.read()
   return read_file
 
-def write_to_file(content: str, file: str):
-  with open(file, "w") as f:
-    f.write(content)
+def write_to_gcs(content: str, file: str):
+  blob = bucket.blob(file)
+  blob.upload_from_string(content, content_type='text/plain')
 
-def write_jsonl_file(content: str, file_path: str):
-  with open(file_path, "a") as f:
-    for item in content:
-      json.dump(item, f)
-      f.write("\n")
-  return
+def write_jsonl_to_gcs(content:list, file: str):
+  blob = bucket.blob(file)
+  for item in content:
+    blob.upload_from_string(json.dumps(item), content_type='application/json')

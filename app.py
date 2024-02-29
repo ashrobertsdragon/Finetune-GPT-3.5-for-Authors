@@ -6,31 +6,48 @@ import threading
 
 import requests
 from flask import Flask, render_template, request, jsonify, send_file, send_from_directory
+from dotenv import load_dotenv
+from tempfile import NamedTemporaryFile
 
 from logging_config import start_loggers
 from ebook_conversion.convert_file import convert_file
-from file_handling import is_encoding
+from file_handling import is_encoding, initialize_GCStorage
 from finetune.shared_resources import training_status
 from finetune.training_management import train
 from send_email import send_mail
 from forms import ContactForm, FineTuneForm, EbookConversionForm
 
+load_dotenv()
 # Set up Logging
 start_loggers()
 error_logger = logging.getLogger('error_logger')
+initialize_GCStorage()
 
-app = Flask(__name__)
-app.config["SECRET_KEY"]=os.environ.get("FLASK_SECRET_KEY")
-UPLOAD_FOLDER = os.path.join("/tmp", "upload_folder")
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-MAX_FILE_SIZE = 2 * 1024 * 1024  # 2 MB
-
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-app.config["MAX_CONTENT_LENGTH"] = MAX_FILE_SIZE
-
+def initialize_upload_folder():
+  """
+  Determines if the environment is production or development and sets the path
+  to the upload folder accordingly.
+  """
+  if os.environ.get("FLASK_ENV") == "production":
+    UPLOAD_FOLDER ="/tmp/upload"
+  else:
+    UPLOAD_FOLDER = "app\upload"
+  return UPLOAD_FOLDER
 
 def random_str():
-  return "".join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(6))
+  return "".join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(10))
+
+app = Flask(__name__)
+
+UPLOAD_FOLDER = initialize_upload_folder()
+DOWNLOAD_FOLDER = initialize_GCStorage()
+MAX_FILE_SIZE = 2 * 1024 * 1024  # 2 MB
+
+app.config["SECRET_KEY"]=os.environ.get("FLASK_SECRET_KEY")
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+app.config["DOWNLOAD_FOLDER"] = DOWNLOAD_FOLDER
+app.config["MAX_CONTENT_LENGTH"] = MAX_FILE_SIZE
+
 
 @app.route('/')
 def landing_page():
@@ -76,7 +93,15 @@ def send_email():
 
 @app.route("/convert-ebook", methods=["GET", "POST"])
 def convert_ebook():
-
+  def make_folder() -> str:
+    temp_folder = random_str()
+    folder_name = os.path.join(UPLOAD_FOLDER, temp_folder)
+    try:
+      os.makedirs(folder_name)
+    except OSError:
+      return make_folder()
+    return folder_name
+  
   form=EbookConversionForm()
   supported_mimetypes = [
     "application/epub+zip", 
@@ -94,20 +119,21 @@ def convert_ebook():
       if uploaded_file.mimetype not in supported_mimetypes:
         return jsonify({"error": "Unsupported file type"}), 400
 
-      folder_name = os.path.join(UPLOAD_FOLDER, random_str())
-      os.makedirs(folder_name, exist_ok=True)
+      folder_name = make_folder()
       file_path = os.path.join(folder_name, uploaded_file.filename)
       uploaded_file.save(file_path)
       if uploaded_file.mimetype == "text/plain" and not is_encoding(file_path, "utf-8"):
-        os.remove(file_path)
         error_logger.error(f"{file_path} is not UTF-8")
         return jsonify({"error": "Not correct kind of text file. Please resave as UTF-8"}), 400
 
       metadata = {"title": title, "author": author}
-      output_file = convert_file(file_path, metadata)
-      output_filepath = os.path.join(folder_name, output_file)
+      book_name, psuedopath = convert_file(file_path, metadata)
 
-      return send_file(path_or_file=output_filepath, mimetype="text/plain", as_attachment="True", max_age=None)
+      with NamedTemporaryFile() as temp_file:
+        blob = DOWNLOAD_FOLDER.blob(psuedopath)
+        blob.download_to_filename(temp_file.name)
+
+        return send_file(path_or_file=temp_file.name, as_attachment="True", attachment_filename=book_name)
 
   return render_template("convert-ebook.html", form=form)
 
@@ -124,7 +150,8 @@ def finetune():
       error_logger.error("invalid key")
       return jsonify({"error": "Invalid user key"}), 400
 
-    folder_name = os.path.join(UPLOAD_FOLDER, random_str())
+    user_folder = random_str()
+    folder_name = os.path.join(UPLOAD_FOLDER, user_folder)
     os.makedirs(folder_name, exist_ok=True)
 
     for file in request.files.getlist("file"):
@@ -153,7 +180,7 @@ def finetune():
         error_logger.error("File is not text file")
 
     threading.Thread(target=train, args=(folder_name, role, user_key, chunk_type)).start()
-    return jsonify({"success": True, "user_folder": folder_name.split("/")[-1]}) 
+    return jsonify({"success": True, "user_folder": user_folder}) 
 
   return render_template("finetune.html", form=form)
 
@@ -166,9 +193,4 @@ def status():
 @app.route("/download/<path:download_path>")
 def download_file(download_path:str):
   flask_path = os.path.join(UPLOAD_FOLDER, download_path)
-  try:
-    return send_file(flask_path, as_attachment=True)
-  finally:
-    user_folder = os.path.dirname(download_path)
-    if training_status[user_folder]:
-      del training_status[user_folder]
+  return send_file(flask_path, as_attachment=True)
