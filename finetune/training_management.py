@@ -1,13 +1,29 @@
 import os
 import time
+from datetime import timedelta
 
 import openai
 
-from file_handling import read_text_file, write_jsonl_file
+from file_handling import read_text_file, write_jsonl_to_gcs, write_jsonl_file, initialize_GCStorage
 from send_email import email_admin
 from finetune.chunking import split_into_chunks
 from finetune.openai_client import get_client, set_client
 from finetune.shared_resources import training_status, thread_local_storage
+
+
+def generate_url(gcs_file: str) -> str:
+  """
+  Generate's signed url from Google Cloud Storage for user to download JSONL file.
+
+  Args:
+    None
+
+  Returns:
+    str: The signed url for the JSONL file.
+  """
+  bucket = initialize_GCStorage()
+  blob = bucket.blob(gcs_file)
+  return blob.generate_signed_url(expiration=timedelta(hours=2), method='GET')
 
 
 def psuedo_animation(user_folder: str, message: str):
@@ -98,10 +114,11 @@ def process_files(folder_name: str, role: str, chunk_type: str, user_folder: str
       training_status[user_folder] = f"{file_name} processed"
   fine_tune_path = os.path.join(folder_name, "fine_tune.jsonl")
   write_jsonl_file(fine_tune_messages, fine_tune_path)
+  gcs_file =write_jsonl_to_gcs(fine_tune_messages, f"{folder_name}_fine_tune.jsonl")
   training_status[user_folder] = "All files processed"
-  return fine_tune_path
+  return gcs_file
 
-def train(folder_name: str, role: str, user_key: str, chunk_type: str):
+def train(folder_name: str, role: str, user_key: str, chunk_type: str, user_folder: str):
   """
   Sets up the process for processing book files into training data and finetuning
   a LLM. This function sets up the necessary OpenAI client using the user's API key,
@@ -121,12 +138,11 @@ def train(folder_name: str, role: str, user_key: str, chunk_type: str):
     None
   """
 
-  user_folder = folder_name.split("/")[-1]
   training_status[user_folder] = "Processing files"
   set_client(user_key)
-  thread_local_storage.user_folder = user_folder
-  fine_tune_path = process_files(folder_name, role, chunk_type, user_folder)
-  fine_tune(folder_name, user_folder)
-  download_path = os.path.relpath(fine_tune_path, start=os.path.join("app", "upload_folder"))
-  training_status[user_folder] = f"Download <a href='/download/{download_path}'>JSONL file here</a>."
   del user_key
+  thread_local_storage.user_folder = user_folder
+  gcs_file = process_files(folder_name, role, chunk_type, user_folder)
+  download_path = generate_url(gcs_file)
+  training_status[user_folder] = f"Download <a href='{download_path}'>JSONL file here</a>."
+  fine_tune(folder_name, user_folder)

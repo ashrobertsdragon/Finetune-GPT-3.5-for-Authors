@@ -21,7 +21,6 @@ load_dotenv()
 # Set up Logging
 start_loggers()
 error_logger = logging.getLogger('error_logger')
-initialize_GCStorage()
 
 def initialize_upload_folder():
   """
@@ -36,6 +35,19 @@ def initialize_upload_folder():
 
 def random_str():
   return "".join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(10))
+
+def make_folder() -> tuple[str, str]:
+  """
+  Generates a random string and creates a folder with that string in the upload
+  folder. Returns the path to the folder and the random string.
+  """
+  temp_folder = random_str()
+  folder_name = os.path.join(UPLOAD_FOLDER, temp_folder)
+  try:
+    os.makedirs(folder_name)
+  except OSError:
+    return make_folder()
+  return folder_name, temp_folder
 
 app = Flask(__name__)
 
@@ -93,15 +105,6 @@ def send_email():
 
 @app.route("/convert-ebook", methods=["GET", "POST"])
 def convert_ebook():
-  def make_folder() -> str:
-    temp_folder = random_str()
-    folder_name = os.path.join(UPLOAD_FOLDER, temp_folder)
-    try:
-      os.makedirs(folder_name)
-    except OSError:
-      return make_folder()
-    return folder_name
-  
   form=EbookConversionForm()
   supported_mimetypes = [
     "application/epub+zip", 
@@ -119,7 +122,7 @@ def convert_ebook():
       if uploaded_file.mimetype not in supported_mimetypes:
         return jsonify({"error": "Unsupported file type"}), 400
 
-      folder_name = make_folder()
+      folder_name, _ = make_folder()
       file_path = os.path.join(folder_name, uploaded_file.filename)
       uploaded_file.save(file_path)
       if uploaded_file.mimetype == "text/plain" and not is_encoding(file_path, "utf-8"):
@@ -150,9 +153,7 @@ def finetune():
       error_logger.error("invalid key")
       return jsonify({"error": "Invalid user key"}), 400
 
-    user_folder = random_str()
-    folder_name = os.path.join(UPLOAD_FOLDER, user_folder)
-    os.makedirs(folder_name, exist_ok=True)
+    folder_name, user_folder = make_folder()
 
     for file in request.files.getlist("file"):
       if (
@@ -179,7 +180,7 @@ def finetune():
       else:
         error_logger.error("File is not text file")
 
-    threading.Thread(target=train, args=(folder_name, role, user_key, chunk_type)).start()
+    threading.Thread(target=train, args=(folder_name, role, user_key, chunk_type, user_folder)).start()
     return jsonify({"success": True, "user_folder": user_folder}) 
 
   return render_template("finetune.html", form=form)
@@ -189,8 +190,3 @@ def status():
   data = request.get_json()
   user_folder = data.get('user_folder')
   return jsonify({"status": training_status.get(user_folder, "Not started")})
-
-@app.route("/download/<path:download_path>")
-def download_file(download_path:str):
-  flask_path = os.path.join(UPLOAD_FOLDER, download_path)
-  return send_file(flask_path, as_attachment=True)

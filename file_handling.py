@@ -57,3 +57,9 @@ def write_jsonl_to_gcs(content:list, file: str):
   blob = bucket.blob(file)
   for item in content:
     blob.upload_from_string(json.dumps(item), content_type='application/json')
+
+def write_jsonl_file(content: list, file_path: str):
+  with open(file_path, "a") as f:
+    for item in content:
+      json.dump(item, f)
+      f.write("\n")
