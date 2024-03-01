@@ -31,11 +31,11 @@ def psuedo_animation(user_folder: str, message: str):
     a cyclically changing number dots."""
   
   original_message = training_status[user_folder]
-  for i in range(1,4):
+  for i in range(1, 4):
     training_status[user_folder] = f"{original_message}<p>{message}{'.' * i}</p>"
     time.sleep(5)
 
-def fine_tune(folder_name: str, user_folder: str, retry_count: int = 0):
+def fine_tune(folder_name: str, user_folder: str, retry_count: int=0):
   """
   Fine-tunes a language model using the specified data.
 
@@ -60,8 +60,8 @@ def fine_tune(folder_name: str, user_folder: str, retry_count: int = 0):
       file = open(fine_tune_file, "rb"),
       purpose = "fine-tune"
     )
-
-
+    training_status[user_folder] += "<p>Fine-tuning file uploaded</p>"
+    print(training_status[user_folder])
     fine_tune_job = client.fine_tuning.jobs.create(training_file=JSONL_file.id, model="gpt-3.5-turbo-1106")
     while True:
       fine_tune_info = client.fine_tuning.jobs.retrieve(fine_tune_job.id)
@@ -73,6 +73,13 @@ def fine_tune(folder_name: str, user_folder: str, retry_count: int = 0):
           f"<p>Model id {fine_tune_info.id }</p>"
         )
         break
+      else:
+        current_event = client.fine_tuning.jobs.list_events(
+          fine_tuning_job_id=fine_tune_job.id,
+          limit = 1
+        )
+        if "data" in current_event and isinstance(current_event["data"], list) and len(current_event["data"]) > 0 and "message" in current_event["data"][0]:
+          training_status[user_folder] += f"<p>{current_event['data'][0]['message']}</p>"
   except openai.NotFoundError as e:
     email_admin(e)
     return
@@ -120,7 +127,9 @@ def process_files(folder_name: str, role: str, chunk_type: str, user_folder: str
   training_status[user_folder] += "<p>All files processed</p>"
   fine_tune_path = os.path.join(folder_name, "fine_tune.jsonl")
   write_jsonl_file(fine_tune_messages, fine_tune_path)
-  gcs_file = upload_file_to_gcs(fine_tune_messages, f"{user_folder}_fine_tune.jsonl")
+  training_status[user_folder] += "<p>Preparing JSONL file for download</p>"
+  gcs_file = f"{user_folder}_fine_tune.jsonl"
+  upload_file_to_gcs(fine_tune_path, gcs_file)
 
   return gcs_file
 
