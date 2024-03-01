@@ -7,6 +7,7 @@ import threading
 import requests
 from flask import Flask, render_template, request, jsonify, send_file, send_from_directory
 from dotenv import load_dotenv
+from werkzeug.utils import secure_filename
 from tempfile import NamedTemporaryFile
 
 from logging_config import start_loggers
@@ -28,9 +29,10 @@ def initialize_upload_folder():
   to the upload folder accordingly.
   """
   if os.environ.get("FLASK_ENV") == "production":
-    UPLOAD_FOLDER ="/tmp/upload"
+    UPLOAD_FOLDER = os.path.join("/tmp", "upload")
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
   else:
-    UPLOAD_FOLDER = "app\upload"
+    UPLOAD_FOLDER = os.path.join("app", "upload_folder")
   return UPLOAD_FOLDER
 
 def random_str():
@@ -155,7 +157,10 @@ def finetune():
 
     folder_name, user_folder = make_folder()
 
-    for file in request.files.getlist("file"):
+    files = request.files.getlist("file")
+    if not files:
+      return jsonify({"error": "No files uploaded"}), 400
+    for file in files:
       if (
         file
         and file.filename.endswith(("txt", "text"))

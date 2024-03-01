@@ -45,21 +45,26 @@ def recode_text(original_file_path: str) -> str:
     f.write(content)
 
 def read_text_file(file_path: str) -> str:
+  "Reads a text file and returns its content."
   with open(file_path, "r") as f:
     read_file = f.read()
   return read_file
 
 def write_to_gcs(content: str, file: str):
+  "Writes a text file to a Google Cloud Storage file."
   blob = bucket.blob(file)
   blob.upload_from_string(content, content_type='text/plain')
 
-def write_jsonl_to_gcs(content:list, file: str):
-  blob = bucket.blob(file)
-  for item in content:
-    blob.upload_from_string(json.dumps(item), content_type='application/json')
 
 def write_jsonl_file(content: list, file_path: str):
+  "Writes a list of dictionaries to a JSONL file"
   with open(file_path, "a") as f:
     for item in content:
       json.dump(item, f)
       f.write("\n")
+
+def upload_file_to_gcs(file_path:str, gcs_file: str):
+  "Uploads a file to a Google Cloud Storage bucket"
+  blob = bucket.blob(gcs_file)
+  with open(file_path, "rb") as f:
+    blob.upload_from_file(f, content_type='application/octet-stream')

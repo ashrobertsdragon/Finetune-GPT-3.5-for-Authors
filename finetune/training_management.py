@@ -4,7 +4,7 @@ from datetime import timedelta
 
 import openai
 
-from file_handling import read_text_file, write_jsonl_to_gcs, write_jsonl_file, initialize_GCStorage
+from file_handling import read_text_file, upload_file_to_gcs, write_jsonl_file, initialize_GCStorage
 from send_email import email_admin
 from finetune.chunking import split_into_chunks
 from finetune.openai_client import get_client, set_client
@@ -32,7 +32,7 @@ def psuedo_animation(user_folder: str, message: str):
   
   original_message = training_status[user_folder]
   for i in range(1,4):
-    training_status[user_folder] = f"{original_message}<p>{message}{'.' * i}<\p>"
+    training_status[user_folder] = f"{original_message}<p>{message}{'.' * i}</p>"
     time.sleep(5)
 
 def fine_tune(folder_name: str, user_folder: str, retry_count: int = 0):
@@ -68,21 +68,21 @@ def fine_tune(folder_name: str, user_folder: str, retry_count: int = 0):
       psuedo_animation(user_folder, "Finetuning")
       if fine_tune_info.status == "succeeded":
         training_status[user_folder] += (
-          f"<p>{fine_tune_info.status}<\p>"
-          f"<p>Fine-tuned model info {fine_tune_info}<\p>"
-          f"<p>Model id {fine_tune_info.id }<\p>"
+          f"<p>{fine_tune_info.status}</p>"
+          f"<p>Fine-tuned model info {fine_tune_info}</p>"
+          f"<p>Model id {fine_tune_info.id }</p>"
         )
         break
   except openai.NotFoundError as e:
     email_admin(e)
     return
   except (openai.AuthenticationError, openai.BadRequestError, openai.PermissionDeniedError, openai.RateLimitError)as e:
-    training_status[user_folder] += f"<p>{e.message}<\p>"
+    training_status[user_folder] += f"<p>{e.message}</p>"
     return
   except (openai.APIConnectionError, openai.APITimeoutError, openai.ConflictError, openai.InternalServerError, openai.UnprocessableEntityError) as e:
     retry_count += 1
     if retry_count > 3:
-      training_status[user_folder] += "<p>A critical error has occured. The administrator has been contacted. Sorry for the inconvience<\p>"
+      training_status[user_folder] += "<p>A critical error has occured. The administrator has been contacted. Sorry for the inconvience</p>"
       email_admin(e)
       return
     fine_tune(folder_name, user_folder, retry_count)
@@ -106,17 +106,22 @@ def process_files(folder_name: str, role: str, chunk_type: str, user_folder: str
   """
 
   fine_tune_messages = []
-  for file_name in os.listdir(folder_name):
+  txt_files = [file for file in os.listdir(folder_name) if file.endswith("txt")]
+  total_files = len(txt_files)
+
+  starting_message = training_status[user_folder]
+  for i, file_name in enumerate(os.listdir(folder_name), start=1):
     if file_name.endswith("txt"):
       file_path = os.path.join(folder_name, file_name)
       book = read_text_file(file_path)
       formatted_messages = split_into_chunks(book, role, chunk_type)
       fine_tune_messages.extend(formatted_messages)
-      training_status[user_folder] += f"<p>{file_name} processed<\p>"
+      training_status[user_folder] = f"{starting_message}<p>File {i} of {total_files} processed</p>"
+  training_status[user_folder] += "<p>All files processed</p>"
   fine_tune_path = os.path.join(folder_name, "fine_tune.jsonl")
   write_jsonl_file(fine_tune_messages, fine_tune_path)
-  gcs_file = write_jsonl_to_gcs(fine_tune_messages, f"{folder_name}_fine_tune.jsonl")
-  training_status[user_folder] += "<p>All files processed<\p>"
+  gcs_file = upload_file_to_gcs(fine_tune_messages, f"{user_folder}_fine_tune.jsonl")
+
   return gcs_file
 
 def train(folder_name: str, role: str, user_key: str, chunk_type: str, user_folder: str):
