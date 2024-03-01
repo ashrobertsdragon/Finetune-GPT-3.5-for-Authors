@@ -23,6 +23,14 @@ def contains_page_break(paragraph: str) -> bool:
   return False
 
 def extract_images(paragraph, doc) -> str:
+  """
+  Extracts images from a paragraph and runs OCR on them.
+  Arguments:
+    paragraph: A paragraph from a docx document.
+    doc: The docx document.
+
+  Returns the OCR text of the images in the paragraph.
+  """
   for run in paragraph.runs:
     for inline_shape in run.element.findall(".//a:blip", namespaces=docx.oxml.ns.nsmap):
       image_blip = inline_shape.get('{http://schemas.openxmlformats.org/drawingml/2006/main}embed')
