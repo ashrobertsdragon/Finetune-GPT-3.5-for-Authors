@@ -1,18 +1,16 @@
 import logging
 import os
-import secrets
-import string
+
 import threading
 
 import requests
 from flask import Flask, render_template, request, jsonify, send_file, send_from_directory
 from dotenv import load_dotenv
-from werkzeug.utils import secure_filename
 from tempfile import NamedTemporaryFile
 
 from logging_config import start_loggers
 from ebook_conversion.convert_file import convert_file
-from file_handling import is_encoding, initialize_GCStorage
+from file_handling import is_encoding, initialize_constants, random_str, make_folder
 from finetune.shared_resources import training_status
 from finetune.training_management import train
 from send_email import send_mail
@@ -21,41 +19,12 @@ from forms import ContactForm, FineTuneForm, EbookConversionForm
 load_dotenv()
 # Set up Logging
 start_loggers()
-error_logger = logging.getLogger('error_logger')
+error_logger = logging.getLogger("error_logger")
 
-def initialize_upload_folder():
-  """
-  Determines if the environment is production or development and sets the path
-  to the upload folder accordingly.
-  """
-  if os.environ.get("FLASK_ENV") == "production":
-    UPLOAD_FOLDER = os.path.join("/tmp", "upload")
-    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-  else:
-    UPLOAD_FOLDER = os.path.join("app", "upload_folder")
-  return UPLOAD_FOLDER
-
-def random_str():
-  return "".join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(10))
-
-def make_folder() -> tuple[str, str]:
-  """
-  Generates a random string and creates a folder with that string in the upload
-  folder. Returns the path to the folder and the random string.
-  """
-  temp_folder = random_str()
-  folder_name = os.path.join(UPLOAD_FOLDER, temp_folder)
-  try:
-    os.makedirs(folder_name)
-  except OSError:
-    return make_folder()
-  return folder_name, temp_folder
+MAX_FILE_SIZE = 2 * 1024 * 1024  # 2 MB
+UPLOAD_FOLDER, DOWNLOAD_FOLDER = initialize_constants()
 
 app = Flask(__name__)
-
-UPLOAD_FOLDER = initialize_upload_folder()
-DOWNLOAD_FOLDER = initialize_GCStorage()
-MAX_FILE_SIZE = 2 * 1024 * 1024  # 2 MB
 
 app.config["SECRET_KEY"]=os.environ.get("FLASK_SECRET_KEY")
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
@@ -63,7 +32,7 @@ app.config["DOWNLOAD_FOLDER"] = DOWNLOAD_FOLDER
 app.config["MAX_CONTENT_LENGTH"] = MAX_FILE_SIZE
 
 
-@app.route('/')
+@app.route("/")
 def landing_page():
   return render_template("index.html")
 
@@ -190,8 +159,8 @@ def finetune():
 
   return render_template("finetune.html", form=form)
 
-@app.route('/status', methods=['POST'])
+@app.route("/status", methods=["POST"])
 def status():
   data = request.get_json()
-  user_folder = data.get('user_folder')
+  user_folder = data.get("user_folder")
   return jsonify({"status": training_status.get(user_folder, "Not started")})
