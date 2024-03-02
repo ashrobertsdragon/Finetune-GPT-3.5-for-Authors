@@ -3,7 +3,6 @@ import os
 import secrets
 import string
 
-import chardet
 from google.cloud import storage
 
 UPLOAD_FOLDER = None
@@ -17,7 +16,7 @@ def initialize_constants():
   """
   UPLOAD_FOLDER = initialize_upload_folder()
   DOWNLOAD_FOLDER = initialize_GCStorage()
-  
+  return UPLOAD_FOLDER, DOWNLOAD_FOLDER
 
 def initialize_upload_folder():
   """
@@ -68,35 +67,6 @@ def is_encoding(file_path: str, encoding: str) -> bool:
     return True
   except UnicodeDecodeError:
     return False
-
-def auto_detect_encoding(file_path: str) -> str:
-  """
-  Detects the encoding of a file using chardet.
-  """
-  with open(file_path, "rb") as f:
-    raw_data = f.read()
-  return chardet.detect(raw_data)["encoding"]
-
-def manual_detect_encoding(file_path: str) -> str:
-  """
-  Manually detects the encoding of a file.
-  """
-  for encoding in ["iso-8859-1", "windows-1252", "utf-16", "utf-32", "iso-8859-2", "iso-8859-5", "iso-8859-6", "iso-8859-7", "iso-8859-9"]:
-    if is_encoding(file_path, encoding):
-      return encoding
-  return ""
-
-def recode_text(original_file_path: str) -> str:
-  """
-  Recodes a text file to UTF-8.
-  """
-  base_name, ext = os.path.splitext(original_file_path)
-  recoded_file_path = f"{base_name}-recoded{ext}"
-  detected_encoding = auto_detect_encoding(original_file_path) or manual_detect_encoding(original_file_path)
-  with open(original_file_path, "r", encoding=detected_encoding or "utf-8", errors="ignore") as f:
-    content = f.read()
-  with open(recoded_file_path, "w", encoding="utf-8") as f:
-    f.write(content)
 
 # File related functions
 def read_text_file(file_path: str) -> str:
