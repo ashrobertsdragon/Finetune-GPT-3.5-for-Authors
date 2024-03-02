@@ -26,7 +26,7 @@ UPLOAD_FOLDER, DOWNLOAD_FOLDER = initialize_constants()
 
 app = Flask(__name__)
 
-app.config["SECRET_KEY"]=os.environ.get("FLASK_SECRET_KEY")
+app.config["SECRET_KEY"] = os.environ.get("FLASK_SECRET_KEY")
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["DOWNLOAD_FOLDER"] = DOWNLOAD_FOLDER
 app.config["MAX_CONTENT_LENGTH"] = MAX_FILE_SIZE
