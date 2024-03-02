@@ -4,3 +4,5 @@ __pycache__/
 run_dev_server.py
 /upload_folder/
 temp.py
+.envs/
+
