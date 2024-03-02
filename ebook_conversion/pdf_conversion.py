@@ -33,6 +33,7 @@ def create_image_from_binary(binary_data, width: int, height: int) -> str:
 
   Returns str: The string representation of the image.
   """
+
   try:
     image = Image.frombytes('1', (width, height), binary_data)
     image = image.convert('L')

@@ -8,7 +8,9 @@ from finetune.data_preparation import adjust_to_newline, count_tokens, format_fo
 
 
 def generate_beats(book: str) -> list:
-
+  """
+  Generate beats for each chapter in the book using GPT-3.5.
+  """
   user_message_list = []
   chunk_list = []
   chapters = separate_into_chapters(book)
@@ -24,7 +26,9 @@ def generate_beats(book: str) -> list:
     return chunk_list, user_message_list
 
 def extract_dialogue(paragraph: str) -> Tuple[str, str]:
-
+  """
+  Extract dialogue and prose from a paragraph.
+  """
   dialogue = ""
   prose = ""
   sentence = ""
@@ -56,7 +60,9 @@ def extract_dialogue(paragraph: str) -> Tuple[str, str]:
   return prose, dialogue
 
 def dialogue_prose(book: str) -> list:
-
+  """
+  Split the book into prose and dialogue chunks.
+  """
   chunk_list = []
   user_message_list = []
   punctuation = [".", "?", "!"]
@@ -82,7 +88,9 @@ def dialogue_prose(book: str) -> list:
   return chunk_list, user_message_list
 
 def sliding_window_large(book: str) -> list:
-
+  """
+  Split the book into chunks of 4096 tokens.
+  """
   chunk_list = []
   chunk_size = 4096
   start_index = 0
@@ -99,7 +107,9 @@ def sliding_window_large(book: str) -> list:
   return chunk_list
 
 def sliding_window_small(book: str) -> list:
-
+  """
+  Split the book into chunks of 1/3 of the chapter size, up to 4096 tokens.
+  """
   chunk_list = []
   chapters = separate_into_chapters(book)
 
@@ -120,7 +130,11 @@ def sliding_window_small(book: str) -> list:
   return chunk_list
 
 def split_into_chunks(book: str, role: str, chunk_type: str) -> list:
-
+  """
+  Split the book into chunks of the specified type.
+  """
+  chunks = []
+  user_messages = []
   if chunk_type == "sliding_window_small":
     chunks = sliding_window_small(book)
   if chunk_type == "sliding_window_large":
@@ -135,5 +149,4 @@ def split_into_chunks(book: str, role: str, chunk_type: str) -> list:
     if "sliding" in chunk_type else 
     format_for_finetuning(chunks, user_messages, role)
   )
-
   return formatted_messages

@@ -56,7 +56,7 @@
     });
   </script>
 </head>
-<body>
+<body class="light-mode">
   <div class="form-container">
     <div class="header">
       <a href="/" title="homepage">
@@ -70,31 +70,33 @@
         </label>
       </div>
     </div>
-    <form id="conversionForm" action="{{ url_for('convert_ebook') }}" method="post" enctype="multipart/form-data">
+    <form id="conversionForm" method="post" enctype="multipart/form-data">
+      {{ form.hidden_tag() }}
       <div class="form" id="upload">
-        <label for="ebook">Upload ebook (must be epub, pdf, docx, or text file)</label>
-        <input id="file-upload" type="file" name="ebook" accept="application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/epub+zip, application/pdf, text/plain">
+        {{ form.ebook.label }}
+        {{ form.ebook(size=20) }}
       </div>
-      <div class="form" id=""metadata">
+      <div class="form" id="metadata">
         <div class="metadata" id="title">
-          <label for="title">Title:</label>
-          <input type="text" name="title">
+          {{ form.title.label }}
+          {{ form.title(size=20) }}
         </div>
         <div class="metadata" id="author">
-          <label for="author">Author:</label>
-          <input type="text" name="author"><br>
+          {{ form.author.label }}
+          {{ form.author(size=20) }}
         </div>
       </div>
       <div class="form" id="checkboxes">
         <div id="rights">
-          <input type="checkbox" id="rights_confirmation" name="rights_confirmation" required>
-          <label for="rights_confirmation">I confirm that I have the rights to these files <span class="required">(Required)</span></label>
+          {{ form.rights_confirmation }}
+          {{ form.rights_confirmation.label }}
         </div>
         <div id="terms">
-          <input type="checkbox" id="terms_agreement" name="terms_agreement" required>
-          <label for="terms_agreement">I agree to the <a href="{{ url_for('static', filename='html/terms.html') }}" target="_blank">terms and conditions</a> <span class="required"> (Required)</span></label>
+          {{ form.terms_agreement(disabled=false, id='terms_agreement') }}  {# Render the checkbox itself #}
+          <label for="terms_agreement">I agree to the <a href="{{ url_for('static', filename='html/terms.html') }}" target="_blank">terms and conditions</a></label>
         </div>
-      <input type="submit" value="Convert">
+      </div>
+      {{ form.submit() }}
     </form>
     <div id="loadingMessage" style="display: none;">Converting file, please wait...</div>
   </div>

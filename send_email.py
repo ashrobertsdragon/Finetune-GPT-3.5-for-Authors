@@ -2,16 +2,13 @@ import logging
 import os
 import smtplib
 
-from dotenv import load_dotenv
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-
-load_dotenv()
 error_logger = logging.getLogger("error_logger")
 
 def email_admin(e):
-  send_mail(name="Admin", user_email = os.environ("mail_username"), message = "fIrrecoverable error from OpenAI: {e}")
+  send_mail(name="Admin", user_email=os.environ.get("mail_username"), message="fIrrecoverable error from OpenAI: {e}")
   
 def send_mail(name: str, user_email: str, message: str) -> None:
   """
@@ -23,16 +20,16 @@ def send_mail(name: str, user_email: str, message: str) -> None:
     user_email: Email address of the user.
   """
 
-  password = os.environ['mail_password']
-  username = os.environ['mail_username']
+  password = os.environ.get('mail_password')
+  username = os.environ.get('mail_username')
 
-  server = "prosepal.io"
+  server = "server310.web-hosting.com"
   port = 465
 
   email_body = f"Name: {name}\nMessage: {message}"
 
   try:
-    s = smtplib.SMTP_SSL(host = server, port = port)
+    s = smtplib.SMTP_SSL(host=server, port=port)
     s.login(username, password)
 
     msg = MIMEMultipart()

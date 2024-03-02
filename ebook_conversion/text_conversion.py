@@ -23,6 +23,7 @@ def parse_text_file(book_content: str) -> str:
     book_content: The entire content of the book as a string.
   Returns the processed book content as a string.
   """
+
   book_lines = book_content.split("\n")
   parsed_lines = [CHAPTER_MARKER if is_chapter(line) else desmarten_text(line) for line in book_lines]
   return "\n".join(parsed_lines)

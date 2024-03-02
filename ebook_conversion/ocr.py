@@ -3,22 +3,22 @@ import logging
 import os
 
 import openai
-from dotenv import load_dotenv
 from openai import OpenAI
 
-load_dotenv()
 error_logger = logging.getLogger("error_logger")
-api_key = os.getenv("PROSEPAL_OCR_KEY")
 
-client = OpenAI(api_key=api_key)
+
 def encode_image(image_path):
+  "Encode an image to base64"
+  
   with open(image_path, "rb") as image_file:
     return base64.b64encode(image_file.read()).decode('utf-8')
 
 def call_api(payload: dict) -> str:
   "Call OpenAI's ChatCompletions API endopoint for OCR or double-checking response"
-  
 
+  api_key = os.getenv("PROSEPAL_OCR_KEY")
+  client = OpenAI(api_key=api_key)
   try:
     response = client.chat.completions.create(payload)
     if response.json()["choices"]:

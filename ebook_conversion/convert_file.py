@@ -5,7 +5,7 @@ from ebook_conversion.docx_conversion import read_docx
 from ebook_conversion.epub_conversion import read_epub
 from ebook_conversion.pdf_conversion import read_pdf
 from ebook_conversion.text_conversion import parse_text_file
-from file_handling import read_text_file, write_to_file
+from file_handling import read_text_file, write_to_gcs
 
 
 error_logger = logging.getLogger("error_logger")
@@ -44,6 +44,7 @@ def convert_file(file_path: str, metadata: dict) -> None:
     error_logger.error("Invalid file type")
 
   book_name = f"{base_name}.txt"
-  book_path = os.path.join(folder, book_name)
-  write_to_file(book_content, book_path)
-  return book_name
+  pseudopath=f"{folder}/{book_name}"
+  write_to_gcs(book_content, pseudopath)
+  return book_name, pseudopath
+
