@@ -5,17 +5,17 @@ import string
 
 from google.cloud import storage
 
-UPLOAD_FOLDER = None
+UPLOAD_FOLDER= None
 DOWNLOAD_FOLDER = None
-bucket = None
 
 # Initializatation Functions
 def initialize_constants():
   """
   Initializes the global constants for the application.
   """
+  global DOWNLOAD_FOLDER
   UPLOAD_FOLDER = initialize_upload_folder()
-  DOWNLOAD_FOLDER = initialize_GCStorage()
+  DOWNLOAD_FOLDER = initialize_cloud_storage()
   return UPLOAD_FOLDER, DOWNLOAD_FOLDER
 
 def initialize_upload_folder():
@@ -30,14 +30,15 @@ def initialize_upload_folder():
     UPLOAD_FOLDER = os.path.join("app", "upload_folder")
   return UPLOAD_FOLDER
 
-def initialize_GCStorage():
+def initialize_cloud_storage():
   """
   Initializes the Google Cloud Storage client.
   """
   os.environ["GOOGLE_APPLICATION_CREDENTIALS"]
   storage_client = storage.Client()
   bucket_name = "finetuner_temp_files"
-  return storage_client.bucket(bucket_name)
+  bucket = storage_client.bucket(bucket_name)
+  return bucket
 
 # Folder related functions
 def random_str():
@@ -83,14 +84,13 @@ def write_jsonl_file(content: list, file_path: str):
       f.write("\n")
 
 # GCS related functions
-bucket = initialize_GCStorage()
 def write_to_gcs(content: str, file: str):
   "Writes a text file to a Google Cloud Storage file."
-  blob = bucket.blob(file)
+  blob = DOWNLOAD_FOLDER.blob(file)
   blob.upload_from_string(content, content_type="text/plain")
 
 def upload_file_to_gcs(file_path:str, gcs_file: str):
   "Uploads a file to a Google Cloud Storage bucket"
-  blob = bucket.blob(gcs_file)
+  blob = DOWNLOAD_FOLDER.blob(gcs_file)
   with open(file_path, "rb") as f:
     blob.upload_from_file(f, content_type="application/octet-stream")
