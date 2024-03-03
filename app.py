@@ -109,7 +109,7 @@ def convert_ebook():
                 blob = DOWNLOAD_FOLDER.blob(psuedopath)
                 blob.download_to_filename(temp_file.name)
 
-                return send_file(path_or_file=temp_file.name, as_attachment="True", attachment_filename=book_name)
+                return send_file(path_or_file=temp_file.name, as_attachment="True", download_name=book_name)
 
     return render_template("convert-ebook.html", form=form)
 
