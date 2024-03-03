@@ -9,3 +9,4 @@ temp.py
 app/app.yaml
 app.yaml
 *.yaml
+*.json
