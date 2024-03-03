@@ -1,115 +1,115 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NFEC3743TH"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-NFEC3743TH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
 
-    gtag('config', 'G-NFEC3743TH');
-  </script>
-  <title>Convert Ebook to Text</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" href="{{ url_for('static', filename='icons/favicon.ico') }}" type="image/x-icon">
-  <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='icons/apple-touch-icon.png') }}">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Exo:wght@300;500&family=Raleway:wght@700&family=Share+Tech&family=Source+Sans+3:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', (event) => {
-      const form = document.getElementById('conversionForm');
-      const loadingMessage = document.getElementById('loadingMessage');
-      const titleField = form.querySelector('input[name="title"]');
-      const fileUploader = form.querySelector('input[name="ebook"]');
+        gtag('config', 'G-NFEC3743TH');
+    </script>
+    <title>Convert Ebook to Text</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{{ url_for('static', filename='icons/favicon.ico') }}" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='icons/apple-touch-icon.png') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Exo:wght@300;500&family=Raleway:wght@700&family=Share+Tech&family=Source+Sans+3:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const form = document.getElementById('conversionForm');
+            const loadingMessage = document.getElementById('loadingMessage');
+            const titleField = form.querySelector('input[name="title"]');
+            const fileUploader = form.querySelector('input[name="ebook"]');
 
-      form.addEventListener('submit', (e) => {
-        loadingMessage.style.display = 'block';
+            form.addEventListener('submit', (e) => {
+                loadingMessage.style.display = 'block';
 
-        // Clear specific fields after a short delay to allow form submission
-        setTimeout(() => {
-          titleField.value = '';
-          fileUploader.value = '';
-          loadingMessage.style.display = 'none';
-        }, 100); // Adjust the delay as needed
-      });
-    });
-    fetch('/convert-ebook', {
-      method: 'POST',
-      body: formData
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw response.json();
-      }
-      return response.json();
-    })
-    .then(data => {
-    })
-    .catch(async (errorPromise) => {
-      const error = await errorPromise;
-      console.error('Error:', error);
-      alert(error.error);
-    });
-  </script>
+                // Clear specific fields after a short delay to allow form submission
+                setTimeout(() => {
+                    titleField.value = '';
+                    fileUploader.value = '';
+                    loadingMessage.style.display = 'none';
+                }, 100); // Adjust the delay as needed
+            });
+        });
+        fetch('/convert-ebook', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw response.json();
+            }
+            return response.json();
+        })
+        .then(data => {
+        })
+        .catch(async (errorPromise) => {
+            const error = await errorPromise;
+            console.error('Error:', error);
+            alert(error.error);
+        });
+    </script>
 </head>
 <body class="light-mode">
-  <div class="form-container">
-    <div class="header">
-      <a href="/" title="homepage">
-        <img src="{{ url_for('static', filename='icons/logo.png') }}" alt="ProsePal logo" id="logo">
-      </a>
-      <div id="toggle">
-        <p id="toggleLabel">Dark mode</p>
-        <label class="switch">
-          <input type="checkbox" id="darkModeToggle" aria-label="Enable dark mode">
-          <span class="slider round"></span>
-        </label>
-      </div>
+    <div class="form-container">
+        <div class="header">
+            <a href="/" title="homepage">
+                <img src="{{ url_for('static', filename='icons/logo.png') }}" alt="ProsePal logo" id="logo">
+            </a>
+            <div id="toggle">
+                <p id="toggleLabel">Dark mode</p>
+                <label class="switch">
+                    <input type="checkbox" id="darkModeToggle" aria-label="Enable dark mode">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+        </div>
+        <form id="conversionForm" method="post" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            <div class="form" id="upload">
+                {{ form.ebook.label }}
+                {{ form.ebook(size=20) }}
+            </div>
+            <div class="form" id="metadata">
+                <div class="metadata" id="title">
+                    {{ form.title.label }}
+                    {{ form.title(size=20) }}
+                </div>
+                <div class="metadata" id="author">
+                    {{ form.author.label }}
+                    {{ form.author(size=20) }}
+                </div>
+            </div>
+            <div class="form" id="checkboxes">
+                <div id="rights">
+                    {{ form.rights_confirmation }}
+                    {{ form.rights_confirmation.label }}
+                </div>
+                <div id="terms">
+                    {{ form.terms_agreement(disabled=false, id='terms_agreement') }}    {# Render the checkbox itself #}
+                    <label for="terms_agreement">I agree to the <a href="{{ url_for('static', filename='html/terms.html') }}" target="_blank">terms and conditions</a></label>
+                </div>
+            </div>
+            {{ form.submit() }}
+        </form>
+        <div id="loadingMessage" style="display: none;">Converting file, please wait...</div>
     </div>
-    <form id="conversionForm" method="post" enctype="multipart/form-data">
-      {{ form.hidden_tag() }}
-      <div class="form" id="upload">
-        {{ form.ebook.label }}
-        {{ form.ebook(size=20) }}
-      </div>
-      <div class="form" id="metadata">
-        <div class="metadata" id="title">
-          {{ form.title.label }}
-          {{ form.title(size=20) }}
+    <footer style="bottom: 0; width: 100%; text-align: center; padding: 10px">
+        <div>
+            © <a href="https://prosepal.io" target="_blank">ProsePal</a>
+            <span> | </span>
+            <a href ="https://github.com/ashrobertsdragon/convert_ebook_files">Code available on GitHub under MIT License</a>
+            <span> | </span>
+            <a href="{{ url_for('static', filename='html/terms.html') }} target="_blank">Terms and Conditions</a>
+            <span> | </span>
+            <a href="{{ url_for('static', filename='html/privacy.html') }}" target="_blank">Privacy Policy</a>
         </div>
-        <div class="metadata" id="author">
-          {{ form.author.label }}
-          {{ form.author(size=20) }}
-        </div>
-      </div>
-      <div class="form" id="checkboxes">
-        <div id="rights">
-          {{ form.rights_confirmation }}
-          {{ form.rights_confirmation.label }}
-        </div>
-        <div id="terms">
-          {{ form.terms_agreement(disabled=false, id='terms_agreement') }}  {# Render the checkbox itself #}
-          <label for="terms_agreement">I agree to the <a href="{{ url_for('static', filename='html/terms.html') }}" target="_blank">terms and conditions</a></label>
-        </div>
-      </div>
-      {{ form.submit() }}
-    </form>
-    <div id="loadingMessage" style="display: none;">Converting file, please wait...</div>
-  </div>
-  <footer style="bottom: 0; width: 100%; text-align: center; padding: 10px">
-    <div>
-      © <a href="https://prosepal.io" target="_blank">ProsePal</a>
-      <span> | </span>
-      <a href ="https://github.com/ashrobertsdragon/convert_ebook_files">Code available on GitHub under MIT License</a>
-      <span> | </span>
-      <a href="{{ url_for('static', filename='html/terms.html') }} target="_blank">Terms and Conditions</a>
-      <span> | </span>
-      <a href="{{ url_for('static', filename='html/privacy.html') }}" target="_blank">Privacy Policy</a>
-    </div>
-  </footer>
+    </footer>
 </body>
 </html>
