@@ -8,7 +8,7 @@ from file_handling import read_text_file, upload_file_to_gcs, write_jsonl_file
 from finetune.chunking import split_into_chunks
 from finetune.openai_client import get_client, set_client
 from finetune.shared_resources import training_status, thread_local_storage
-from initialize_constants import get_folders
+from initialize_constants import get_download_folder
 from send_email import email_admin
 
 
@@ -22,8 +22,7 @@ def generate_url(gcs_file: str) -> str:
     Returns:
         str: The signed url for the JSONL file.
     """
-    DOWNLOAD_FOLDER, _ = get_folders()
-    blob = DOWNLOAD_FOLDER.blob(gcs_file)
+    blob = get_download_folder().blob(gcs_file)
     return blob.generate_signed_url(expiration=timedelta(hours=2), method='GET')
 
 

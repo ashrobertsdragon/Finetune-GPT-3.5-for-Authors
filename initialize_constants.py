@@ -38,8 +38,15 @@ def initialize_cloud_storage():
     bucket = storage_client.bucket(bucket_name)
     return bucket
 
-def get_folders() -> tuple:
+# Getters
+def get_upload_folder() -> str:
     """
-    Returns the upload and download folders.
+    Returns the upload folder.
     """
-    return UPLOAD_FOLDER, DOWNLOAD_FOLDER
+    return UPLOAD_FOLDER
+
+def get_download_folder() -> str:
+    """
+    Returns the download folder.
+    """
+    return DOWNLOAD_FOLDER

@@ -3,10 +3,8 @@ import os
 import secrets
 import string
 
-from initialize_constants import get_folders
+from initialize_constants import get_upload_folder, get_download_folder
 
-
-UPLOAD_FOLDER, DOWNLOAD_FOLDER = get_folders()
 
 # Folder related functions
 def random_str():
@@ -18,7 +16,7 @@ def make_folder() -> tuple[str, str]:
     folder. Returns the path to the folder and the random string.
     """
     temp_folder = random_str()
-    folder_name = os.path.join(UPLOAD_FOLDER, temp_folder)
+    folder_name = os.path.join(get_upload_folder(), temp_folder)
     try:
         os.makedirs(folder_name)
     except OSError:
@@ -54,11 +52,11 @@ def write_jsonl_file(content: list, file_path: str):
 # GCS related functions
 def write_to_gcs(content: str, file: str):
     "Writes a text file to a Google Cloud Storage file."
-    blob = DOWNLOAD_FOLDER.blob(file)
+    blob = get_download_folder().blob(file)
     blob.upload_from_string(content, content_type="text/plain")
 
 def upload_file_to_gcs(file_path:str, gcs_file: str):
     "Uploads a file to a Google Cloud Storage bucket"
-    blob = DOWNLOAD_FOLDER.blob(gcs_file)
+    blob = get_upload_folder().blob(gcs_file)
     with open(file_path, "rb") as f:
         blob.upload_from_file(f, content_type="application/octet-stream")
