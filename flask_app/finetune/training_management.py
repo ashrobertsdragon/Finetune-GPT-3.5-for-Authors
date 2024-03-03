@@ -8,7 +8,7 @@ from file_handling import read_text_file, upload_file_to_gcs, write_jsonl_file
 from finetune.chunking import split_into_chunks
 from finetune.openai_client import get_client, set_client
 from finetune.shared_resources import training_status, thread_local_storage
-from initialize_constants import get_download_folder
+from set_folders import get_download_folder
 from send_email import email_admin
 
 

@@ -3,7 +3,7 @@ import os
 import secrets
 import string
 
-from initialize_constants import get_upload_folder, get_download_folder
+from set_folders import get_upload_folder, get_download_folder
 
 
 # Folder related functions
