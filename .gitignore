@@ -6,4 +6,6 @@ run_dev_server.py
 /upload_folder/
 temp.py
 .envs/
+app/app.yaml
 app.yaml
+*.yaml
