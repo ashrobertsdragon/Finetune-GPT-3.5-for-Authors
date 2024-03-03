@@ -1,8 +1,17 @@
 __pycache__/
+.pytest_cache/
 .env
 .git
 run_dev_server.py
 upload_folder/
 temp.py
+<<<<<<< HEAD
 *.yaml
 *.json
+=======
+.envs/
+app/app.yaml
+app.yaml
+*.yaml
+*.json
+>>>>>>> main

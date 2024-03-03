@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-NFEC3743TH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-NFEC3743TH');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us</title>
+    <link rel="icon" href="{{ url_for('static', filename='icons/favicon.ico') }}" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='icons/apple-touch-icon.png') }}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
+</head>
+<body class="light-mode">
+    <div class="header">
+        <a href="/" title="homepage">
+            <img src="{{ url_for('static', filename='icons/logo.png') }}" alt="ProsePal logo" id="logo">
+        </a>
+        <div id="toggle">
+            <p id="toggleLabel">Dark mode</p>
+            <label class="switch">
+                <input type="checkbox" id="darkModeToggle" aria-label="Enable dark mode">
+                <span class="slider round"></span>
+            </label>
+        </div>
+    </div>
+
+    <div class="contact-form">
+        <h1>Contact Us</h1>
+        <form action="" method="post" novalidate>
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.name.label }}<br>
+                {{ form.name(size=20) }}<br>
+            </p>
+            <p>
+                {{ form.email.label }}<br>
+                {{ form.email(size=20) }}<br>
+            </p>
+            <p>
+                {{ form.message.label }}<br>
+                {{ form.message(rows=5, cols=20) }}
+            </p>
+            <p>{{ form.submit() }}</p>
+        </form>
+        
+    </div>
+
+    <footer>
+        &copy; 2024 ProsePal
+    </footer>
+</body>
+</html>
