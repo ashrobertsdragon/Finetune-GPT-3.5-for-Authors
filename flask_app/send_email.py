@@ -8,7 +8,7 @@ from email.mime.text import MIMEText
 error_logger = logging.getLogger("error_logger")
 
 def email_admin(e):
-    send_mail(name="Admin", user_email=os.environ.get("mail_username"), message="fIrrecoverable error from OpenAI: {e}")
+    send_mail(name="Admin", user_email=os.environ.get("mail_username"), message=f"Irrecoverable error from OpenAI: {e}")
     
 def send_mail(name: str, user_email: str, message: str) -> None:
     """
@@ -41,4 +41,4 @@ def send_mail(name: str, user_email: str, message: str) -> None:
         s.send_message(msg)
     except Exception as e:
         error_logger.exception(f"Failed to send email. Reason: {e}")
-    return
+        print(f"Failed to send email. Reason: {e}")
