@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-NFEC3743TH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-NFEC3743TH');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us</title>
+    <link rel="icon" href="{{ url_for('static', filename='icons/favicon.ico') }}" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='icons/apple-touch-icon.png') }}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
+</head>
+<body class="light-mode">
+    <div class="form-container">
+        <div class="header">
+            <a href="/" title="homepage">
+                <img src="{{ url_for('static', filename='icons/logo.png') }}" alt="ProsePal logo" id="logo">
+            </a>
+            <div id="toggle">
+                <p id="toggleLabel">Dark mode</p>
+                <label class="switch">
+                    <input type="checkbox" id="darkModeToggle" aria-label="Enable dark mode">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="contact-form">
+            <h1>Thank you</h1>
+            <p class="lead">Your message has been sent successfully. We will get back to you as soon as possible.</p>
+            <p>Click below to return to the homepage.</p>
+            <button>Return Home</a>
+        </div>
+    </div>
+</body>
+</html>

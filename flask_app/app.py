@@ -72,7 +72,8 @@ def send_email():
         name = form.name.data
         user_email = form.email.data
         message = form.message.data
-        threading.Thread(target=send_message, args=(name, user_email, message)).start()
+        send_message(name, user_email, message)
+        return render_template("message_sent.html")
 
     return render_template("contact-us.html", form=form)
 
