@@ -16,7 +16,7 @@ def set_upload_folder():
         UPLOAD_FOLDER = os.path.join("/tmp", "upload")
         os.makedirs(UPLOAD_FOLDER, exist_ok=True)
     else:
-        UPLOAD_FOLDER = os.path.join("src", "flask_app", "upload_folder")
+        UPLOAD_FOLDER = os.path.join("src", "upload_folder")
     return UPLOAD_FOLDER
 
 def get_service_account_credentials():

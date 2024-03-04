@@ -12,7 +12,7 @@ from file_handling import is_encoding, random_str, make_folder
 from finetune.shared_resources import training_status
 from finetune.training_management import train
 from forms import ContactForm, FineTuneForm, EbookConversionForm
-from flask_app.set_folders import set_constants
+from set_folders import set_constants
 from logging_config import start_loggers
 from send_email import send_mail
 
