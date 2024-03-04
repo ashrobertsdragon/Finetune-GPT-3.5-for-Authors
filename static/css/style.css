@@ -411,10 +411,14 @@ footer.dark-mode {
 .contact-form {
     margin: 20px auto;
     max-width: 600px;
-    padding: 20px;
+    padding: 40px;
     background-color: #BBE5ED;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0.1);
+}
+body.dark-mode .contact-form {
+  background-color: #3F5C7D;
+  color:#DBE1E7;
 }
 
 .contact-form label {

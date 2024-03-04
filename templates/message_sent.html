@@ -35,28 +35,11 @@
         </div>
 
         <div class="contact-form">
-            <h1>Contact Us</h1>
-            <form action="" method="post" novalidate>
-                {{ form.hidden_tag() }}
-                <p>
-                    {{ form.name.label }}<br>
-                    {{ form.name(size=20) }}<br>
-                </p>
-                <p>
-                    {{ form.email.label }}<br>
-                    {{ form.email(size=20) }}<br>
-                </p>
-                <p>
-                    {{ form.message.label }}<br>
-                    {{ form.message(rows=5, cols=20) }}
-                </p>
-                <p>{{ form.submit() }}</p>
-            </form>
-            
+            <h1>Thank you</h1>
+            <p class="lead">Your message has been sent successfully. We will get back to you as soon as possible.</p>
+            <p>Click below to return to the homepage.</p>
+            <button>Return Home</button>
         </div>
     </div>
-    <footer>
-        &copy; 2024 ProsePal
-    </footer>
 </body>
 </html>

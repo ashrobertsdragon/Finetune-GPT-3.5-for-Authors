@@ -12,7 +12,7 @@ from file_handling import is_encoding, random_str, make_folder
 from finetune.shared_resources import training_status
 from finetune.training_management import train
 from forms import ContactForm, FineTuneForm, EbookConversionForm
-from initialize_constants import initialize_constants
+from set_folders import set_constants
 from logging_config import start_loggers
 from send_email import send_mail
 
@@ -24,7 +24,7 @@ start_loggers()
 error_logger = logging.getLogger("error_logger")
 
 MAX_FILE_SIZE = 2 * 1024 * 1024    # 2 MB
-UPLOAD_FOLDER, DOWNLOAD_FOLDER = initialize_constants()
+UPLOAD_FOLDER, DOWNLOAD_FOLDER = set_constants()
 
 app = Flask(__name__)
 
@@ -72,7 +72,8 @@ def send_email():
         name = form.name.data
         user_email = form.email.data
         message = form.message.data
-        threading.Thread(target=send_message, args=(name, user_email, message)).start()
+        send_message(name, user_email, message)
+        return render_template("message_sent.html")
 
     return render_template("contact-us.html", form=form)
 
