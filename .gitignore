@@ -5,19 +5,5 @@ __pycache__/
 run_dev_server.py
 upload_folder/
 temp.py
-<<<<<<< HEAD
 *.yaml
 *.json
-=======
-.envs/
-<<<<<<< HEAD
-*.yaml
-*.json
-
-=======
-app/app.yaml
-app.yaml
-*.yaml
-*.json
->>>>>>> main
->>>>>>> main
