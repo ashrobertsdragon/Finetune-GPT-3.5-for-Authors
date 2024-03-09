@@ -2,7 +2,7 @@ from src.utils import random_str
 from src.supabase_client import supabase
 
 
-def create_user(user_id):
+def add_user_prefix(user_id):
     while True:
         user_prefix = random_str()
         res = supabase.table("userTable").insert({
