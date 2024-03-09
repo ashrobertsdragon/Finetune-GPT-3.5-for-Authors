@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import EmailField, PasswordField, BooleanField, TextField, DateField
+from wtforms import EmailField, PasswordField, BooleanField, TextField, DateField, SubmitField
 from wtforms.validators import DataRequired, Email, Length
 
 class SignupForm(FlaskForm):
@@ -22,9 +22,13 @@ class LoginForm(FlaskForm):
     password = PasswordField("Password", validators=[DataRequired()])
 
 class AccountManagementForm(FlaskForm):
-    email = EmailField("Email", validators=[DataRequired(), Email()])
-    current_password = PasswordField("Password", validators=[DataRequired()])
-    new_password = PasswordField("Password", validators=[DataRequired()])
+    email = EmailField("Email", validators=[Email()])
     first_name = TextField("First name")
     last_name = TextField("Last name")
     b_day = DateField("Birthdate")
+    submit_account = SubmitField("Update Account")
+
+class UpdatePasswordForm(FlaskForm):
+    current_password = PasswordField("Password", validators=[DataRequired()])
+    new_password = PasswordField("Password", validators=[DataRequired()])
+    submit_password = SubmitField("Update Password")
