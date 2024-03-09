@@ -16,3 +16,6 @@ def login_required(f):
 def random_str():
     """Generate a random 7 character alphanumeric string."""
     return "".join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(7))
+
+def send_mail():
+    pass
