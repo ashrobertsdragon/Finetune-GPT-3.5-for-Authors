@@ -1,8 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import EmailField, PasswordField, BooleanField
+from wtforms import EmailField, PasswordField, BooleanField, TextField, DateField
 from wtforms.validators import DataRequired, Email, Length
-
-from src.accounts.models import UserTable
 
 class SignupForm(FlaskForm):
     email = EmailField(
@@ -17,12 +15,16 @@ class SignupForm(FlaskForm):
         initial_validation = super(SignupForm, self).validate()
         if not initial_validation:
             return False
-        user = UserTable.query.filter_by(email=self.email.data).first()
-        if user:
-            self.email.errors.append("Email already registered")
-            return False
         return True
 
 class LoginForm(FlaskForm):
     email = EmailField("Email", validators=[DataRequired(), Email()])
     password = PasswordField("Password", validators=[DataRequired()])
+
+class AccountManagementForm(FlaskForm):
+    email = EmailField("Email", validators=[DataRequired(), Email()])
+    current_password = PasswordField("Password", validators=[DataRequired()])
+    new_password = PasswordField("Password", validators=[DataRequired()])
+    first_name = TextField("First name")
+    last_name = TextField("Last name")
+    b_day = DateField("Birthdate")
