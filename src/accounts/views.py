@@ -10,7 +10,7 @@ from .utils import add_user_prefix
 accounts_bp = Blueprint("accounts", __name__)
 
 @app.route("/signup", methods=["GET", "POST"])
-def signup():
+def signup_view():
     form = SignupForm()
     if form.validate_on_submit():
         res = supabase.auth.sign_up({
@@ -27,7 +27,7 @@ def signup():
     return render_template("signup.html", form=form)
 
 @app.route("/login", methods=["GET", "POST"])
-def login():
+def login_view():
     form = LoginForm()
     if form.validate_on_submit():
         data = supabase.auth.sign_in_with_password({
@@ -52,7 +52,7 @@ def login():
 
 @app.route("/logout", method=["GET"])
 @login_required
-def logout():
+def logout_view():
     session.pop("access_token", None)
     supabase.auth.sign_out()
     return redirect("/login.html")
@@ -61,7 +61,7 @@ def logout():
 @login_required
 def account_view():
     user_id = session.get("user_id")
-    error, data = supabase.table("userTable").select("*").eq("id", user_id).single().execute()
+    error, data = supabase.table("userTable").select("*").eq("uuid", user_id).single().execute()
     if not error and data:
         user_dict = {}
         user_dict["email"] = data.get("email", "")
@@ -84,7 +84,7 @@ def account_view():
     
 @app.route("/profile")
 @login_required
-def profile():
+def profile_view():
     user_id = session.get("user_id")
     account_form = AccountManagementForm()
     password_form = UpdatePasswordForm()
