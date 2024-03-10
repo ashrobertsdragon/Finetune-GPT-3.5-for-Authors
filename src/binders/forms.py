@@ -5,7 +5,7 @@ from flask_wtf.file import FileAllowed, FileRequired
 
 class LoreBinderForm(FlaskForm):
     author = StringField(
-        'Author Name',
+        "Author Name",
         validators=[
             Length(max=30),
             DataRequired()
@@ -13,7 +13,7 @@ class LoreBinderForm(FlaskForm):
         render_kw={"aria-label": "Author name for manuscript"}
     )
     title = StringField(
-        'Book Title',
+        "Book Title",
         validators=[
             Length(max=50),
             DataRequired()
@@ -21,18 +21,18 @@ class LoreBinderForm(FlaskForm):
             render_kw={"aria-label": "Book title"}
     )
     is_first_person = BooleanField(
-        'First Person Narrative',
+        "First Person Narrative",
         render_kw={"aria-label": "Choose first or third person for manuscript"}
     )
     narrator = StringField(
-        'Narrator Name',
+        "Narrator Name",
         validators=[Length(max=30)],
         render_kw={"aria-label": "Narrator's name"},
-        filters=[lambda x: x or None]
+        filters=[lambda x: x or ""]
     )
     
     character_attributes_input = StringField(
-        'Character Attributes',
+        "Character Attributes",
         render_kw={
             "autocomplete": "off",
             "aria-label": "Character attributes to include"
@@ -40,7 +40,7 @@ class LoreBinderForm(FlaskForm):
         filters=[lambda x: x or None]
         )
     other_attributes_input = StringField(
-        'Other Attributes',
+        "Other Attributes",
         render_kw={
             "autocomplete": "off",
             "aria-label": "Other attributes for AI to search for"
@@ -48,9 +48,9 @@ class LoreBinderForm(FlaskForm):
         filters=[lambda x: x or None]
     )
     
-    character_attributes = HiddenField(filters=[lambda x: x or None])
-    other_attributes = HiddenField(filters=[lambda x: x or None])
+    character_attributes = HiddenField(filters=[lambda x: x or []])
+    other_attributes = HiddenField(filters=[lambda x: x or []])
 
-    file_upload = FileField('Document', validators=[
+    file_upload = FileField("Document", validators=[
         FileRequired(),
-        FileAllowed(['docx', 'epub', 'pdf', 'txt'], 'Invalid file format')])
+        FileAllowed(["docx", "epub", "pdf", "txt"], "Invalid file format")])

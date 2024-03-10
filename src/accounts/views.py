@@ -37,22 +37,29 @@ def login_view():
         if data.error:
             return jsonify({"error": {data.error.message}}), data.error.status
         
-        access_token = data.data.access_token
-        session["access_token"] = access_token
-
         user_id = data.user.id
-        query = supabase.from_("userTable").select("credits_available").eq("uuid", user_id)
-        response = query.execute()
-        credits_available = response.data[0]["credits_available"]
+        access_token = data.data.access_token
+
+        session["access_token"] = access_token
+        session["user_id"] = user_id
+
+        response = supabase.from_("userTable").select("*").eq("uuid", user_id).single().execute()
+        user_details = response.data[0]
+        session["user_details"] = user_details
+
+        credits_available = session["user_details"]["credits_available"]
         if credits_available > 0:
             return redirect("lorebinder.html")
         else:
             return redirect("account.html#but_credits")
+    
     return render_template("login.html", form=form)
 
 @app.route("/logout", method=["GET"])
 @login_required
 def logout_view():
+    session.pop("user_details", None)
+    session.pop("user_id", None)
     session.pop("access_token", None)
     supabase.auth.sign_out()
     return redirect("/login.html")
@@ -60,18 +67,8 @@ def logout_view():
 @app.route("/account")
 @login_required
 def account_view():
-    user_id = session.get("user_id")
-    error, data = supabase.table("userTable").select("*").eq("uuid", user_id).single().execute()
-    if not error and data:
-        user_dict = {}
-        user_dict["email"] = data.get("email", "")
-        user_dict["first_name"] = data.get("first_name", "")
-        user_dict["last_name"] = data.get("last_name", "")
-        user_dict["form.b_day"] = data.get("b_day", None)
-        user_dict["credits_available"]  = data.get("credits_available")
-        user_dict["credits_used"] = data.get("credits_used")
-    
-
+    pass
+"""
 
     if section == "profile":
         return profile()
@@ -81,7 +78,8 @@ def account_view():
         return buy_credits()
     else:
         return redirect(url_for("account_view", section="profile"))
-    
+"""
+
 @app.route("/profile")
 @login_required
 def profile_view():
@@ -92,15 +90,22 @@ def profile_view():
         form = account_form
         update_user = {}
         if form.email.data:
-            update_user["email"] = form.email.data
+            new_email = form.email.data
+            supabase.auth.update_user(
+              access_token=session["access_token"],
+              email=new_email
+            )
         if form.first_name.data:
             update_user["f_name"] = form.first_name.data
+            session["user_details"]["f_name"] = form.first_name.data
         if form.last_name.data:
             update_user["l_name"] = form.last_name.data
+            session["user_details"]["l_name"] = form.last_name.data
         if form.b_day.data:
             update_user["b_day"] = form.b_day.data
+            session["user_details"]["b_day"] = form.b_day.data
         if update_user:
-            error, _ = supabase.table("userTable").update(update_user).eq("id", user_id).execute()
+            error, _ = supabase.table("userTable").update(update_user).eq("uuid", user_id).execute()
 
             if error:
                 flash("There was an error updating your profile.", "error")
@@ -112,7 +117,7 @@ def profile_view():
     if password_form.validate_on_submit():
         new_password = password_form.new_password.data
         error = supabase.auth.update_user(
-            access_token=session['access_token'],
+            access_token=session["access_token"],
             password=new_password
         )
 
@@ -122,4 +127,3 @@ def profile_view():
             flash("Password successfully updated.", "success")
 
     return render_template("profile.html", account_form=account_form, password_form=password_form)
-

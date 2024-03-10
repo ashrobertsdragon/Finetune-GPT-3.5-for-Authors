@@ -1,19 +1,20 @@
 document.addEventListener("DOMContentLoaded", function() {
-  var isFirstPersonCheckbox = document.getElementById("id_is_first_person");
-  var narratorFieldContainer = document.getElementById("id_narrator_name").closest(".form-group");
+  var isFirstPersonCheckbox = document.getElementById("is_first_person");
+  var narratorFieldContainer = document.getElementById("narrator");
 
   // Toggle narrator name field based on checkbox
   function toggleNarratorField() {
-    narratorFieldContainer.style.display = isFirstPersonCheckbox.checked ? "" : "none";
+    narratorFieldContainer.style.display = isFirstPersonCheckbox.checked ? "block" : "none";
   }
   isFirstPersonCheckbox.addEventListener("change", toggleNarratorField);
   toggleNarratorField();
 
-  // Function to handle multi-value inputs for character attributes
+  // Function to handle multi-value inputs for attributes
   function handleMultiValueInput(inputFieldId, storageFieldId) {
     var inputField = document.getElementById(inputFieldId);
     var storageField = document.getElementById(storageFieldId);
     var itemList = document.createElement("ul");
+    itemList.classList.add("attributes-list");
     storageField.parentNode.insertBefore(itemList, storageField.nextSibling);
     inputField.addEventListener("keypress", function(e) {
       if (e.key === "Enter") {
@@ -23,12 +24,17 @@ document.addEventListener("DOMContentLoaded", function() {
           var item = document.createElement("li");
           item.textContent = itemValue;
           itemList.appendChild(item);
-          storageField.value += itemValue + ","; // Store the item in a hidden field as a comma-separated list
+          // Update the hidden field to store the list as a JSON array
+          var items = storageField.value ? JSON.parse(storageField.value) : [];
+          items.push(itemValue);
+          storageField.value = JSON.stringify(items);
+
           inputField.value = ""; // Clear input for next entry
         }
       }
     });
   }
 
-  handleMultiValueInput("id_character_attributes", "storage_character_attributes");
+  handleMultiValueInput("character_attributes_input", "character_attributes");
+  handleMultiValueInput("other_attributes_input", "other_attributes");
 });

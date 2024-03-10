@@ -2,7 +2,7 @@ import secrets
 import string
 
 from functools import wraps
-from flask import redirect, session, url_for, flash
+from flask import redirect, session, url_for
 
 from src import app
 from .supabase_client import supabase
@@ -76,18 +76,20 @@ def random_str():
 def send_mail():
     pass
 
-def upload_supabase_bucket(user_folder, file, *bucket):
+def upload_supabase_bucket(user_folder, file, *, bucket):
     """
     Uploads a file to a Supabase storage bucket.
 
     Args:
-        user_folder (str): The user's folder in the storage bucket where the
-        file will be uploaded.
-        file (FileStorage): The file to be uploaded.
-        *bucket (str): The name of the bucket(s) to upload the file to.
+        user (str): The user's uuid which acts as their folder name in the 
+        storage bucket where the file will be uploaded.
+        file (FileStorage): The file to be uploaded, as a Flask FileStorage
+        object.
+        bucket (str): The name of the bucket to upload the file to. Must be
+        specified as a keyword argument
 
     Returns:
-        None
+        upload_path (str): The path the file in the storage bucket.
 
     Raises:
         Exception: If an error occurs during the file upload.
@@ -111,15 +113,12 @@ def upload_supabase_bucket(user_folder, file, *bucket):
         file_mime_type = file.content_type
         file.seek(0)
 
-        response = supabase.storage.from_(bucket).upload(
+        supabase.storage.from_(bucket).upload(
             path=upload_path,
             file=file_content,
             file_options={"content-type": file_mime_type}
         )
-        if response.status_code in [200, 201]:
-            flash("File uploaded successfully", "success")
-        else:
-            flash("Failed to upload the file. Please try again.", "error")
     except Exception as e:
         app.logger.error(f"An error occurred during file upload: {e}")
-        flash("An error occurred while uploading the file. Please try again.", "error")
+    
+    return upload_path
