@@ -1,0 +1,42 @@
+{% load static %}
+<header>
+  <nav class="header-nav">
+    <ul class="header-menu">
+      <li class="logo"><a href="{% url 'index' %}" title="homepage">
+        <img src="{% static 'images/logo.png' %}" alt="ProsePal logo" id="logo">
+      </a></li>
+      {% if user.is_authenticated %}
+        <li class="header-list"><a href="{% url 'lorebinder' %}">LoreBinders</a></li>
+      {% else %}
+          <li class="header-list"><a href="{% url 'index' %}">LoreBinders</a></li>
+      {% endif %}
+      <li class="dropdown header-list"><a href="#">Free Tools</a>
+        <ul class="dropdown-content">
+          <li class="dropdown-item"><a href="{% url 'finetune' %}">GPT 3.5 Finetuner</a></li>
+          <li class="dropdown-item sub"><a href="{% url 'finetune_instructions' %}">Instructions</a></li>
+          <li class="dropdown-item"><a href="{% url 'convert_ebook' %}">Convert-ebook</a></li>
+        </ul>
+      </li>
+      {% if user.is_authenticated %}
+      <li class="dropdown header-right" id="account"><a href="#">Account</a>
+        <ul class="dropdown-content last">
+          <li class="dropdown-item account"><a href="{% url 'account' %}#profile">Profile</a></li>
+          <li class="dropdown-item account"><a href="{% url 'account' %}#buy_credits">Buy Credits</a></li>
+          <li class="dropdown-item account"><a href="{% url 'account' %}#loreprosebinders">Past Purchases</a></li>
+          <li class="credit-item"><p class="credits">Credits: {{ user.credits_available }}</p></li>
+          <li class="dropdown-item account"><a href="{% url 'logout' %}">Logout</a></li>
+        </ul>
+      </li>
+      {% else %}
+      <li class="header-list header-right"><a href="{% url 'signup' %}">Sign Up</a></li>
+      {% endif %}
+      <li class="header-right toggle"><div id="toggle">
+        <p id="toggleLabel">Dark mode</p>
+        <label class="switch">
+          <input type="checkbox" id="darkModeToggle" aria-label="Enable dark mode">
+          <span class="slider round"></span>
+        </label>
+      </div></li>
+    </ul>
+  </nav>
+</header>

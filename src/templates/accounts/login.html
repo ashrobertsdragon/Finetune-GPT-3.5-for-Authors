@@ -1,0 +1,53 @@
+{% extends "forms-base.html" %}
+{% load static %}
+{% block title %}Login{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/forms.css' %}">
+{% endblock extra_css %}
+
+{% block content %}
+<div class="form box">
+  <form id="login-form" class="form" method="post" action="{% url 'login' %}">
+    {% csrf_token %}
+    <h1 class="content-title">Login</h1>
+    <div class="input-boxes">
+      <!-- Email Field -->
+      <div class="form-grid" id="div-id_email">
+        <label class="user-input-label" for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+        {{ form.username }}
+        {% if form.username.help_text %}
+          <small class="help-text">{{ form.username.help_text }}</small>
+        {% endif %}
+        {% for error in form.username.errors %}
+          <div class="error">{{ error }}</div>
+        {% endfor %}
+      </div>
+      <!-- Password Field -->
+      <div class="form-grid" id="div-id_password">
+        <label class="user-input-label" for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+        <div class="password-container">
+          {{ form.password }}
+          <span class="material-symbols-outlined" id="eye" onclick="toggleVisibility()">visibility</span>
+        </div>
+        {% if form.password.help_text %}
+          <small class="help-text">{{ form.password.help_text }}</small>
+        {% endif %}
+        {% for error in form.password.errors %}
+          <div class="error">{{ error }}</div>
+        {% endfor %}
+      </div>
+    </div>
+    <input type="submit" value="Login" class="btn btn-primary">
+  </form>
+  <div class="switch-auth">
+    Don't have an account? <a href="{% url 'signup' %}" id="signup-link" class="auth-switch-link">Sign Up</a>
+  </div>
+</div>
+{% endblock content %}
+{% block footer %}
+  {% include "normal-footer.html" %}
+{% endblock footer %}
+{% block end_js %}
+  <script src="{% static 'js/visToggle.js' %}"></script>
+{% endblock end_js %}

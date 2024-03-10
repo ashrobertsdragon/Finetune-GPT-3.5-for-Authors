@@ -1,0 +1,66 @@
+{% extends "forms-base.html" %}
+
+{% load static %}
+
+{% block title %}Signup{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/forms.css' %}">
+{% endblock extra_css %}
+
+{% block content %}
+  <div class="form box">
+    <form class="user-form" method="POST" role="main" action="{% url 'signup' %}">
+      {% csrf_token %}
+      <h1>Become a Pal to your Prose</h1>
+      <div id="required-div">
+        <h3 class="required-text">All fields are required.</h3>
+      </div>
+      <div class="input-boxes">
+        <!-- Email Field -->
+        <div class="form-grid" id="div-id_email">
+          <label class="user-input-label" for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+          {{ form.email }}
+          {% if form.email.help_text %}
+            <small class="help-text">{{ form.email.help_text }}</small>
+          {% endif %}
+          {% for error in form.email.errors %}
+            <div class="error">{{ error }}</div>
+          {% endfor %}
+        </div>
+        <!-- Password Field -->
+        <div class="form-grid" id="div-id_password">
+          <label class="user-input-label" for="{{ form.password1.id_for_label }}">{{ form.password1.label }}</label>
+          <div class="password-container">
+            {{ form.password1 }}
+            <span class="material-symbols-outlined" id="eye" onclick="toggleVisibility()">visibility</span>
+          </div>
+          {% if form.password1.help_text %}
+            <small class="help-text">{{ form.password1.help_text }}</small>
+          {% endif %}
+          {% for error in form.password1.errors %}
+            <div class="error">{{ error }}</div>
+          {% endfor %}
+        </div>
+      </div>
+      <div id="checkboxes">
+        <div class="check-grid" id="terms">
+          {{ form.terms_agreement }}
+          <label for="{{ form.terms_agreement.id_for_label }}" class="user-input-label">{{ form.terms_agreement.label }}</label>
+        </div>
+        </div>
+      <input type="submit" value="Signup" class="btn btn-primary">
+    </form>
+    <div class="switch-auth">
+      Already have an account?  <a href="{% url 'login' %}" id="login-link">Login</a>
+    </div>
+  </div>
+{% endblock %}
+
+{% block footer %}
+  {% include "normal-footer.html" %}
+{% endblock footer %}
+
+{% block end_js %}
+  <script src="{% static 'js/visToggle.js' %}"></script>
+{% endblock end_js %}

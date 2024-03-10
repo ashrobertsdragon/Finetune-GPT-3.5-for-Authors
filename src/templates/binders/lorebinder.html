@@ -1,0 +1,28 @@
+{% extends 'forms-base.html' %}
+{% load static %}
+
+{% block title %}LoreBinder Setup{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/finetuner.css' %}">
+{% endblock extra_css %}
+
+{% block extra_js %}
+  <script src="{% static, 'javascript/invalid-input.js'}"></script>
+{% endblock extra_js}
+
+{% block content %}
+<div class="alert alert-danger" role="alert" aria-live="polite">
+  Please correct the errors below.
+</div>
+{% endif %}
+
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Create LoreBinder</button>
+</form>
+{% endblock content %}
+{% block footer %}
+  {% include 'finetune-footer.html' %}
+{% endblock footer %}

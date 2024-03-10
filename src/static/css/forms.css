@@ -1,0 +1,462 @@
+/* General styling */
+button, label, 
+select input[type="submit"],
+input[type="checkbox"] {
+  font-family: 'Exo', sans-serif;
+}
+
+input, textarea {
+  font-family: 'Source Sans 3', sans-serif;
+}
+
+/* Inputs */
+input[type="file"] {
+  border: none;
+} 
+
+input[type="submit"] {
+  text-transform: uppercase;
+  letter-spacing: .15rem;
+  display: block;
+  text-align: center;
+  width: auto;
+  background-color: hsl(120, 100%, 20%);
+  color: #DBE1E7;
+  padding: 14px 20px;
+  margin: 2em auto .5em;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: 0 0 3px #1C0B19;
+}
+
+input[type="submit"]:hover {
+  background-color: #089108;
+}
+
+input::file-selector-button {
+  background-color: hsl(210, 20%, 88%);
+  padding: 14px 20px;
+  margin: 8px auto;
+  margin-right: .25em;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: inset 0 0 0.5px 1px rgba(219, 225, 231, 0.1),
+  0 0 0 1px rgba(0, 100, 0, 0.075),
+  0 0.3px 0.4px rgba(0, 100, 0, 0.02),
+  0 0.9px 1.5px rgba(0, 100, 0, 0.045),
+  0 3.5px 6px rgba(0, 100, 0, 0.09);
+}
+
+input::file-selector-button:hover {
+  background-color: hsl(210, 20%, 95%)
+}
+
+/* Labels */
+label {
+  display: grid;
+  font-size: 1.1em;
+  padding-bottom: .25em;
+  margin-right: 1rem;
+}
+
+label a {
+  padding-left: .25em;
+}
+
+/* Dark mode */
+body.dark-mode label {
+  color: inherit;
+}
+body.light-mode label {
+  color: inherit;
+}
+
+body.dark-mode .box {
+  background-color: #3F5C7D;
+  box-shadow: inset 0 0 5px #DBE1E7; /* White shadow */
+} 
+
+body.dark-mode .user-input,
+body.dark-mode input[type="password"],
+body.dark-mode input[type="text"],
+body.dark-mode input[type="date"],
+body.dark-mode input[type="email"],
+body.dark-mode select,
+body.dark-mode textarea {
+  border-radius: 4px;
+  box-shadow: inset 0 0 0.5px 1px rgba(219, 225, 231, 0.1),
+              0 0 0 1px rgba(44, 11, 25, 0.075),
+              0 0.3px 0.4px rgba(44, 11, 25, 0.02),
+              0 0.9px 1.5px rgba(44, 11, 25, 0.045),
+              0 3.5px 6px rgba(44, 11, 25, 0.09) !important;
+}
+
+body.dark-mode input[type="submit"],
+body.dark-mode input::file-selector-button {
+  box-shadow: inset 0 0 0.5px 1px rgba(219, 225, 231, 0.1),
+  0 0 0 1px rgba(0, 100, 0, 0.075),
+  0 0.3px 0.4px rgba(0, 100, 0, 0.02),
+  0 0.9px 1.5px rgba(0, 100, 0, 0.045),
+  0 3.5px 6px rgba(0, 100, 0, 0.09);
+}
+body.dark-mode input[type="submit"]:hover,
+body.dark-mode input::file-selector-button:hover {
+  box-shadow: inset 0 0 0.5px 1px rgba(219, 225, 231, 0.1),
+  0 0 0 1px rgba(244, 238, 144, 0.075),
+  0 0.3px 0.4px rgba(244, 238, 144, 0.02),
+  0 0.9px 1.5px rgba(244, 238, 144, 0.045),
+  0 3.5px 6px rgba(244, 238, 144, 0.09);
+}
+
+/* Containers */
+div {
+  padding-bottom: .5em;
+}
+
+.form {
+  padding-bottom: .5em;
+}
+
+.box {
+  margin: 0 auto;
+  padding: 20px 40px;
+  box-shadow: 0 0 10px rgba(0, 0, 0.1);
+  background-color: #BBE5ED;
+  border-radius: 8px;
+}
+
+#box {
+  text-align: center;
+}
+
+/* Help-text */
+.help-text {
+  display: none;
+}
+
+.form-grid input:hover + .help-text {
+  display: block;
+}
+
+/* Finetuner */
+.opening-info {
+  padding-bottom: 2em;
+}
+
+
+#file_upload {
+  text-align: center;
+}
+
+#role {
+  width: 95%;
+  height: auto;
+  resize: both;
+  margin-bottom: 2em;
+}
+
+#chunk-type {
+  display: flex;
+  justify-content: flex-end;
+}
+
+#chunk-type select {
+  width: auto;
+  margin: auto;
+}
+
+#checkboxes {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+#checkboxes label {
+  font-size: .8em;
+  padding-top: .2em;
+  white-space: nowrap;
+}
+
+#rights, #terms {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0;
+  margin-right: auto;
+  padding-bottom: 0;
+  flex-wrap: nowrap;
+}
+
+#rights input[type="checkbox"], 
+#terms input[type="checkbox"] {
+  margin-right: 5px;
+}
+
+.info-list a {
+  font-style: italic;
+}
+
+/* Error Modal */
+.modal {
+  display: none; /* Hide the modal by default */
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+  background-color: #DBE1E7;
+  color: #1C0B19;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #BBE5ED;
+  width: 50%;
+  text-align: center;
+}
+body.dark-mode .modal-content {
+  background-color: #1C0B19;
+  color: #DBE1E7;
+  border: 1px solid #3F5C7D
+}
+
+.close {
+  color: #BBE5ED;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.error {
+  color: #ff0000; /* Adjust color as needed */
+  font-size: .9em;
+}
+
+/* Visibility toggle icon */
+.password-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: 0;
+  margin: 0;
+}
+
+.password-input {
+  padding-right: 30px;
+  flex-grow: 1;
+}
+
+#eye {
+  color:#1C0B19;
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  top: 42%;
+  transform: translateY(-50%);
+}
+
+/* Ebook converter */
+.metadata label {
+  width: 3em;
+}
+#convert-link {
+  text-align: center;
+}
+
+/* Joint */
+#chunk, .metadata {
+  margin-right: auto;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+#chunk, .metadata label {
+  margin-right: .25em;
+  white-space: nowrap;
+}
+
+/* Contact form */
+.contact-form {
+  margin: 20px auto;
+  max-width: 600px;
+  padding: 20px;
+  background-color: #BBE5ED;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0.1);
+}
+
+.contact-form label {
+  font-size: 1.1em;
+  display: flex;
+  padding-bottom: 0.25em;
+}
+
+.contact-form input[type="text"],
+.contact-form textarea {
+  font-size: 0.9em;
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  box-shadow: 0 0 3px rgb(63, 92, 125);
+}
+
+.contact-form input[type="submit"] {
+  text-transform: uppercase;
+  display: block;
+  text-align: center;
+  width: auto;
+  background-color: hsl(120, 100%, 20%);
+  color: #DBE1E7;
+  padding: 14px 20px;
+  margin: 8px auto;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: 0 0 3px #1C0B19;
+}
+
+.contact-form input[type="submit"]:hover {
+  background-color: hsl(120, 90%, 30%);
+}
+
+.contact-form textarea {
+  height: 5em; /* Adjust the height as needed */
+} 
+
+/* Signup / Login */
+.form h1 {
+  text-align: center;
+}
+.form h3 {
+  font-family: 'Share Tech', sans-serif;
+  font-weight: 300;
+  font-style: italic;
+  font-size: .75rem;
+  text-align: left;
+  letter-spacing: .05em;
+}
+#required-div {
+  text-align: left;
+  margin-right: auto;
+}
+
+.user-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: none;
+}
+
+.input-boxes {
+  width: 100%;
+  margin: auto;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: 30% 50%;
+}
+.user-input-label {
+  align-items: center;
+  text-align: left;
+  padding-right: 10px;
+}
+
+user-input,
+input[type="password"],
+input[type="text"],
+input[type="date"],
+input[type="email"] {
+  font-size: 1rem;
+  max-width: 40ch;
+  width: 100%;
+  box-sizing: border-box;
+  height: 40px;
+  padding: 8px;
+  margin: 0 auto 10px 0;
+}
+
+.form-grid #user-key,
+.form-grid .system-message,
+.form-grid .file-input {
+  margin-left: calc(30% + 10px); /* Align inputs with labels */
+}
+input[type="date"]::-webkit-calendar-picker-indicator {
+  right: 10px;
+}
+
+.switch-auth {
+  margin-top: 2em;
+  text-align: center;
+}
+
+/* Responsive changes */
+@media screen and (max-width: 768px) {
+  
+	/* Inputs */
+  input[type="password"],
+  input[type="text"],
+  input[type="date"],
+  input[type="email"],
+  select,
+  textarea,
+  .user-input {
+    height: 60px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  input[type="file"] {
+    width: 100%;
+    height: 60px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+  }
+  input::file-selector-button {
+    height: 48px;
+    margin-right: 10px;
+  }
+  input[type="checkbox"] {
+    height: 40px;
+    width: 40 px;
+  }
+  
+  /* Finetuner */
+  .form-container,
+  #user_key {
+    width: 100%;
+    box-shadow: none;
+    padding: 10px;
+  }
+
+  #checkboxes label {
+    display: block;
+    align-items: center;
+    font-size: 16px;
+    line-height: normal;
+    margin: 8px 0;
+  }
+  #upload label {
+    margin-top: .5em;
+    margin-bottom: .5em;;
+  }
+  #chunk, .metadata, #key {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr; /* Stack label and input on small screens */
+  }
+
+  .form-grid label {
+    text-align: left;
+    padding-right: 0;
+  }
+  .user-input {
+    min-height: 48px;
+  }
+}

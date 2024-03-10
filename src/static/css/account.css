@@ -1,0 +1,16 @@
+.slider-container {
+  padding: 20px;
+}
+#price {
+  margin-top: 10px;
+}
+
+@media (max-width: 768px) {
+  #credits {
+    -webkit-appearance: slider-vertical;
+    appearance: slider-vertical;
+    writing-mode:vertical-rl;
+    width: 20px;
+    height: 200px;
+  }
+}

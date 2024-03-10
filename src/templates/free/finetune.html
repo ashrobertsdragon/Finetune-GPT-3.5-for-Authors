@@ -1,0 +1,87 @@
+{% extends 'forms-base.html' %}
+{% load static %}
+
+{% block title %}ProsePal's GPT 3.5 Finetuner{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/forms.css' %}">
+{% endblock extra_css %}
+{% block extra_js %}
+  <script src="{% static 'js/finetuner.js' %}"></script>
+  <script src="{% static 'js/invalid-input.js' %}"></script>
+{% endblock extra_js %}
+
+{% block content %}
+  <div class="box hidden" id="status" role="status updates" aria-label="Status Updates">
+    <h2>Fine tuning status:</h2>
+    <p id="statusMessage"></p>
+  </div>
+  <div id="errorModal" class="modal" aria-labelledby="modalTitle" aria-describedby="errorMessage">
+    <div class="modal-content">
+      <span class="close" role="button" tabindex="0">&times;</span>
+      <h2 id="modalTitle">Error Message</h2>
+      <p id="errorMessage"></p>
+    </div>
+  </div>
+  <form class="box" method="POST" enctype="multipart/form-data" role="main">
+    {% csrf_token %}
+    <div class="opening-info">
+      <p class="info-link"><a href="{% url 'finetune_instructions' %}" target="_blank" aria-label="Read detailed instructions">Instructions</a></p>
+      <p class="info-link"><a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" title="OpenAI API keys" aria-label="Get API key from OpenAI">Get API key from OpenAI</a></p>
+    </div>
+    <div class="input-boxes">
+      <div class="form-grid" id="key">
+        <label class="user-input-label" for="{{ form.user_key.id_for_label }}">{{ form.user_key.label }}</label>
+        {{ form.user_key }}
+        <span class="material-symbols-outlined" id="eye" onclick="toggleVisibility()">visibility</span>
+      </div>
+      <p class="info-link"><a href="{% url 'convert_ebook' %}" target="_blank">Convert your ebooks here</a></p>
+      <div id="upload">
+        <label class="user-input-label" for="{{ form.file.id_for_label }}">{{ form.file.label }}</label>
+        {{ form.file }}
+      </div>
+    <div id="sys_role">
+      <label class="user-input-label" for="{{ form.role.id_for_label }}">{{ form.role.label }}</label>
+      {{ form.role }}
+    </div>
+
+    <div class="form-flex" id="chunk">
+      <label class="user-input-label" for="{{ form.chunk_type.id_for_label }}">{{ form.chunk_type.label }}</label>
+      {{ form.chunk_type }}
+    </div>
+    <div id="checkboxes">
+      <div class="check-grid" id="rights">
+        {{ form.rights_confirmation }}
+        <label for="{{ form.rights_confirmation.id_for_label }}" class="user-input-label">{{ form.rights_confirmation.label }}</label>
+      </div>
+
+      <div class="check-grid" id="terms">
+        {{ form.terms_agreement }}
+        <label for="{{ form.terms_agreement.id_for_label }}" class="user-input-label">{{ form.terms_agreement.label }}</label>
+      </div>
+      </div>
+    </div>
+    <input type="submit" value="Finetune GPT 3.5" class="btn btn-primary">
+  </form>
+  
+{% endblock %}
+
+{% block footer %}
+  {% include 'finetune-footer.html' %}
+{% endblock footer %}
+{% block end_js %}
+  <script src="{% static 'js/visToggle.js' %}"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      var selectElement = document.getElementById('id_chunk_type');
+      selectElement.addEventListener('change', function() {
+        // Check if the current value is not the placeholder
+        if(this.value !== '') {
+          // Disable or remove the placeholder option
+          this.options[0].disabled = true;
+        }
+      });
+    });
+    </script>
+    
+{% endblock end_js %}

@@ -1,0 +1,68 @@
+{% extends 'forms-base.html' %}
+{% load static %}
+{% block title %}Account Management{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/forms.css' %}">
+<link rel="stylesheet" href="{% static 'css/account.css' %}">
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'js/dark-mode.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+  <div class="profile shown">
+    <a href="#profile"></a>
+    <h1>Profile</h1>
+    <form method="post" class="form" id="account-management-form">
+      {% csrf_token %}
+      <div>
+        <label for="name">Name: {{ user.name }}</label>
+        <input type="text" id="name" name="name" value="{{ user.name }}">
+      </div>
+      <div>
+        <label for="email">Email: {{ user.email }}</label>
+        <input type="email" id="email" name="email" value="{{ user.email }}">
+      </div>
+      <input type="submit" value="Update Profile"  class="btn btn-primary" />
+    </form>
+    <div class="credit-info">
+      <h2>Credit Balance: {{ user.credits_available }}</h2>
+      <h2>Credits Used: {{ user.credits_used }}</h2>
+    </div>
+    <!-- Password Field -->
+    <div class="form-grid" id="div-id_password">
+      <h2>Update Password</h2>
+      <label class="user-input-label" for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+      <div class="password-container">
+        {{ form.password }}
+        <span class="material-symbols-outlined" id="eye" onclick="toggleVisibility()">visibility</span>
+      </div>
+      {% if form.password.help_text %}
+        <small class="help-text">{{ form.password.help_text }}</small>
+      {% endif %}
+      {% for error in form.password.errors %}
+        <div class="error">{{ error }}</div>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="view_lorebinders hidden">
+    <a href="#view_lorebinders"></a>
+    {{ for lorebinder in lorebinder_data }}
+      <div class="row">
+        {{ lorebinder }}
+      </div>
+  </div>
+  <div class="buy_credits hidden">
+    <a href="#buy_credits"></a>
+    <h1>Buy Credits</h1>
+    <div class="slider-container">
+      <label for="credits">Credits: <span id="credits-value">1</span></label>
+      <input type="range" id="credits" name="credits" min="1" max="10" value="1">
+      <div id="price">Price: $10</div>
+    </div>
+  </div>
+{% endblock content %}
+{% block end_js %}
+  <script src="{% static 'js/visToggle.js' %}"></script>
+{% endblock end_js %}
