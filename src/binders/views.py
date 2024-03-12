@@ -1,10 +1,12 @@
-import requests
-from flask import Blueprint, render_template, redirect, session
+from flask import Blueprint, render_template, session
 
 from src import app
-from src.supabase_client import supabase
-from src.utils import login_required, credit_required, upload_supabase_bucket, send_mail
+from src.utils import login_required, credit_required, upload_supabase_bucket
+
+from .credits import update_credits
 from .forms import LoreBinderForm
+from .utils import call_api, save_binder_data
+
 
 binders_bp = Blueprint("binders", __name__)
 
@@ -12,11 +14,13 @@ binders_bp = Blueprint("binders", __name__)
 @login_required
 @credit_required
 def lorebinder_form_view():
-    user = session["user_details"]["uuid"]
+    user = session["user_details"]["user"]
+    user_folder = session["user_details"]["uuid"]
+    user_email = session["user_details"]["email"]
     form = LoreBinderForm
     if form.validate_on_submit():
         file = form.file_upload.data
-        upload_path = upload_supabase_bucket(user, file, bucket="binders")
+        upload_path = upload_supabase_bucket(user_folder, file, bucket="binders")
 
         title = form.title.data
         author = form.author.data
@@ -30,18 +34,12 @@ def lorebinder_form_view():
             "author": author,
             "narrator": narrator,
             "character_attributes": character_attributes,
-            "other_attributes": other_attributes
+            "other_attributes": other_attributes,
+            "email": user_email
         }
-        response = requests.post('PP_API_ENDPOINT', json=api_payload)
-        if response.status_code != 200:
-            send_mail(f"{response.message} for {api_payload}")
 
-        api_payload["owner"] = user
-        try:
-            supabase.table("binderTable").insert(api_payload).execute()
-        except Exception as e:
-            send_mail(f"Exception {e} saving {api_payload} to binderTable")
-            
-        return redirect("lorebinder-success.html")
+        call_api(api_payload)
+        save_binder_data(api_payload, user)
+        update_credits(user)
     
     render_template("lorebinder.html", form=form)
