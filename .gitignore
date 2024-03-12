@@ -2,3 +2,4 @@
 .env
 .git/
 upload_folder/
+stripe-ids.json
