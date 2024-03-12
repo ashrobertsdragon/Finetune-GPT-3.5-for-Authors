@@ -58,13 +58,13 @@ ul li {
 body {
   background: radial-gradient(circle at 40% 40%, #d7e1e9, #dbe1e7);
   background-attachment: fixed;
-  color: #1C0B19;
+  color: #1c0b19;
 }
 
 body.dark-mode {
   background: linear-gradient(0deg, #251126, #1c0b19);
   background-attachment: fixed;
-  color: #DBE1E7;
+  color: #dbe1e7;
 }
 
 body, button {

@@ -81,7 +81,7 @@ def upload_supabase_bucket(user_folder, file, *, bucket):
     Uploads a file to a Supabase storage bucket.
 
     Args:
-        user (str): The user's uuid which acts as their folder name in the 
+        user_folder (str): The user's uuid which acts as their folder name in the 
         storage bucket where the file will be uploaded.
         file (FileStorage): The file to be uploaded, as a Flask FileStorage
         object.

@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import EmailField, PasswordField, BooleanField, TextField, DateField, SubmitField
-from wtforms.validators import DataRequired, Email, Length
+from wtforms import EmailField, PasswordField, BooleanField, TextField, DateField, SubmitField, IntegerRangeField
+from wtforms.validators import DataRequired, Email, Length, NumberRange
 
 class SignupForm(FlaskForm):
     email = EmailField(
@@ -51,3 +51,12 @@ class UpdatePasswordForm(FlaskForm):
     current_password = PasswordField("Password", validators=[DataRequired()])
     new_password = PasswordField("Password", validators=[DataRequired()])
     submit_password = SubmitField("Update Password")
+
+class BuyCreditsForm(FlaskForm):
+    credits = IntegerRangeField(
+        "Credits",
+        validators=[
+            DataRequired(),
+            NumberRange(min=1,max=10)
+        ]
+    )

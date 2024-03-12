@@ -4,8 +4,8 @@ from flask import Blueprint, render_template, redirect, jsonify, session, url_fo
 from src import app
 from src.supabase_client import supabase
 from src.utils import login_required
-from .forms import SignupForm, LoginForm, AccountManagementForm, UpdatePasswordForm
-from .utils import add_user_prefix
+from .forms import SignupForm, LoginForm, AccountManagementForm, UpdatePasswordForm, BuyCreditForm
+from .utils import add_extra_user_info
 
 accounts_bp = Blueprint("accounts", __name__)
 
@@ -13,15 +13,16 @@ accounts_bp = Blueprint("accounts", __name__)
 def signup_view():
     form = SignupForm()
     if form.validate_on_submit():
+        email = form.email.data
         res = supabase.auth.sign_up({
-            "email": form.email.data,
+            "email": email,
             "password": form.password.data,
         })
         if res.error:
             return jsonify({"error": {res.error.message}}), res.error.status
         else:
             user_id  = res.data["user"].get("id")
-            add_user_prefix(user_id)
+            add_extra_user_info(user_id, email)
             return jsonify({"success": True, "message": "Signup successful. Please check your email to verify your account."}), 200
     
     return render_template("signup.html", form=form)
@@ -37,13 +38,13 @@ def login_view():
         if data.error:
             return jsonify({"error": {data.error.message}}), data.error.status
         
-        user_id = data.user.id
+        auth_id = data.user.id
         access_token = data.data.access_token
 
         session["access_token"] = access_token
-        session["user_id"] = user_id
+        session["auth_id"] = auth_id
 
-        response = supabase.from_("userTable").select("*").eq("uuid", user_id).single().execute()
+        response = supabase.from_("user").select("*").eq("auth_id", auth_id).single().execute()
         user_details = response.data[0]
         session["user_details"] = user_details
 
@@ -59,7 +60,7 @@ def login_view():
 @login_required
 def logout_view():
     session.pop("user_details", None)
-    session.pop("user_id", None)
+    session.pop("auth_id", None)
     session.pop("access_token", None)
     supabase.auth.sign_out()
     return redirect("/login.html")
@@ -83,7 +84,7 @@ def account_view():
 @app.route("/profile")
 @login_required
 def profile_view():
-    user_id = session.get("user_id")
+    user_id = session["user_details"]["id"]
     account_form = AccountManagementForm()
     password_form = UpdatePasswordForm()
     if account_form.validate_on_submit():
@@ -91,6 +92,7 @@ def profile_view():
         update_user = {}
         if form.email.data:
             new_email = form.email.data
+            supabase.table("user").update({"email": new_email}).eq("user_id", user_id).execute()
             supabase.auth.update_user(
               access_token=session["access_token"],
               email=new_email
@@ -105,7 +107,7 @@ def profile_view():
             update_user["b_day"] = form.b_day.data
             session["user_details"]["b_day"] = form.b_day.data
         if update_user:
-            error, _ = supabase.table("userTable").update(update_user).eq("uuid", user_id).execute()
+            error, _ = supabase.table("userTable").update(update_user).eq("user_id", user_id).execute()
 
             if error:
                 flash("There was an error updating your profile.", "error")
@@ -127,3 +129,18 @@ def profile_view():
             flash("Password successfully updated.", "success")
 
     return render_template("profile.html", account_form=account_form, password_form=password_form)
+
+@app.route("/view-binders", method=["GET", "POST"])
+@login_required
+def view_binders_view():
+    owner = session["user_details"]["user"]
+    data = supabase.table("binderTable").select("title", "author", "download_path").filter("owner", eq=owner).execute()
+
+    binders = [{"title": binder["title"], "author": binder["author"], "download_path": binder["download_path"]} for binder in data.data]
+    return render_template("view-binders.html", binders=binders)
+
+@app.route("/buy-credits")
+@login_required
+def buy_credits_view():
+    form=BuyCreditForm()
+    render_template("buy_credits.html", form=form)
