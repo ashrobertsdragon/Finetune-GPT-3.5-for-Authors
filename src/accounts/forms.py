@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import EmailField, PasswordField, BooleanField, TextField, DateField, SubmitField, IntegerRangeField
+from wtforms import EmailField, PasswordField, BooleanField, TextField, DateField, SubmitField, IntegerRangeField, HiddenField
 from wtforms.validators import DataRequired, Email, Length, NumberRange
 
 class SignupForm(FlaskForm):
@@ -60,3 +60,4 @@ class BuyCreditsForm(FlaskForm):
             NumberRange(min=1,max=10)
         ]
     )
+    submit = SubmitField("Buy Credits")

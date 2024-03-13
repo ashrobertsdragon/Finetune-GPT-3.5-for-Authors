@@ -143,4 +143,7 @@ def view_binders_view():
 @login_required
 def buy_credits_view():
     form=BuyCreditForm()
+    if form.validate_on_submit():
+        num_credits = form.credits.data
+        return redirect(url_for('stripe_checkout', num_credits=num_credits))
     render_template("buy_credits.html", form=form)
