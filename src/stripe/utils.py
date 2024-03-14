@@ -1,5 +1,6 @@
 import json
 import time
+from flask import flash
 from typing import Optional
 
 import stripe
@@ -25,25 +26,26 @@ def get_id(file_path: str, num_credits: int) -> str:
     
     return price_id
 
-def handle_error(error: Exception, display_message: bool = False) -> Optional[str]:
+def handle_error(error: Exception, override_default: bool = False) -> Optional[str]:
     """
     Handle different types of errors that may occur during the payment process.
 
     Parameters:
     - error: The error object.
-    - display_message: Whether to display the error message (default: False).
+    - override_default: Whether to display the default erorr message or
+      user_message string from error object (default: False).
 
     Returns:
-    - The user message if display_message is True.
-    - None otherwise.
+    - None
 
     """
 
     email_admin(error)
-    if display_message:
-        return error.user_message
+    if override_default:
+        flash("There was an issue completing your order. Your card was not charged. Please try again later", "error")
     else:
-        return None
+        flash(error.user_message, "error")
+    return None
 
 def retry_delay(attempt: int) -> int:
     """
@@ -60,20 +62,19 @@ def retry_delay(attempt: int) -> int:
     time.sleep(0.5)
     return attempt + 1
 
-def create_stripe_session(price_id: str, customer_email: str, attempt: int = 0) -> Optional[stripe.checkout.Session]:
+def create_stripe_session(num_credits: int, customer_email: str, attempt: int = 0) -> Optional[stripe.checkout.Session]:
     """
     Create a Stripe session for a payment.
 
     Parameters:
-    - price_id: The ID of the price for the product.
+    - num_credits: The number of credits being purchased.
     - customer_email: The email address of the customer.
     - attempt: The number of attempts made to create the session (default: 0).
 
     Returns:
     - The created Stripe session if successful.
     - A recursive call to the function under certain circumstances.
-    - The user message if an error occurs during the payment process.
-    - None: during other errors.
+    - None: If an error occurs.
 
     Raises:
     - stripe.error.CardError: If there is an error with the customer's card.
@@ -83,6 +84,7 @@ def create_stripe_session(price_id: str, customer_email: str, attempt: int = 0) 
 
     """
 
+    price_id = get_id(num_credits)
     try:
         stripe_session = stripe.checkout.Session.create(
             ui_mode="embedded",
@@ -91,13 +93,14 @@ def create_stripe_session(price_id: str, customer_email: str, attempt: int = 0) 
             customer_email=customer_email,
             return_url="/return.html?session_id={CHECKOUT_SESSION_ID}",
             automatic_tax={"enabled": True},
+            metadata={"num_credits": num_credits},
         )
         return stripe_session
     except stripe.error.CardError as e:
-        return handle_error(e, display_message=True)
+        return handle_error(e, override_default=True)
     except (stripe.error.RateLimitError, stripe.error.APIConnectionError) as e:
         attempt = retry_delay(attempt)
-        if attempt < 3:
+        if attempt < 2:
             return create_stripe_session(price_id, customer_email, attempt)
         else:
             return handle_error(e)

@@ -2,9 +2,6 @@
 
 {% block title %}Pay for your Lorebinder credits with Stripe{% endblock %}
 
-{% block extra_css %}
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
-{% endblock %}
 {% block extra_js %}
   <script src="https://js.stripe.com/v3/"></script>
   <script src="{{ url_for('static', filename='checkout.js') }}" defer></script>
