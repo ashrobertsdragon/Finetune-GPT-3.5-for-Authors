@@ -5,7 +5,7 @@ from functools import wraps
 from flask import redirect, session, url_for
 
 from src import app
-from .supabase_client import supabase
+from .supabase import supabase
 
 def credit_required(f):
     """

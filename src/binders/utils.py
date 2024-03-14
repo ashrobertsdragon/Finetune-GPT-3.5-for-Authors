@@ -1,6 +1,6 @@
 import requests
 
-from src.supabase_client import supabase
+from src.supabase import supabase
 from src.utils import send_mail
 
 

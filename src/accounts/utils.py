@@ -1,4 +1,4 @@
-from src.supabase_client import supabase
+from src.supabase import supabase 
 
 
 def initialize_user_db(user_id, email):

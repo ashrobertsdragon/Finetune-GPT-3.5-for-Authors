@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, jsonify, session, url_for, flash, request
 
 from src import app
-from src.supabase_client import supabase
+from src.supabase import supabase, update_db
 from src.utils import login_required
 
 from .forms import SignupForm, LoginForm, AccountManagementForm, UpdatePasswordForm, BuyCreditForm
@@ -86,30 +86,23 @@ def profile_view():
     password_form = UpdatePasswordForm()
     if account_form.validate_on_submit():
         form = account_form
-        update_user = {}
         if form.email.data:
             new_email = form.email.data
+            session["user_details"]["email"] = new_email
             supabase.table("user").update({"email": new_email}).eq("user_id", user_id).execute()
             supabase.auth.update_user(
               access_token=session["access_token"],
               email=new_email
             )
-        if form.first_name.data:
-            update_user["f_name"] = form.first_name.data
-            session["user_details"]["f_name"] = form.first_name.data
-        if form.last_name.data:
-            update_user["l_name"] = form.last_name.data
-            session["user_details"]["l_name"] = form.last_name.data
-        if form.b_day.data:
-            update_user["b_day"] = form.b_day.data
-            session["user_details"]["b_day"] = form.b_day.data
-        if update_user:
-            error, _ = supabase.table("userTable").update(update_user).eq("user_id", user_id).execute()
-
-            if error:
-                flash("There was an error updating your profile.", "error")
-            else:
-                flash("Your profile has been updated.", "success")
+        session["user_details"]["f_name"] = form.first_name.data
+        session["user_details"]["l_name"] = form.last_name.data
+        session["user_details"]["b_day"] = form.b_day.data
+        
+        error, success = update_db()
+        if error:
+            flash("There was an error updating your profile.", "error")
+        if success:
+            flash("Your profile has been updated.", "success")
 
         return redirect(url_for("account_view", section="profile"))
     
