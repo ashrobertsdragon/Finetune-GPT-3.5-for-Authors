@@ -6,10 +6,10 @@ from src import app
 from src.utils import send_mail
 from .forms import ContactForm
 
-core_bp = Blueprint("core", __name__)
+core_bp = Blueprint("core", __name__, template_folder="templates/binders")
 
 @app.route("/contact-us", methods=["GET", "POST"])
-def send_email():
+def contact_us_view():
     form = ContactForm()
     def check_email(user_email: str) -> bool:
         api_key =    os.environ.get("abstract_api_key")
@@ -34,3 +34,15 @@ def send_email():
         return render_template("message_sent.html")
 
     return render_template("contact-us.html", form=form)
+
+@app.route("/")
+def landing_page():
+    return render_template("index.html")
+
+@app.route("/privacy")
+def privacy_page():
+    return render_template("privacy.html")
+
+@app.route("/terms")
+def terms_page():
+    return render_template("terms.html")

@@ -1,13 +1,12 @@
-{% extends 'normal-base.html' %}
-{% load static %}
+{% extends 'normal-base.html') }}
 {% block title %}LoreBinders{% endblock %}
 
 {% block extra_css %}
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
-  <link rel="stylesheet" href="{% static 'css/landing.css' %}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}" />
 {% endblock extra_css %}
 {% block extra_js %}
-  <script src="{% static 'js/mailerlite.js' %}"></script>
+  <script src="{{ url_for('static', filename='js/mailerlite.js') }}"></script>
   <script>
     document.addEventListener('DOMContentLoaded', (event) => {
       const faqQuestions = document.querySelectorAll('.faq-question');
@@ -40,12 +39,12 @@
         <p>Dive into a seamless experience where your manuscript evolves into a beautifully structured story bible. With LoreBinders, every character, location, and narrative thread is meticulously organized, giving you the freedom to focus on what you love most – storytelling.</p>
         <a href="#waitlist-form" title="Join waitlist" class="button"><button class="cta">Join the waitlist</button></a>
       </div>
-      <div class="illustration image-box"><img src="{% static 'images/hero-image.png' %}" alt="A manuscript opens, pages transforming into organized documents with story elements like characters and maps. Icons from the story float above, set in a cozy nook with a quill and ink pot." title="hero image"></div>
+      <div class="illustration image-box"><img src="{{ url_for('static', filename='images/hero-image.png') }}" alt="A manuscript opens, pages transforming into organized documents with story elements like characters and maps. Icons from the story float above, set in a cozy nook with a quill and ink pot." title="hero image"></div>
     </section>
 
     <!-- Problem Section -->
     <section class="section problem">
-      <div class="image-box photo"><img src="{% static 'images/problem-photo.jpg' %}" title="problem section image" alt="A harried man in a blue plaid shirt over a yellow tshirt and covered in post-it notes reaches for a pile of books on a cluttered desk. He is in a room with lime green walls and empty white bookshelves"></div>
+      <div class="image-box photo"><img src="{{ url_for('static', filename='images/problem-photo.jpg') }}" title="problem section image" alt="A harried man in a blue plaid shirt over a yellow tshirt and covered in post-it notes reaches for a pile of books on a cluttered desk. He is in a room with lime green walls and empty white bookshelves"></div>
       <div class="text-box">
         <div class="inner-text">
         <h1>Navigating the Complexity of Storytelling</h1>
@@ -64,13 +63,13 @@
         <p>Enter the world of LoreBinders, where each element of your story is given the attention it deserves. Our innovative platform transforms your manuscript into a detailed story bible, encapsulating everything from character dynamics to location details. With LoreBinders, you get a comprehensive view of your narrative world, meticulously organized and easily accessible.</p>
         <p>Imagine having a personalized guide to your story's universe, where every character trait, location nuance, and plot point is beautifully laid out. LoreBinders empowers you to weave complex narratives with ease, ensuring consistency and depth in your storytelling. This is not just about keeping track; it's about enhancing your creative process.</p>
       </div>
-      <div class="photo image-box"><img src="{% static 'images/solution-photo.jpg' %}" alt="A visual transition from a chaotic manuscript on the left to an organized, colorful story bible on the right, symbolizing the structuring process by LoreBinders." title="solution section image"></div>
+      <div class="photo image-box"><img src="{{ url_for('static', filename='images/solution-photo.jpg') }}" alt="A visual transition from a chaotic manuscript on the left to an organized, colorful story bible on the right, symbolizing the structuring process by LoreBinders." title="solution section image"></div>
     </section>
 
 
     <!-- Anticipation and Credibility Section -->
     <section class="section anticipation">
-      <div class="photo image-box"><img src="{% static 'images/anticipation-photo.jpg' %}" alt="A blonde woman with glasses, wearing jeans and a tan blazer, sitting at a desk with two monitors and a laptop in a well lit room with gerber daisies in the window. She is drinking a cup of coffee." title="Anticipation image"></div>
+      <div class="photo image-box"><img src="{{ url_for('static', filename='images/anticipation-photo.jpg') }}" alt="A blonde woman with glasses, wearing jeans and a tan blazer, sitting at a desk with two monitors and a laptop in a well lit room with gerber daisies in the window. She is drinking a cup of coffee." title="Anticipation image"></div>
       <div class="text-box">
         <div class="inner-text">
         <h1>Embrace a New Chapter in Story Organization</h1>
@@ -117,11 +116,11 @@
         </div>
       </div>
       </div>
-      <div class="photo" id="binder"><img src="{% static 'images/pricing-photo.png' %}" title="LoreBinders image" alt="A stack of colored binders" id="binderImage"></div>
+      <div class="photo" id="binder"><img src="{{ url_for('static', filename='images/pricing-photo.png') }}" title="LoreBinders image" alt="A stack of colored binders" id="binderImage"></div>
     </section>
     <div class="illustration" id="chart">
-      <img src="{% static 'images/pricing-table-horizontal.jpg' %}" class="horizontal-chart" title="pricing chart" alt="A pricing table for LoreBinder showing the cost savings at different quantities. Below are three rows and ten columns. The first row, labeled 'Quantity', has the numbers 1 through 10. The second row, labeled 'Price', lists prices from $10 to $55 in increments correlating to the quantity above. The third row, labeled 'Savings', shows the amount saved at each quantity, starting from '-' for 1 item, to '$45' savings for 10 items. The prices and savings increase progressively as the quantity increases.">
-      <img src="{% static 'images/pricing-table-vertical.jpg' %}" class="vertical-chart" title="pricing chart" alt="A pricing table for LoreBinder showing the cost savings at different quantities. Below are three rows and ten columns. The first row, labeled 'Quantity', has the numbers 1 through 10. The second row, labeled 'Price', lists prices from $10 to $55 in increments correlating to the quantity above. The third row, labeled 'Savings', shows the amount saved at each quantity, starting from '-' for 1 item, to '$45' savings for 10 items. The prices and savings increase progressively as the quantity increases.">
+      <img src="{{ url_for('static', filename='images/pricing-table-horizontal.jpg') }}" class="horizontal-chart" title="pricing chart" alt="A pricing table for LoreBinder showing the cost savings at different quantities. Below are three rows and ten columns. The first row, labeled 'Quantity', has the numbers 1 through 10. The second row, labeled 'Price', lists prices from $10 to $55 in increments correlating to the quantity above. The third row, labeled 'Savings', shows the amount saved at each quantity, starting from '-' for 1 item, to '$45' savings for 10 items. The prices and savings increase progressively as the quantity increases.">
+      <img src="{{ url_for('static', filename='images/pricing-table-vertical.jpg') }}" class="vertical-chart" title="pricing chart" alt="A pricing table for LoreBinder showing the cost savings at different quantities. Below are three rows and ten columns. The first row, labeled 'Quantity', has the numbers 1 through 10. The second row, labeled 'Price', lists prices from $10 to $55 in increments correlating to the quantity above. The third row, labeled 'Savings', shows the amount saved at each quantity, starting from '-' for 1 item, to '$45' savings for 10 items. The prices and savings increase progressively as the quantity increases.">
     </div>
     
 
@@ -201,14 +200,15 @@
 
 {% block footer %}
   <nav class="footer-nav">
-    <a href="/contact-us">Contact</a>
-    <a href="{% static 'html/terms.html' %}">Terms of Service</a>
-    <a href="{% static 'html/privacy.html' %}">Privacy Policy</a>
+    <a href="{{ url_fpr('contact_us_view')}}" title="Contact us" target="_blank" rel="noopener">Contact</a>
+    <a href="{{ url_for('terms_page') }}" title="Terms of Service" target="_blank" rel="noopener">Terms of Service</a>
+    <a href="{{ url_for('privacy_page') }}" title="privacy page" target="_blank" rel="noopener">Privacy Policy</a>
     <a href="#faq">FAQ</a>
   </nav>
   <div class="social-media-links">
-    <a href="https://www.facebook.com/settings?tab=profile&section=username">Facebook</a>
-    <a href="https://github.com/ashrobertsdragon">GitHub</a>
-    <a href="https://www.linkedin.com/company/prosepal">LinkedIn</a>
+    <a href="https://www.facebook.com/prosepalai" title="ProsePal Facebook page" target="_blank" rel="noopener">Facebook</a>
+    <a href="https://github.com/ashrobertsdragon" title="ProsePal GitHub repos" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://www.linkedin.com/company/prosepal" title="ProsePal on LinkedIn" target="_blank" rel="noopener">LinkedIn</a>
+    <a href="https://www.youtube.com/channel/UCYvNGIsdBfFGxQoq5HLblkg" title="ProsePal Youtube channel" target="_blank" rel="noopener">YouTube</a>
   </div>
 {% endblock footer %}
