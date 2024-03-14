@@ -1,5 +1,4 @@
 {% extends 'forms-base.html' %}
-{% load static %}
 
 {% block title %}LoreBinder Setup{% endblock %}
 
@@ -12,17 +11,53 @@
 {% endblock extra_js}
 
 {% block content %}
-<div class="alert alert-danger" role="alert" aria-live="polite">
-  Please correct the errors below.
-</div>
-{% endif %}
-
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Create LoreBinder</button>
-</form>
+  <h1>Create LoreBinder</h1>
+  <form method="POST" class="form box" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+      {{ form.author.label }} {{ form.author(size=30, class="form-control metadata") }}
+      <span class="text-muted">{{ form.author.errors }}</span>
+    </div>
+    <div class="form-group">
+      {{ form.title.label }} {{ form.title(size=50, class="form-control metadata") }}
+      <span class="text-muted">{{ form.title.errors }}</span>
+    </div>
+    <div class="form-group form-check">
+      {{ form.is_first_person.label }}
+      {{ form.is_first_person }}
+    </div>
+    <div class="form-group" id="narrator-container" style="display: none;">
+      {{ form.narrator.label }} {{ form.narrator(size=30, class="form-control") }}
+      <span class="text-muted">{{ form.narrator.errors }}</span>
+    </div>
+    <div class="form-group">
+      {{ form.character_attributes_input.label }} 
+      {{ form.character_attributes_input(class="metadata") }}
+      <span class="text-muted">{{ form.character_attributes_input.errors }}</span>
+    </div>
+    <div class="form-group">
+      {{ form.other_attributes_input.label }} 
+      {{ form.other_attributes_input(class="metadata") }}
+      <span class="text-muted">{{ form.other_attributes_input.errors }}</span>
+    </div>
+    <div class="form-group">
+      {{ form.file_upload.label }} {{ form.file_upload(accept=".docx,.epub,.pdf,.txt") }}
+      <span class="text-muted">{{ form.file_upload.errors }}</span>
+    </div>
+    <button type="submit" class="btn btn-primary">{{ form.submit.label }}</button>
+  </form>
 {% endblock content %}
 {% block footer %}
   {% include 'finetune-footer.html' %}
 {% endblock footer %}
+{% block end_js %}
+<script>
+  document.getElementById('is_first_person').addEventListener('change', function() {
+    if (this.checked) {
+      document.getElementById('narrator-container').style.display = 'block';
+    } else {
+      document.getElementById('narrator-container').style.display = 'none';
+    }
+  });
+  </script>
+  {% endblock}

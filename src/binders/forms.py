@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, BooleanField, FileField, HiddenField
+from wtforms import StringField, BooleanField, FileField, HiddenField, SubmitField
 from wtforms.validators import DataRequired, Length
 from flask_wtf.file import FileAllowed, FileRequired
 
@@ -54,3 +54,4 @@ class LoreBinderForm(FlaskForm):
     file_upload = FileField("Document", validators=[
         FileRequired(),
         FileAllowed(["docx", "epub", "pdf", "txt"], "Invalid file format")])
+    submit = SubmitField("Create LoreBinder")

@@ -8,7 +8,7 @@ from .forms import LoreBinderForm
 from .utils import call_api, save_binder_data
 
 
-binders_bp = Blueprint("binders", __name__)
+binders_bp = Blueprint("binders", __name__, template_folder="templates/binders")
 
 @app.route("/lorebinder", method=["GET", "POST"])
 @login_required
