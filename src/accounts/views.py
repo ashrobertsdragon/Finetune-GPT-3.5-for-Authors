@@ -1,13 +1,13 @@
-from flask import Blueprint, render_template, redirect, jsonify, session, url_for, flash
-
+from flask import Blueprint, render_template, redirect, jsonify, session, url_for, flash, request
 
 from src import app
 from src.supabase_client import supabase
 from src.utils import login_required
-from .forms import SignupForm, LoginForm, AccountManagementForm, UpdatePasswordForm, BuyCreditForm
-from .utils import add_extra_user_info
 
-accounts_bp = Blueprint("accounts", __name__)
+from .forms import SignupForm, LoginForm, AccountManagementForm, UpdatePasswordForm, BuyCreditForm
+from .utils import initialize_user_db
+
+accounts_bp = Blueprint("accounts", __name__, template_folder="templates/accounts")
 
 @app.route("/signup", methods=["GET", "POST"])
 def signup_view():
@@ -22,7 +22,7 @@ def signup_view():
             return jsonify({"error": {res.error.message}}), res.error.status
         else:
             user_id  = res.data["user"].get("id")
-            add_extra_user_info(user_id, email)
+            initialize_user_db(user_id, email)
             return jsonify({"success": True, "message": "Signup successful. Please check your email to verify your account."}), 200
     
     return render_template("signup.html", form=form)
@@ -65,21 +65,18 @@ def logout_view():
     supabase.auth.sign_out()
     return redirect("/login.html")
 
-@app.route("/account")
+@app.route("/account", methods=["GET", "POST"])
 @login_required
 def account_view():
-    pass
-"""
-
+    section = request.args.get("section", "profile")
     if section == "profile":
-        return profile()
-    elif section == "view_binders":
-        return view_binders()
-    elif section == "buy_credits":
-        return buy_credits()
+        return profile_view()
+    elif section == "view-binders":
+        return view_binders_view()
+    elif section == "buy-credits":
+        return buy_credits_view()
     else:
         return redirect(url_for("account_view", section="profile"))
-"""
 
 @app.route("/profile")
 @login_required
@@ -139,11 +136,11 @@ def view_binders_view():
     binders = [{"title": binder["title"], "author": binder["author"], "download_path": binder["download_path"]} for binder in data.data]
     return render_template("view-binders.html", binders=binders)
 
-@app.route("/buy-credits")
+@app.route("/buy-credits", method=["GET", "POST"])
 @login_required
 def buy_credits_view():
     form=BuyCreditForm()
     if form.validate_on_submit():
         num_credits = form.credits.data
-        return redirect(url_for('stripe_checkout', num_credits=num_credits))
-    render_template("buy_credits.html", form=form)
+        return redirect(f"/checkout.html?num_credits={num_credits}")
+    return render_template("buy_credits.html", form=form)

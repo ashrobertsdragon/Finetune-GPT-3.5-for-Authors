@@ -1,0 +1,38 @@
+{% extends "account.html" %}
+
+{% block content %}
+    <h1>Profile</h1>
+    <form method="post" class="form" id="account-management-form">
+        {{ form.hidden_tag() }}
+        <div>
+            <label for="name">Name: {{ user.name }}</label>
+            {{ form.name(value=user.name, id="name") }}
+        </div>
+        <div>
+            <label for="email">Email: {{ user.email }}</label>
+            {{ form.email(value=user.email, id="email") }}
+        </div>
+        <input type="submit" value="Update Profile" class="btn btn-primary" />
+    </form>
+    <div class="credit-info">
+        <h2>Credit Balance: {{ user.credits_available }}</h2>
+        <h2>Credits Used: {{ user.credits_used }}</h2>
+    </div>
+    <!-- Password Field -->
+    <div class="form-grid" id="div-id_password">
+        <h2>Update Password</h2>
+        {{ password_form.new_password.label(class="user-input-label") }}
+        <div class="password-container">
+            {{ password_form.new_password(id=password_form.new_password.id, class=password_form.new_password.css_class) }}
+            <span class="material-symbols-outlined" id="eye" onclick="toggleVisibility()">visibility</span>
+        </div>
+        {% if password_form.new_password.description %}
+            <small class="help-text">{{ password_form.new_password.description }}</small>
+        {% endif %}
+        {% if password_form.new_password.errors %}
+            {% for error in password_form.new_password.errors %}
+                <div class="error">{{ error }}</div>
+            {% endfor %}
+        {% endif %}
+    </div>
+{% endblock content %}
