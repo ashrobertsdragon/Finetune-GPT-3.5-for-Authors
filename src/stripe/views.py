@@ -1,4 +1,4 @@
-import os
+from decouple import config
 from flask import Blueprint, jsonify, request, session
 
 import stripe
@@ -9,8 +9,8 @@ from src.utils import login_required
 from .utils import create_stripe_session
 
 stripe_bp = Blueprint("stripe", __name__)
-# This is your test secret API key.
-stripe.api_key = os.environ["STRIPE_TEST_KEY"]
+
+stripe.api_key = config("STRIPE_KEY")
 
 
 @app.route("/create_checkout_session", methods=["POST"])

@@ -1,11 +1,11 @@
-import os
+from decouple import config
 from flask import session
 
 from supabase import create_client, Client
 from .utils import email_admin
 
-url: str = os.environ.get("SUPABASE_URL")
-key: str = os.environ.get("SUPABASE_KEY")
+url: str = config("SUPABASE_URL")
+key: str = config("SUPABASE_KEY")
 supabase: Client = create_client(url, key)
 
 def update_db():
