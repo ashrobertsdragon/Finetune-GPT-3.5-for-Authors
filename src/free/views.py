@@ -10,7 +10,7 @@ from src.logging_config import start_loggers
 from .forms import EbookConversionForm, FineTuneForm
 from src.free.utils import make_folder, is_encoding
 
-free_bp = Blueprint("free", __name__)
+free_bp = Blueprint("free", __name__, template_folder="templates/free")
 
 start_loggers()
 error_logger = logging.getLogger("error_logger")

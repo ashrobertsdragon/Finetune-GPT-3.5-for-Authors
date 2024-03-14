@@ -15,11 +15,11 @@
   <form method="POST" class="form box" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
     <div class="form-group">
-      {{ form.author.label }} {{ form.author(class="form-control metadata") }}
+      {{ form.author.label }} {{ form.author(class_="form-control metadata") }}
       <span class="text-muted">{{ form.author.errors }}</span>
     </div>
     <div class="form-group">
-      {{ form.title.label }} {{ form.title(class="form-control metadata") }}
+      {{ form.title.label }} {{ form.title(class_="form-control metadata") }}
       <span class="text-muted">{{ form.title.errors }}</span>
     </div>
     <div class="form-group form-check">
@@ -27,17 +27,17 @@
       {{ form.is_first_person }}
     </div>
     <div class="form-group" id="narrator-container" style="display: none;">
-      {{ form.narrator.label }} {{ form.narrator(class="form-control") }}
+      {{ form.narrator.label }} {{ form.narrator(class_="form-control") }}
       <span class="text-muted">{{ form.narrator.errors }}</span>
     </div>
     <div class="form-group">
       {{ form.character_attributes_input.label }} 
-      {{ form.character_attributes_input(class="metadata") }}
+      {{ form.character_attributes_input(class_="metadata") }}
       <span class="text-muted">{{ form.character_attributes_input.errors }}</span>
     </div>
     <div class="form-group">
       {{ form.other_attributes_input.label }} 
-      {{ form.other_attributes_input(class="metadata") }}
+      {{ form.other_attributes_input(class_="metadata") }}
       <span class="text-muted">{{ form.other_attributes_input.errors }}</span>
     </div>
     <div class="form-group">

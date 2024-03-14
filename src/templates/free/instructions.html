@@ -3,12 +3,12 @@
 
 {% block title %}Finetuner Instructions{% endblock %}
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/static.css' %}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/static.css') }}}">
 {% endblock extra_css %}
 {% block content %}
-    <section>
-      <h1>How to Finetune GPT 3.5 using<br />ProsePal Finetuner</h1>
-      
+  <h1>How to Finetune GPT 3.5 using<br />ProsePal Finetuner</h1>
+    <section class="text">
+      <p><a href="#youtube-video">skip to video</a></p>
       <h2>1. Sign Up for OpenAI</h2>
       <p>If you haven't already, the first thing you'll need to do is create an OpenAI account by going to <a href="https://platform.openai.com/login?launch" target="_blank" rel="noopener" title="OpenAI singup page" aria-label="OpenAI signup page">OpenAI's signup page</a> and follow the prompts to register.</p>
       
@@ -17,7 +17,7 @@
       <p>Note: ProsePal does not save your key either. As soon as finetuning is complete, the key is deleted from memory so you won't have to worry about it being stolen.</p>
       
       <h2>3. Prepare Your Manuscripts</h2>
-      <p>Your books need to be in text format, with chapters separated by three asterisks (***). If your texts aren't formatted this way, we can help with that. Click on <a href="{% url 'convert_ebook' %}" title="Convert ebooks" aria-label="free tool to convert ebooks for finetuning">"Convert your ebooks here"</a> to get started.</p>
+      <p>Your books need to be in text format, with chapters separated by three asterisks (***). If your texts aren't formatted this way, we can help with that. Click on <a href="{{ url_for('convert_ebook') }}" title="Convert ebooks" aria-label="free tool to convert ebooks for finetuning">"Convert your ebooks here"</a> to get started.</p>
       
       <h2>4. Upload Your Texts</h2>
       <p>Once your files are ready, use the "Choose files" button to upload them.</p>
@@ -47,6 +47,9 @@
       <p>A file will also automatically download. This file, formatted in something called JSONL or JSON lines, contains all the instructions that were used for finetuning GPT 3.5 and can be used for further fine-tuning or modifications in the future.</p>
       
       <p id="closing">Your fine-tuned AI model will then be listed on your OpenAI account and can be used in various anywhere you can use your own versions of GPT 3.5 like OpenAI Playground, Rexy, or Novelcrafter.</p>
+    </section>
+    <section class="video" id="youtube-video">
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/eI8d6rqrUQs?si=ow8AeV2LbtW3xFgI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
     </section>
 {% endblock content %}
 {% block footer %}

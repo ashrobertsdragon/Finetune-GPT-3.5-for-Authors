@@ -13,42 +13,34 @@
 {% endblock extra_js %}
 
 {% block content %}
-  <!-- Display form errors if there are any -->
-  {% if form.errors %}
-  <div class="alert alert-danger" role="alert" aria-live="polite">
-    Please correct the errors below.
-  </div>
-  {% endif %}
-
-  <form class="box" method="post">
-    {% csrf_token %}
+  <form class="box" id="conversionForm" method="post" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
     <div class="form" id="upload">
-      {{ form.ebook.label_tag }}
-      {{ form.ebook }}
+        {{ form.ebook.label }}
+        {{ form.ebook(size=20) }}
     </div>
-    <div class="form" id=""metadata">
-      <div class="metadata" id="title">
-        {{ form.book_title.label_tag}}
-        {{ form.book_title }}
-      </div>
-      <div class="metadata" id="author">
-        {{ form.author_name.label_tag}}
-        {{ form.author_name }}
-      </div>
+    <div class="form" id="metadata">
+        <div class="metadata" id="title">
+            {{ form.title.label }}
+            {{ form.title(size=20) }}
+        </div>
+        <div class="metadata" id="author">
+            {{ form.author.label }}
+            {{ form.author(size=20) }}
+        </div>
     </div>
-    <div id="checkboxes">
+    <div class="form" id="checkboxes">
       <div id="rights">
-        {{ form.rights_confirmation }}
-        {{ form.rights_confirmation.label_tag }}
-      </div>
-      <div id="terms">
-        {{ form.terms_agreement }}
-        <label for="terms_agreement">I agree to the <a href="{% static 'html/terms.html' %}" target="_blank">terms and conditions</a></label>
-      </div>
+        {{ form.rights_confirmation(id="rights_confirmation") }}
+        {{ form.rights_confirmation.label }}
     </div>
-    <input type="submit" value="Convert ebook" class="btn btn-primary">
+    <div id="terms">
+        {{ form.terms_agreement(id="terms_agreement") }}
+        <label for="terms_agreement">I agree to the <a href="{{ url_for('terms_page') }}" target="_blank">terms and conditions</a></label>
+    </div>
+    </div>
+    {{ form.submit() }}
   </form>
-  <div id="loadingMessage" style="display: none;">Converting file, please wait...</div>
 {% endblock content %}
 {% block footer %}
 <div>
