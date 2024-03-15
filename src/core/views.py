@@ -2,7 +2,7 @@ import os
 import requests
 from flask import Blueprint, render_template, flash
 
-from src.utils import send_mail
+from src.utils import email_admin
 from .forms import ContactForm
 
 core_app = Blueprint("core", __name__, template_folder="templates/binders")
@@ -23,7 +23,7 @@ def contact_us_view():
         return True
     def send_message(name, user_email, message) -> None:
         if check_email(user_email):
-            send_mail(name, user_email, message)
+            email_admin(name, user_email, message)
     
     if form.validate_on_submit():
         name = form.name.data

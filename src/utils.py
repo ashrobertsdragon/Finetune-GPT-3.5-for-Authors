@@ -4,7 +4,6 @@ import string
 from functools import wraps
 from flask import redirect, session, url_for
 
-from src import app
 from .supabase import supabase
 
 def credit_required(f):
@@ -73,7 +72,7 @@ def random_str():
     """Generate a random 7 character alphanumeric string."""
     return "".join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(7))
 
-def send_mail():
+def email_admin():
     pass
 
 def upload_supabase_bucket(user_folder, file, *, bucket):
@@ -119,6 +118,6 @@ def upload_supabase_bucket(user_folder, file, *, bucket):
             file_options={"content-type": file_mime_type}
         )
     except Exception as e:
-        app.logger.error(f"An error occurred during file upload: {e}")
+        email_admin(e)
     
     return upload_path
