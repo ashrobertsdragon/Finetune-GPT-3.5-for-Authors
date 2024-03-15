@@ -5,3 +5,4 @@ upload_folder/
 stripe-ids.json
 *.pyc
 __pycache__/*
+*.log
