@@ -1,6 +1,6 @@
-from flask import Markup
 from flask_wtf import FlaskForm
-from wtforms import EmailField, PasswordField, BooleanField, TextField, DateField, SubmitField, IntegerRangeField
+from markupsafe import Markup
+from wtforms import EmailField, PasswordField, BooleanField, StringField, DateField, SubmitField, IntegerRangeField
 from wtforms.validators import DataRequired, Email, Length, NumberRange
 
 class SignupForm(FlaskForm):
@@ -57,11 +57,11 @@ class AccountManagementForm(FlaskForm):
         render_kw={"aria-label": "Update email address"},
         filters=[lambda x: x or None]
     )
-    first_name = TextField("First name",
+    first_name = StringField("First name",
         render_kw={"aria-label": "First name"},
         filters=[lambda x: x or None]
     )
-    last_name = TextField("Last name",
+    last_name = StringField("Last name",
         render_kw={"aria-label": "First name"},
         filters=[lambda x: x or None]
     )

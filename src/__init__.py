@@ -39,4 +39,3 @@ app.register_blueprint(stripe_app)
 # Session storage
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
-

@@ -4,7 +4,7 @@ from src.supabase import supabase
 from src.error_handling import email_admin
 
 
-def save_lorebinder_data(data, user):
+def save_binder_data(data, user):
     try:
         data["owner"] = user
         supabase.table("binder").insert(data).execute()
