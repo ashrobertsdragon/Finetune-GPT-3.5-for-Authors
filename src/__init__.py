@@ -26,8 +26,6 @@ config_name = config("FLASK_ENV", default="development")
 app.config.from_object(env_config[config_name])
 
 app.secret_key=config("FLASK_SECRET_KEY")
-app.upload_folder=config("UPLOAD_FOLDER")
-app.config["DEBUG"] = config("DEBUG", cast=bool)
 
 # Register Blueprints
 app.register_blueprint(accounts_app)

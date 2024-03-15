@@ -10,7 +10,7 @@ from .utils import initialize_user_db
 
 accounts_app = Blueprint("accounts", __name__, template_folder="templates/accounts")
 
-@accounts_app.route("/signup", methods=["GET", "POST"])
+@accounts_app.route("/signup", method=["GET", "POST"])
 def signup_view():
     form = SignupForm()
     if form.validate_on_submit():
@@ -28,7 +28,7 @@ def signup_view():
     
     return render_template("signup.html", form=form)
 
-@accounts_app.route("/login", methods=["GET", "POST"])
+@accounts_app.route("/login", method=["GET", "POST"])
 def login_view():
     form = LoginForm()
     if form.validate_on_submit():
@@ -75,7 +75,7 @@ def forgot_password_view():
         return supabase.auth.reset_password_for_email(email, redirect_to=f"{domain}/update-password.html")
     return render_template("forgot-password.html", form=form)
 
-@accounts_app.route("update-password", methods=["GET", "POST"])
+@accounts_app.route("update-password", method=["GET", "POST"])
 def reset_password_view():
     form = UpdatePasswordForm()
     if form.validate_on_submit():
@@ -90,7 +90,7 @@ def reset_password_view():
     return render_template("update-password.html", form=form)
 
 
-@accounts_app.route("/account", methods=["GET", "POST"])
+@accounts_app.route("/account", method=["GET", "POST"])
 @login_required
 def account_view():
     section = request.args.get("section", "profile")

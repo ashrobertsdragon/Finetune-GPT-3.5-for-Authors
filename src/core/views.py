@@ -7,7 +7,7 @@ from .forms import ContactForm
 
 core_app = Blueprint("core", __name__, template_folder="templates/binders")
 
-@core_app.route("/contact-us", methods=["GET", "POST"])
+@core_app.route("/contact-us", method=["GET", "POST"])
 def contact_us_view():
     form = ContactForm()
     def check_email(user_email: str) -> bool:
