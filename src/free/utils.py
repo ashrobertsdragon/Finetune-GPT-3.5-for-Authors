@@ -1,6 +1,6 @@
 import os
+from decouple import config
 
-from src import app
 from src.utils import random_str
 
 def make_folder() -> tuple[str, str]:
@@ -9,7 +9,7 @@ def make_folder() -> tuple[str, str]:
     folder. Returns the path to the folder and the random string.
     """
     temp_folder = random_str()
-    folder_name = os.path.join(app.config["UPLOAD_FOLDER"], temp_folder)
+    folder_name = os.path.join(config["UPLOAD_FOLDER"], temp_folder)
     try:
         os.makedirs(folder_name)
     except OSError:
