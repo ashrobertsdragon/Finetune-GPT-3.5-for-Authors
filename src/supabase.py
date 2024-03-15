@@ -2,7 +2,7 @@ from decouple import config
 from flask import session
 
 from supabase import create_client, Client
-from .utils import email_admin
+from .error_handling import email_admin
 
 url: str = config("SUPABASE_URL")
 key: str = config("SUPABASE_KEY")

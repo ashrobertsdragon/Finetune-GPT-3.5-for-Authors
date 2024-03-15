@@ -2,7 +2,7 @@ import os
 import requests
 from flask import Blueprint, render_template, flash
 
-from src.utils import email_admin
+from src.error_handling import email_admin
 from .forms import ContactForm
 
 core_app = Blueprint("core", __name__, template_folder="templates/binders")

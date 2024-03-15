@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, session
 
-from src.utils import login_required, credit_required, upload_supabase_bucket
+from src.utils import upload_supabase_bucket
+from src.saas_decorators import login_required, credit_required
 
 from .credits import update_credits
 from .forms import LoreBinderForm

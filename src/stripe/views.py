@@ -4,7 +4,7 @@ from flask import Blueprint, jsonify, request, session
 import stripe
 
 from src.supabase import update_db
-from src.utils import login_required
+from src.saas_decorators import login_required
 from .utils import create_stripe_session
 
 stripe_app = Blueprint("stripe", __name__)

@@ -1,7 +1,7 @@
 import requests
 
 from src.supabase import supabase
-from src.utils import email_admin
+from src.error_handling import email_admin
 
 
 def save_lorebinder_data(data, user):

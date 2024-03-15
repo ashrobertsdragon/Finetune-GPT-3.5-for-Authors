@@ -5,7 +5,7 @@ from typing import Optional
 
 import stripe
 
-from src.utils import email_admin
+from src.error_handling import email_admin
 
 
 def get_id(file_path: str, num_credits: int) -> str:
