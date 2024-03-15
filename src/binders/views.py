@@ -1,6 +1,5 @@
 from flask import Blueprint, render_template, session
 
-from src import app
 from src.utils import login_required, credit_required, upload_supabase_bucket
 
 from .credits import update_credits
@@ -8,9 +7,9 @@ from .forms import LoreBinderForm
 from .utils import call_api, save_binder_data
 
 
-binders_bp = Blueprint("binders", __name__, template_folder="templates/binders")
+binders_app = Blueprint("binders", __name__, template_folder="templates/binders")
 
-@app.route("/lorebinder", method=["GET", "POST"])
+@binders_app.route("/lorebinder", method=["GET", "POST"])
 @login_required
 @credit_required
 def lorebinder_form_view():

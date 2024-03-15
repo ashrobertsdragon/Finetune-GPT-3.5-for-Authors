@@ -2,15 +2,13 @@ import os
 import logging
 from flask import Blueprint, request, render_template, jsonify
 
-
-from src import app
 from src.utils import random_str
 from src.logging_config import start_loggers
 
 from .forms import EbookConversionForm, FineTuneForm
 from src.free.utils import make_folder, is_encoding
 
-free_bp = Blueprint("free", __name__, template_folder="templates/free")
+free_app = Blueprint("free", __name__, template_folder="templates/free")
 
 start_loggers()
 error_logger = logging.getLogger("error_logger")
@@ -18,7 +16,7 @@ error_logger = logging.getLogger("error_logger")
 def training_status():
     pass # dummy function till API is implemented
 
-@app.route("/convert-ebook", methods=["GET", "POST"])
+@free_app.route("/convert-ebook", methods=["GET", "POST"])
 def convert_ebook():
     form=EbookConversionForm()
     supported_mimetypes = [
@@ -57,7 +55,7 @@ def convert_ebook():
 """
     return render_template("convert-ebook.html", form=form)
 
-@app.route("/finetune", methods=["GET", "POST"])
+@free_app.route("/finetune", methods=["GET", "POST"])
 def finetune():
     form = FineTuneForm()
     if form.validate_on_submit():
@@ -107,7 +105,7 @@ def finetune():
 
     return render_template("finetune.html", form=form)
 
-@app.route("/status", methods=["POST"])
+@free_app.route("/status", methods=["POST"])
 def status():
     data = request.get_json()
     user_folder = data.get("user_folder")

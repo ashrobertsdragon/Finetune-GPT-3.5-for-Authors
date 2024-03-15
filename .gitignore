@@ -3,3 +3,5 @@
 .git/
 upload_folder/
 stripe-ids.json
+*.pyc
+__pycache__/*

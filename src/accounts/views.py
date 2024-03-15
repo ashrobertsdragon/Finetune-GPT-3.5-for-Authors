@@ -1,16 +1,16 @@
 from decouple import config
 from flask import Blueprint, render_template, redirect, jsonify, session, url_for, flash, request
 
-from src import app
+
 from src.supabase import supabase, update_db
 from src.utils import login_required
 
 from .forms import SignupForm, LoginForm, AccountManagementForm, UpdatePasswordForm, BuyCreditForm, ForgotPasswordForm
 from .utils import initialize_user_db
 
-accounts_bp = Blueprint("accounts", __name__, template_folder="templates/accounts")
+accounts_app = Blueprint("accounts", __name__, template_folder="templates/accounts")
 
-@app.route("/signup", methods=["GET", "POST"])
+@accounts_app.route("/signup", methods=["GET", "POST"])
 def signup_view():
     form = SignupForm()
     if form.validate_on_submit():
@@ -28,7 +28,7 @@ def signup_view():
     
     return render_template("signup.html", form=form)
 
-@app.route("/login", methods=["GET", "POST"])
+@accounts_app.route("/login", methods=["GET", "POST"])
 def login_view():
     form = LoginForm()
     if form.validate_on_submit():
@@ -57,7 +57,7 @@ def login_view():
     
     return render_template("login.html", form=form)
 
-@app.route("/logout", method=["GET"])
+@accounts_app.route("/logout", method=["GET"])
 @login_required
 def logout_view():
     session.pop("user_details", None)
@@ -66,7 +66,7 @@ def logout_view():
     supabase.auth.sign_out()
     return redirect(url_for("login_view"))
 
-@app.route("/forgot-password", method=["GET", "POST"])
+@accounts_app.route("/forgot-password", method=["GET", "POST"])
 def forgot_password_view():
     domain = config("DOMAIN")
     form = ForgotPasswordForm()
@@ -75,7 +75,7 @@ def forgot_password_view():
         return supabase.auth.reset_password_for_email(email, redirect_to=f"{domain}/update-password")
     return render_template("forgot-password.html", form=form)
 
-@app.route("/account", methods=["GET", "POST"])
+@accounts_app.route("/account", methods=["GET", "POST"])
 @login_required
 def account_view():
     section = request.args.get("section", "profile")
@@ -88,7 +88,7 @@ def account_view():
     else:
         return redirect(url_for("account_view", section="profile"))
 
-@app.route("/profile")
+@accounts_app.route("/profile")
 @login_required
 def profile_view():
     user_id = session["user_details"]["id"]
@@ -128,7 +128,7 @@ def profile_view():
 
     return render_template("profile.html", account_form=account_form, password_form=password_form)
 
-@app.route("/view-binders", method=["GET", "POST"])
+@accounts_app.route("/view-binders", method=["GET", "POST"])
 @login_required
 def view_binders_view():
     owner = session["user_details"]["user"]
@@ -137,7 +137,7 @@ def view_binders_view():
     binders = [{"title": binder["title"], "author": binder["author"], "download_path": binder["download_path"]} for binder in data.data]
     return render_template("view-binders.html", binders=binders)
 
-@app.route("/buy-credits", method=["GET", "POST"])
+@accounts_app.route("/buy-credits", method=["GET", "POST"])
 @login_required
 def buy_credits_view():
     form = BuyCreditForm()

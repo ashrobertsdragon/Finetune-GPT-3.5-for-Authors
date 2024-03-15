@@ -2,13 +2,12 @@ import os
 import requests
 from flask import Blueprint, render_template, flash
 
-from src import app
 from src.utils import send_mail
 from .forms import ContactForm
 
-core_bp = Blueprint("core", __name__, template_folder="templates/binders")
+core_app = Blueprint("core", __name__, template_folder="templates/binders")
 
-@app.route("/contact-us", methods=["GET", "POST"])
+@core_app.route("/contact-us", methods=["GET", "POST"])
 def contact_us_view():
     form = ContactForm()
     def check_email(user_email: str) -> bool:
@@ -35,14 +34,14 @@ def contact_us_view():
 
     return render_template("contact-us.html", form=form)
 
-@app.route("/")
+@core_app.route("/")
 def landing_page():
     return render_template("index.html")
 
-@app.route("/privacy")
+@core_app.route("/privacy")
 def privacy_page():
     return render_template("privacy.html")
 
-@app.route("/terms")
+@core_app.route("/terms")
 def terms_page():
     return render_template("terms.html")
