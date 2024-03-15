@@ -16,7 +16,7 @@ error_logger = logging.getLogger("error_logger")
 def training_status():
     pass # dummy function till API is implemented
 
-@free_app.route("/convert-ebook", method=["GET", "POST"])
+@free_app.route("/convert-ebook", methods=["GET", "POST"])
 def convert_ebook():
     form=EbookConversionForm()
     supported_mimetypes = [
@@ -55,7 +55,7 @@ def convert_ebook():
 """
     return render_template("convert-ebook.html", form=form)
 
-@free_app.route("/finetune", method=["GET", "POST"])
+@free_app.route("/finetune", methods=["GET", "POST"])
 def finetune():
     form = FineTuneForm()
     if form.validate_on_submit():
@@ -105,7 +105,7 @@ def finetune():
 
     return render_template("finetune.html", form=form)
 
-@free_app.route("/status", method=["POST"])
+@free_app.route("/status", methods=["POST"])
 def status():
     data = request.get_json()
     user_folder = data.get("user_folder")

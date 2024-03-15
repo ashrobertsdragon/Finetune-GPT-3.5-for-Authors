@@ -10,7 +10,7 @@ from .utils import call_api, save_binder_data
 
 binders_app = Blueprint("binders", __name__, template_folder="templates/binders")
 
-@binders_app.route("/lorebinder", method=["GET", "POST"])
+@binders_app.route("/lorebinder", methods=["GET", "POST"])
 @login_required
 @credit_required
 def lorebinder_form_view():
