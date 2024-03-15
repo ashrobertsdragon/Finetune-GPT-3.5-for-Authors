@@ -1,10 +1,16 @@
-// This is your test publishable API key.
-const stripe = Stripe("pk_test_51Nyon4L0Xe7lwg06F5bQuuCa3GunHhGCFSNCyeYQbOVEcX8sItCXZHSk1cfUHsea9U9T8c4RnNEAgzVgmQ6RrjsF00bLEwcaux");
+// Fetch publishable key
+async function fetchPublishableKey() {
+  const response = await fetch('/get_publishable_key');
+  const data = await response.json();
+  return data.publishable_key;
+}
 
 initialize();
 
-// Create a Checkout Session as soon as the page loads
 async function initialize() {
+    const publishableKey = await fetchPublishableKey();
+    const stripe = Stripe(publishableKey);
+
     const response = await fetch("/create-checkout-session", {
         method: "POST",
     });
@@ -15,6 +21,5 @@ async function initialize() {
         clientSecret,
     });
 
-    // Mount Checkout
     checkout.mount('#checkout');
 }

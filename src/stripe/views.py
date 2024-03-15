@@ -32,3 +32,8 @@ def session_status():
         update_db()
 
     return jsonify(status=stripe_session.status, customer_email=stripe_session.customer_details.email)
+
+@app.route('/get_publishable_key', methods=['GET'])
+def get_publishable_key():
+    STRIPE_PUBLISHABLE_KEY = config("STRIPE_PUBLIC_KEY")
+    return jsonify({'publishable_key': STRIPE_PUBLISHABLE_KEY})
