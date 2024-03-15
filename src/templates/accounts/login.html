@@ -8,7 +8,7 @@
 
 {% block content %}
     <div class="form box">
-        <form id="login-form" class="form" method="post" action="{{ url_for('login') }}">
+        <form id="login-form" class="form" method="post" action="{{ url_for('login_view') }}">
             {{ form.hidden_tag() }}
             <h1 class="content-title">Login</h1>
             <div class="input-boxes">
@@ -44,8 +44,11 @@
             </div>
             <input type="submit" value="Login" class="btn btn-primary">
         </form>
+        <div class="forgot-password">
+          <p><a href="{{ url_for('forgot_password_view')}}" title="Forgot password">Forgot password?</a></p>
+        </div>
         <div class="switch-auth">
-            Don't have an account? <a href="{{ url_for('signup') }}" id="signup-link" class="auth-switch-link">Sign Up</a>
+            Don't have an account? <a href="{{ url_for('signup_view') }}" id="signup-link" class="auth-switch-link">Sign Up</a>
         </div>
     </div>
 {% endblock content %}

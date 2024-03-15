@@ -1,10 +1,11 @@
+from decouple import config
 from flask import Blueprint, render_template, redirect, jsonify, session, url_for, flash, request
 
 from src import app
 from src.supabase import supabase, update_db
 from src.utils import login_required
 
-from .forms import SignupForm, LoginForm, AccountManagementForm, UpdatePasswordForm, BuyCreditForm
+from .forms import SignupForm, LoginForm, AccountManagementForm, UpdatePasswordForm, BuyCreditForm, ForgotPasswordForm
 from .utils import initialize_user_db
 
 accounts_bp = Blueprint("accounts", __name__, template_folder="templates/accounts")
@@ -50,9 +51,9 @@ def login_view():
 
         credits_available = session["user_details"]["credits_available"]
         if credits_available > 0:
-            return redirect("lorebinder.html")
+            return redirect(url_for("lorebinder_form_view"))
         else:
-            return redirect("account.html#but_credits")
+            return redirect(url_for("buy_creditsview"))
     
     return render_template("login.html", form=form)
 
@@ -63,7 +64,16 @@ def logout_view():
     session.pop("auth_id", None)
     session.pop("access_token", None)
     supabase.auth.sign_out()
-    return redirect("/login.html")
+    return redirect(url_for("login_view"))
+
+@app.route("/forgot-password", method=["GET", "POST"])
+def forgot_password_view():
+    domain = config("DOMAIN")
+    form = ForgotPasswordForm()
+    if form.validate_on_submit():
+        email = form.email.data
+        return supabase.auth.reset_password_for_email(email, redirect_to=f"{domain}/update-password")
+    return render_template("forgot-password.html", form=form)
 
 @app.route("/account", methods=["GET", "POST"])
 @login_required
@@ -103,8 +113,6 @@ def profile_view():
             flash("There was an error updating your profile.", "error")
         if success:
             flash("Your profile has been updated.", "success")
-
-        return redirect(url_for("account_view", section="profile"))
     
     if password_form.validate_on_submit():
         new_password = password_form.new_password.data
@@ -132,7 +140,7 @@ def view_binders_view():
 @app.route("/buy-credits", method=["GET", "POST"])
 @login_required
 def buy_credits_view():
-    form=BuyCreditForm()
+    form = BuyCreditForm()
     if form.validate_on_submit():
         num_credits = form.credits.data
         return redirect(f"/checkout.html?num_credits={num_credits}")

@@ -1,6 +1,6 @@
 import os
 import requests
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, flash
 
 from src import app
 from src.utils import send_mail
@@ -31,7 +31,7 @@ def contact_us_view():
         user_email = form.email.data
         message = form.message.data
         send_message(name, user_email, message)
-        return render_template("message_sent.html")
+        flash("Message sent", "success")
 
     return render_template("contact-us.html", form=form)
 
