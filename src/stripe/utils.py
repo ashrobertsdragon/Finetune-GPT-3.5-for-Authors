@@ -1,5 +1,6 @@
 import json
 import time
+from decouple import config
 from flask import flash
 from typing import Optional
 
@@ -7,6 +8,8 @@ import stripe
 
 from src.error_handling import email_admin
 
+def set_stripe_key():
+    stripe.api_key = config("STRIPE_KEY")
 
 def get_id(file_path: str, num_credits: int) -> str:
     """

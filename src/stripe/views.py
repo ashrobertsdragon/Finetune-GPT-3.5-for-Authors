@@ -5,11 +5,13 @@ import stripe
 
 from src.supabase import update_db
 from src.saas_decorators import login_required
-from .utils import create_stripe_session
+from .utils import create_stripe_session, set_stripe_key
 
 stripe_app = Blueprint("stripe", __name__)
 
-stripe.api_key = config("STRIPE_KEY")
+stripe.api_key = None
+
+
 
 
 @stripe_app.route("/create_checkout_session", methods=["POST"])
@@ -17,6 +19,8 @@ stripe.api_key = config("STRIPE_KEY")
 def create_checkout_session():
     customer_email = session["user_details"]["email"]
     num_credits = request.args.get("num_credits", type=int)
+    if not stripe.api_key:
+        set_stripe_key()
     stripe_session = create_stripe_session(num_credits, customer_email)
     if stripe_session:
         return jsonify(clientSecret=stripe_session.client_secret)
