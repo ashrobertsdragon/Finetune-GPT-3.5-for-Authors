@@ -5,7 +5,19 @@ from flask import Blueprint, render_template, flash
 from src.error_handling import email_admin
 from .forms import ContactForm
 
-core_app = Blueprint("core", __name__, template_folder="templates/binders")
+core_app = Blueprint("core", __name__)
+
+@core_app.route("/")
+def landing_page():
+    return render_template("core/index.html")
+
+@core_app.route("/privacy")
+def privacy_page():
+    return render_template("core/privacy.html")
+
+@core_app.route("/terms")
+def terms_page():
+    return render_template("core/terms.html")
 
 @core_app.route("/contact-us", methods=["GET", "POST"])
 def contact_us_view():
@@ -32,16 +44,4 @@ def contact_us_view():
         send_message(name, user_email, message)
         flash("Message sent", "success")
 
-    return render_template("contact-us.html", form=form)
-
-@core_app.route("/")
-def landing_page():
-    return render_template("index.html")
-
-@core_app.route("/privacy")
-def privacy_page():
-    return render_template("privacy.html")
-
-@core_app.route("/terms")
-def terms_page():
-    return render_template("terms.html")
+    return render_template("core/contact-us.html", form=form)
