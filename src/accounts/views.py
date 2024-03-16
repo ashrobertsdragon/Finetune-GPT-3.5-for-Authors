@@ -75,7 +75,7 @@ def forgot_password_view():
         return supabase.auth.reset_password_for_email(email, redirect_to=f"{domain}/update-password.html")
     return render_template("forgot-password.html", form=form)
 
-@accounts_app.route("update-password", methods=["GET", "POST"])
+@accounts_app.route("/update-password", methods=["GET", "POST"])
 def reset_password_view():
     form = UpdatePasswordForm()
     if form.validate_on_submit():
