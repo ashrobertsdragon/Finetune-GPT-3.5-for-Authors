@@ -8,7 +8,7 @@ from src.logging_config import start_loggers
 from .forms import EbookConversionForm, FineTuneForm
 from src.free.utils import make_folder, is_encoding
 
-free_app = Blueprint("free", __name__, template_folder="templates/free")
+free_app = Blueprint("free", __name__)
 
 start_loggers()
 error_logger = logging.getLogger("error_logger")
@@ -53,7 +53,7 @@ def convert_ebook():
 
                 return send_file(path_or_file=temp_file.name, as_attachment="True", download_name=book_name)
 """
-    return render_template("convert-ebook.html", form=form)
+    return render_template("free/convert-ebook.html", form=form)
 
 @free_app.route("/finetune", methods=["GET", "POST"])
 def finetune():
@@ -103,10 +103,14 @@ def finetune():
 
         return jsonify({"success": True, "user_folder": user_folder}) 
 
-    return render_template("finetune.html", form=form)
+    return render_template("free/finetune.html", form=form)
 
 @free_app.route("/status", methods=["POST"])
 def status():
     data = request.get_json()
     user_folder = data.get("user_folder")
     return jsonify({"status": training_status.get(user_folder, "Not started")})
+
+@free_app.route("/finetune/instructions", methods=["GET"])
+def instructions():
+    return render_template("free/instructions.html")

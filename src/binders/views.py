@@ -8,7 +8,7 @@ from .forms import LoreBinderForm
 from .utils import call_api, save_binder_data
 
 
-binders_app = Blueprint("binders", __name__, template_folder="templates/binders")
+binders_app = Blueprint("binders", __name__)
 
 @binders_app.route("/lorebinder", methods=["GET", "POST"])
 @login_required
@@ -42,4 +42,4 @@ def lorebinder_form_view():
         save_binder_data(api_payload, user)
         update_credits(user)
     
-    render_template("lorebinder.html", form=form)
+    render_template("binders/lorebinder.html", form=form)

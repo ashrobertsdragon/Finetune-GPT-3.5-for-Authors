@@ -8,7 +8,7 @@ from src.saas_decorators import login_required
 from .forms import SignupForm, LoginForm, AccountManagementForm, UpdatePasswordForm, BuyCreditsForm, ForgotPasswordForm
 from .utils import initialize_user_db
 
-accounts_app = Blueprint("accounts", __name__, template_folder="templates/accounts")
+accounts_app = Blueprint("accounts", __name__)
 
 @accounts_app.route("/signup", methods=["GET", "POST"])
 def signup_view():
@@ -26,7 +26,7 @@ def signup_view():
             initialize_user_db(user_id, email)
             return jsonify({"success": True, "message": "Signup successful. Please check your email to verify your account."}), 200
     
-    return render_template("signup.html", form=form)
+    return render_template("accounts/signup.html", form=form)
 
 @accounts_app.route("/login", methods=["GET", "POST"])
 def login_view():
@@ -55,7 +55,7 @@ def login_view():
         else:
             return redirect(url_for("buy_creditsview"))
     
-    return render_template("login.html", form=form)
+    return render_template("accounts/login.html", form=form)
 
 @accounts_app.route("/logout", methods=["GET"])
 @login_required
@@ -73,7 +73,7 @@ def forgot_password_view():
     if form.validate_on_submit():
         email = form.email.data
         return supabase.auth.reset_password_for_email(email, redirect_to=f"{domain}/update-password.html")
-    return render_template("forgot-password.html", form=form)
+    return render_template("accounts/forgot-password.html", form=form)
 
 @accounts_app.route("/update-password", methods=["GET", "POST"])
 def reset_password_view():
@@ -87,7 +87,7 @@ def reset_password_view():
             flash("There was a problem updating your password. Please try again.", "error")
         if success:
             flash("Password successfully updated.", "success")
-    return render_template("update-password.html", form=form)
+    return render_template("accounts/update-password.html", form=form)
 
 
 @accounts_app.route("/account", methods=["GET", "POST"])
@@ -141,7 +141,7 @@ def profile_view():
         if success:
             flash("Password successfully updated.", "success")
 
-    return render_template("profile.html", account_form=account_form, password_form=password_form)
+    return render_template("accounts/profile.html", account_form=account_form, password_form=password_form)
 
 @accounts_app.route("/view-binders", methods=["GET", "POST"])
 @login_required
@@ -150,7 +150,7 @@ def view_binders_view():
     data = supabase.table("binderTable").select("title", "author", "download_path").filter("owner", eq=owner).execute()
 
     binders = [{"title": binder["title"], "author": binder["author"], "download_path": binder["download_path"]} for binder in data.data]
-    return render_template("view-binders.html", binders=binders)
+    return render_template("accounts/view-binders.html", binders=binders)
 
 @accounts_app.route("/buy-credits", methods=["GET", "POST"])
 @login_required
@@ -159,4 +159,4 @@ def buy_credits_view():
     if form.validate_on_submit():
         num_credits = form.credits.data
         return redirect(f"/checkout.html?num_credits={num_credits}")
-    return render_template("buy_credits.html", form=form)
+    return render_template("accounts/buy_credits.html", form=form)
