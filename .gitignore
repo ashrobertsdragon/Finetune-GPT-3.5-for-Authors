@@ -6,3 +6,4 @@ stripe-ids.json
 *.pyc
 __pycache__/*
 *.log
+flask_session/
