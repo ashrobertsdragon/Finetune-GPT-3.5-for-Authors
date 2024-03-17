@@ -1,5 +1,5 @@
 from functools import wraps
-from flask import redirect, session, url_for
+from flask import redirect, session, url_for, g
 
 
 def credit_required(f):
@@ -59,7 +59,7 @@ def login_required(f):
     
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if "access_token" not in session:
-            return redirect("/login")
+        if not g.get('user'):
+            return redirect(url_for("login_view"))
         return f(*args, **kwargs)
     return decorated_function

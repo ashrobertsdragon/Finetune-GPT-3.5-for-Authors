@@ -5,6 +5,7 @@ from flask_session import Session
 # Config classes for environment variables
 from config import DevelopmentConfig, TestingConfig, StagingConfig, ProductionConfig
 
+from .utils import load_user
 # Import blueprints
 from src.accounts.views import accounts_app
 from src.binders.views import binders_app
@@ -26,6 +27,10 @@ config_name = config("FLASK_ENV", default="development")
 app.config.from_object(env_config[config_name])
 
 app.secret_key=config("FLASK_SECRET_KEY")
+
+@app.before_request
+def before_each_request():
+    load_user()
 
 # Register Blueprints
 app.register_blueprint(accounts_app)

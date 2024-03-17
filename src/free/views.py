@@ -112,5 +112,5 @@ def status():
     return jsonify({"status": training_status.get(user_folder, "Not started")})
 
 @free_app.route("/finetune/instructions", methods=["GET"])
-def instructions():
+def finetune_instructions():
     return render_template("free/instructions.html")

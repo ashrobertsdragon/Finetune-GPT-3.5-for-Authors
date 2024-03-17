@@ -3,7 +3,7 @@ from flask import Blueprint, render_template, redirect, jsonify, session, url_fo
 
 
 from src.supabase import supabase, update_db
-from src.saas_decorators import login_required
+from src.decorators import login_required
 
 from .forms import SignupForm, LoginForm, AccountManagementForm, UpdatePasswordForm, BuyCreditsForm, ForgotPasswordForm
 from .utils import initialize_user_db
