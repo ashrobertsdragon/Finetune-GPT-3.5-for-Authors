@@ -11,7 +11,7 @@ supabase: Client = create_client(url, key)
 def update_db():
     row = session["user_details"]
     try:
-        error, response = supabase.table("user").update(row).eq("id", row["id"]).execute()
-        return error, response
+        response, _ = supabase.table("user").update(row).eq("id", row["id"]).execute()
+        return response
     except Exception as e:
         email_admin(f"Error {e}\n for {row}")

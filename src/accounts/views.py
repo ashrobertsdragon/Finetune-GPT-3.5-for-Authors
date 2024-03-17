@@ -1,5 +1,5 @@
 from decouple import config
-from flask import Blueprint, render_template, redirect, jsonify, session, url_for, flash, request
+from flask import Blueprint, render_template, redirect, session, url_for, flash, request
 
 
 from src.supabase import supabase, update_db
@@ -15,16 +15,16 @@ def signup_view():
     form = SignupForm()
     if form.validate_on_submit():
         email = form.email.data
-        res = supabase.auth.sign_up({
-            "email": email,
-            "password": form.password.data,
-        })
-        if res.error:
-            return jsonify({"error": {res.error.message}}), res.error.status
-        else:
-            user_id  = res.data["user"].get("id")
+        try:
+            res = supabase.auth.sign_up({
+                "email": email,
+                "password": form.password.data,
+            })
+            user_id  = res.get("id")
             initialize_user_db(user_id, email)
-            return jsonify({"success": True, "message": "Signup successful. Please check your email to verify your account."}), 200
+            flash("Signup successful. Please check your email to verify your account.")
+        except Exception as e:
+            flash(e)
     
     return render_template("accounts/signup.html", form=form)
 
@@ -32,18 +32,17 @@ def signup_view():
 def login_view():
     form = LoginForm()
     if form.validate_on_submit():
-        data = supabase.auth.sign_in_with_password({
-            "email": form.email.data,
-            "password": form.password.data
-        })
-        if data.error:
-            return jsonify({"error": {data.error.message}}), data.error.status
-        
-        auth_id = data.user.id
-        access_token = data.data.access_token
+        try:
+            data = supabase.auth.sign_in_with_password({
+                "email": form.email.data,
+                "password": form.password.data
+            })
+            access_token = data.access_token
+            auth_id = data.user.id
+        except Exception as e:
+            flash(e)
 
         session["access_token"] = access_token
-        session["auth_id"] = auth_id
 
         response = supabase.from_("user").select("*").eq("auth_id", auth_id).single().execute()
         user_details = response.data[0]
@@ -61,7 +60,6 @@ def login_view():
 @login_required
 def logout_view():
     session.pop("user_details", None)
-    session.pop("auth_id", None)
     session.pop("access_token", None)
     supabase.auth.sign_out()
     return redirect(url_for("login_view"))
@@ -72,7 +70,7 @@ def forgot_password_view():
     form = ForgotPasswordForm()
     if form.validate_on_submit():
         email = form.email.data
-        return supabase.auth.reset_password_for_email(email, redirect_to=f"{domain}/update-password.html")
+        return supabase.auth.reset_password_email(email, options={"redirect_to":f"{domain}/update-password.html"})
     return render_template("accounts/forgot-password.html", form=form)
 
 @accounts_app.route("/update-password", methods=["GET", "POST"])
@@ -80,13 +78,14 @@ def reset_password_view():
     form = UpdatePasswordForm()
     if form.validate_on_submit():
         new_password = form.new_password.data
-        success, error = supabase.auth.update_user({
-            "password": new_password
-        })
-        if error:
-            flash("There was a problem updating your password. Please try again.", "error")
-        if success:
+        try:
+            supabase.auth.update({
+                "password": new_password
+            })
             flash("Password successfully updated.", "success")
+        except Exception:
+            flash("There was a problem updating your password. Please try again.", "error")
+            
     return render_template("accounts/update-password.html", form=form)
 
 
@@ -106,7 +105,6 @@ def account_view():
 @accounts_app.route("/profile")
 @login_required
 def profile_view():
-    user_id = session["user_details"]["id"]
     account_form = AccountManagementForm()
     password_form = UpdatePasswordForm()
     if account_form.validate_on_submit():
@@ -114,32 +112,35 @@ def profile_view():
         if form.email.data:
             new_email = form.email.data
             session["user_details"]["email"] = new_email
-            supabase.table("user").update({"email": new_email}).eq("user_id", user_id).execute()
-            supabase.auth.update_user(
-              access_token=session["access_token"],
-              email=new_email
-            )
+            try:
+                data = supabase.auth.update_user(
+                  {"email":new_email}
+                )
+                access_token = data.access_token
+                session["access_token"] = access_token
+            except Exception:
+                flash("Email update failed", "Error")
         session["user_details"]["f_name"] = form.first_name.data
         session["user_details"]["l_name"] = form.last_name.data
         session["user_details"]["b_day"] = form.b_day.data
         
-        error, success = update_db()
-        if error:
-            flash("There was an error updating your profile.", "error")
-        if success:
+        response = update_db()
+        if response:
             flash("Your profile has been updated.", "success")
+        else:
+            flash("There was an error updating your profile.", "error")
     
     if password_form.validate_on_submit():
         new_password = password_form.new_password.data
-        sucess, error = supabase.auth.update_user(
-            access_token=session["access_token"],
-            password=new_password
-        )
-
-        if error:
-            flash("There was a problem updating your password. Please try again.", "error")
-        if success:
+        try:
+            response = supabase.auth.update_user(
+                {"password":new_password}
+            )
+            access_token = response.access_token
+            session["access_token"] = access_token
             flash("Password successfully updated.", "success")
+        except Exception:
+            flash("There was a problem updating your password. Please try again.", "error")
 
     return render_template("accounts/profile.html", account_form=account_form, password_form=password_form)
 
