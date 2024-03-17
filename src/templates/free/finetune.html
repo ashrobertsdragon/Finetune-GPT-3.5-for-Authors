@@ -34,7 +34,7 @@
         <button id="showButton" type="button" onclick="toggleVisibility()" aria-label="Show or hide API key text"><img id="visibilityImage" src="{{ url_for('static', filename='icons/visibility.png') }}" alt="show key"></button>
     </div>
     <div id="upload">
-        <p class="info-link" id="convert-link"><a href="{{ url_for('convert_ebook') }}" target="_blank">Convert your ebooks here</a></p>
+        <p class="info-link" id="convert-link"><a href="{{ url_for('free.convert_ebook') }}" target="_blank">Convert your ebooks here</a></p>
         {{ form.file.label }}
         {{ form.file(id="file", class_="form-control", multiple=true, accept="text/plain") }}
     </div>
@@ -53,7 +53,7 @@
         </div>
         <div id="terms">
             {{ form.terms_agreement(id="terms_agreement") }}
-            <label for="terms_agreement">I agree to the <a href="{{ url_for('terms_page') }}" target="_blank">terms and conditions</a></label>
+            <label for="terms_agreement">I agree to the <a href="{{ url_for('core.terms_page') }}" target="_blank">terms and conditions</a></label>
         </div>
     </div>
     {{ form.submit(class_="btn btn-primary") }}

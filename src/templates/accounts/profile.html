@@ -1,8 +1,6 @@
-{% extends "account.html" %}
-
 {% block content %}
     <h1>Profile</h1>
-    <form method="post" class="form" id="account-management-form">
+    <form method="post" class="form" id="account-management-form" action="{{ url_for('accounts.profile_view') }}">
         {{ form.hidden_tag() }}
         <div>
             <label for="name">Name: {{ user.name }}</label>
@@ -34,5 +32,6 @@
                 <div class="error">{{ error }}</div>
             {% endfor %}
         {% endif %}
+        <input type="submit" value="Change Password" class="btn btn-primary" />
     </div>
 {% endblock content %}
