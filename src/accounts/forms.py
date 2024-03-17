@@ -21,8 +21,8 @@ class SignupForm(FlaskForm):
     )
     submit = SubmitField("Signup", render_kw={"aria-label": "Sign up"})
 
-    def validate(self):
-        initial_validation = super(SignupForm, self).validate()
+    def validate(self, extra_validators=None):
+        initial_validation = super(SignupForm, self).validate(extra_validators)
         if not initial_validation:
             return False
         return True

@@ -14,13 +14,13 @@
             <div class="input-boxes">
                 <!-- Email Field -->
                 <div class="form-grid" id="div-id_email">
-                    {{ form.username.label(class="user-input-label") }}
-                    {{ form.username(id=form.username.id, class=form.username.css_class) }}
-                    {% if form.username.description %}
-                        <small class="help-text">{{ form.username.description }}</small>
+                    {{ form.email.label(class="user-input-label") }}
+                    {{ form.email(id=form.email.id, class=form.email.css_class) }}
+                    {% if form.email.description %}
+                        <small class="help-text">{{ form.email.description }}</small>
                     {% endif %}
-                    {% if form.username.errors %}
-                        {% for error in form.username.errors %}
+                    {% if form.email.errors %}
+                        {% for error in form.email.errors %}
                             <div class="error">{{ error }}</div>
                         {% endfor %}
                     {% endif %}
