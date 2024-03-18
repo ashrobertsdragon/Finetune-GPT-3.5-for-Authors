@@ -13,6 +13,7 @@
 {% endblock extra_js %}
 
 {% block content %}
+{% for message in get_flashed_messages() %}
   <form class="box" id="conversionForm" method="post" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
     <div class="form" id="upload">

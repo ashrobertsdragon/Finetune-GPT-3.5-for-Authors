@@ -8,6 +8,7 @@
 
 {% block content %}
     <div class="form box">
+        {% for message in get_flashed_messages() %}
         <form class="user-form" method="POST" role="main" action="{{ url_for('accounts.signup_view') }}">
             {{ form.hidden_tag() }}
             <h1>Become a Pal to your Prose</h1>

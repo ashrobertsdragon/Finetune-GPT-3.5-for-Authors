@@ -12,6 +12,7 @@
 
 {% block content %}
   <h1>Create LoreBinder</h1>
+  {% for message in get_flashed_messages() %}
   <form method="POST" class="form box" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
     <div class="form-group">
