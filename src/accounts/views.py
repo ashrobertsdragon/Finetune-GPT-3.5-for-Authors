@@ -37,7 +37,7 @@ def login_view():
                 "email": form.email.data,
                 "password": form.password.data
             })
-            access_token = data.access_token
+            access_token = data.session.access_token
             auth_id = data.user.id
         except Exception as e:
             flash(e)
@@ -79,7 +79,7 @@ def reset_password_view():
     if form.validate_on_submit():
         new_password = form.new_password.data
         try:
-            supabase.auth.update({
+            supabase.auth.update_user({
                 "password": new_password
             })
             flash("Password successfully updated.", "success")
@@ -116,7 +116,7 @@ def profile_view():
                 data = supabase.auth.update_user(
                   {"email":new_email}
                 )
-                access_token = data.access_token
+                access_token = data.session.access_token
                 session["access_token"] = access_token
             except Exception:
                 flash("Email update failed", "Error")
