@@ -16,6 +16,7 @@
                 {% endfor %}
                 </ul>
             {% endif %}
+        {% endwith %}
         <form class="user-form" method="POST" role="main" action="{{ url_for('accounts.signup_view') }}">
             {{ form.hidden_tag() }}
             <h1>Become a Pal to your Prose</h1>
