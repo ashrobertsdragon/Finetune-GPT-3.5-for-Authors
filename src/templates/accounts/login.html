@@ -8,7 +8,14 @@
 
 {% block content %}
     <div class="form box">
-        {% for message in get_flashed_messages() %}
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class=flashes>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
         <form id="login-form" class="form" method="post" action="{{ url_for('accounts.login_view') }}">
             {{ form.hidden_tag() }}
             <h1 class="content-title">Login</h1>

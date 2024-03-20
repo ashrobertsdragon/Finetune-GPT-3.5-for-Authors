@@ -9,7 +9,7 @@
 
 {% block content %}
 <section id="success" class="hidden">
-  <p>We appreciate your business! A confirmation email will be sent to <span id="customer-email"></span>. You know have {{ session["user_details"]["credits_available"] }} credits.
+  <p>We appreciate your business! A confirmation email will be sent to <span id="customer-email"></span>. You know have {{ user.credits_available }} credits.
   </p>
   <p>Get started on a <a href="{{ url_for('lorebinder_form_view')}}" title="Start lorebinder">Lorebinder</a> now.</p>
 </section>
