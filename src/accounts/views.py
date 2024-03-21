@@ -38,21 +38,25 @@ def login_view():
                 "password": form.password.data
             })
             access_token = data.session.access_token
+            print(data.user.id)
             auth_id = data.user.id
+            print(auth_id)
         except Exception as e:
             flash(e.message)
 
         session["access_token"] = access_token
-
-        response = supabase.from_("user").select("*").eq("auth_id", auth_id).single().execute()
-        user_details = response.data[0]
+        response = supabase.from_("user").select("*").eq("auth_id", auth_id).execute()
+        print(response.data)
+        all_data = supabase.from_("user").select("*").execute()
+        print(all_data)
+        user_details = response.data
         session["user_details"] = user_details
 
         credits_available = session["user_details"]["credits_available"]
         if credits_available > 0:
             return redirect(url_for("lorebinder_form_view"))
         else:
-            return redirect(url_for("buy_creditsview"))
+            return redirect(url_for("buy_credits_view"))
     
     return render_template("accounts/login.html", form=form)
 

@@ -34,13 +34,13 @@
   <form class="box" method="POST" enctype="multipart/form-data" role="main">
     {{ form.hidden_tag() }}
     <div class="opening-info">
-        <p class="info-link"><a href="{{ url_for('instructions') }}" target="_blank" aria-label="Read detailed instructions">Instructions</a></p>
+        <p class="info-link"><a href="{{ url_for('free.finetune_instructions') }}" target="_blank" aria-label="Read detailed instructions">Instructions</a></p>
         <p class="info-link"><a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" title="OpenAI API keys" aria-label="Get API key from OpenAI">Get API key from OpenAI</a></p>
     </div>
     <div id="key">
         {{ form.user_key.label }}
         {{ form.user_key(id="user_key", class_="form-control") }}
-        <button id="showButton" type="button" onclick="toggleVisibility()" aria-label="Show or hide API key text"><img id="visibilityImage" src="{{ url_for('static', filename='icons/visibility.png') }}" alt="show key"></button>
+        <span class="material-symbols-outlined" id="eye" onclick="toggleVisibility()">visibility</span>
     </div>
     <div id="upload">
         <p class="info-link" id="convert-link"><a href="{{ url_for('free.convert_ebook') }}" target="_blank">Convert your ebooks here</a></p>
