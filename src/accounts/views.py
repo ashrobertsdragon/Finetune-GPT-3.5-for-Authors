@@ -24,7 +24,7 @@ def signup_view():
             initialize_user_db(auth_id, email)
             flash("Signup successful. Please check your email to verify your account.")
         except Exception as e:
-            flash(e)
+            flash(e.message)
     
     return render_template("accounts/signup.html", form=form)
 
@@ -40,7 +40,7 @@ def login_view():
             access_token = data.session.access_token
             auth_id = data.user.id
         except Exception as e:
-            flash(e)
+            flash(e.message)
 
         session["access_token"] = access_token
 
