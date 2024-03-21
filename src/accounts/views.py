@@ -20,8 +20,8 @@ def signup_view():
                 "email": email,
                 "password": form.password.data,
             })
-            user_id = res.user.id
-            initialize_user_db(user_id, email)
+            auth_id = res.user.id
+            initialize_user_db(auth_id, email)
             flash("Signup successful. Please check your email to verify your account.")
         except Exception as e:
             flash(e)

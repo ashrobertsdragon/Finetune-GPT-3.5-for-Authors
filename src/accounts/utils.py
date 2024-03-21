@@ -1,9 +1,9 @@
 from src.supabase import supabase 
 
 
-def initialize_user_db(user_id, email):
+def initialize_user_db(auth_id, email):
       supabase.table("user").insert({
-          "user_id": user_id,
+          "auth_id": auth_id,
           "email": email,
       }).execute()
 
