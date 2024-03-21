@@ -7,3 +7,4 @@ stripe-ids.json
 __pycache__/*
 *.log
 flask_session/
+test.py
