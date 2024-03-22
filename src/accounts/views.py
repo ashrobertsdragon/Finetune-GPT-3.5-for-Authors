@@ -43,16 +43,17 @@ def login_view():
             flash(e.message)
 
         session["access_token"] = access_token
-        response = supabase.table("user").select("*").eq("auth_id", auth_id).execute()
-        print(response.data)
-        user_details = response.data
-        session["user_details"] = user_details
-
-        credits_available = session["user_details"]["credits_available"]
-        if credits_available > 0:
-            return redirect(url_for("lorebinder_form_view"))
-        else:
-            return redirect(url_for("buy_credits_view"))
+        try:
+            response = supabase.table("user").select("*").eq("auth_id", auth_id).execute()
+            user_details = response.data[0]
+            session["user_details"] = user_details
+            credits_available = session["user_details"]["credits_available"]
+            if credits_available > 0:
+                return redirect(url_for("binders.lorebinder_form_view"))
+            else:
+                return redirect(url_for("accounts.buy_credits_view"))
+        except Exception as e:
+            flash(e)
     
     return render_template("accounts/login.html", form=form)
 
@@ -87,7 +88,6 @@ def reset_password_view():
             flash("There was a problem updating your password. Please try again.", "error")
             
     return render_template("accounts/update-password.html", form=form)
-
 
 @accounts_app.route("/account", methods=["GET", "POST"])
 @login_required
@@ -160,4 +160,4 @@ def buy_credits_view():
     if form.validate_on_submit():
         num_credits = form.credits.data
         return redirect(f"/checkout.html?num_credits={num_credits}")
-    return render_template("accounts/buy_credits.html", form=form)
+    return render_template("accounts/buy-credits.html", form=form)

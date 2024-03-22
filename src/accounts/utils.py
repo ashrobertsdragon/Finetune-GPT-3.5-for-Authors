@@ -1,8 +1,8 @@
-from src.supabase import supabase 
+from src.supabase import supa_service
 
 
 def initialize_user_db(auth_id, email):
-      supabase.table("user").insert({
+      supa_service.table("user").insert({
           "auth_id": auth_id,
           "email": email,
       }).execute()

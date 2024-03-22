@@ -5,8 +5,10 @@ from supabase import create_client, Client
 from .error_handling import email_admin
 
 url: str = config("SUPABASE_URL")
-key: str = config("SUPABASE_SERVICE_ROLE")
+key: str = config("SUPABASE_KEY")
+service_role: str = config("SUPABASE_SERVICE_ROLE")
 supabase: Client = create_client(url, key)
+supa_service: Client = create_client(url, service_role)
 
 def update_db():
     row = session["user_details"]
