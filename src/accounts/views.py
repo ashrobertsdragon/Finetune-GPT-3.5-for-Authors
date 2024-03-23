@@ -89,22 +89,29 @@ def reset_password_view():
             
     return render_template("accounts/update-password.html", form=form)
 
-@accounts_app.route("/account", methods=["GET", "POST"])
+@accounts_app.route("/account", methods=["GET"])
 @login_required
 def account_view():
     section = request.args.get("section", "profile")
-    if section == "profile":
-        return profile_view()
-    elif section == "view-binders":
-        return view_binders_view()
-    elif section == "buy-credits":
-        return buy_credits_view()
-    else:
-        return redirect(url_for("account_view", section="profile"))
+    account_form = AccountManagementForm()
+    password_form = UpdatePasswordForm()
+    buy_credits_form = BuyCreditsForm()
+    binders = session.get("binders", [])
 
-@accounts_app.route("/profile")
+    return render_template(
+        "accounts/account.html",
+        section=section,
+        account_form=account_form,
+        password_form=password_form,
+        binders=binders,
+        buy_credits_form=buy_credits_form
+    )
+
+@accounts_app.route("/profile", methods=["GET", "POST"])
 @login_required
 def profile_view():
+    if request.method == "GET":
+        return redirect(url_for("accounts.account_view", section="profile"))
     account_form = AccountManagementForm()
     password_form = UpdatePasswordForm()
     if account_form.validate_on_submit():
@@ -142,22 +149,24 @@ def profile_view():
         except Exception:
             flash("There was a problem updating your password. Please try again.", "error")
 
-    return render_template("accounts/profile.html", account_form=account_form, password_form=password_form)
 
 @accounts_app.route("/view-binders", methods=["GET", "POST"])
 @login_required
 def view_binders_view():
+    if request.method == "GET":
+        return redirect(url_for("accounts.account_view"), section="view_binders")
     owner = session["user_details"]["user"]
     data = supabase.table("binderTable").select("title", "author", "download_path").filter("owner", eq=owner).execute()
 
     binders = [{"title": binder["title"], "author": binder["author"], "download_path": binder["download_path"]} for binder in data.data]
-    return render_template("accounts/view-binders.html", binders=binders)
+    session["binders"] = binders
 
 @accounts_app.route("/buy-credits", methods=["GET", "POST"])
 @login_required
 def buy_credits_view():
+    if request.method == "GET":
+        return redirect(url_for("accounts.account_view", section="buy-credits"))
     form = BuyCreditsForm()
     if form.validate_on_submit():
         num_credits = form.credits.data
         return redirect(f"/checkout.html?num_credits={num_credits}")
-    return render_template("accounts/buy-credits.html", form=form)

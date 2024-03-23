@@ -1,3 +1,4 @@
+{% extends 'accounts/account.html' %}
 {% block content %}
     {% with messages = get_flashed_messages() %}
         {% if messages %}
@@ -10,7 +11,7 @@
     {% endwith %}
     <h1>Profile</h1>
     <form method="post" class="form" id="account-management-form" action="{{ url_for('accounts.profile_view') }}">
-        {{ form.hidden_tag() }}
+      {{ form_csrf_token() }}
         <div>
             <label for="name">Name: {{ user.name }}</label>
             {{ form.name(value=user.name, id="name") }}
@@ -28,6 +29,8 @@
     <!-- Password Field -->
     <div class="form-grid" id="div-id_password">
         <h2>Update Password</h2>
+        <form method="POST" action="{{ url_for('accounts.profile_view') }}">
+          {{ form_csrf_token() }}
         {{ password_form.new_password.label(class="user-input-label") }}
         <div class="password-container">
             {{ password_form.new_password(id=password_form.new_password.id, class=password_form.new_password.css_class) }}

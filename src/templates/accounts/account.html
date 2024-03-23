@@ -12,18 +12,22 @@
 {% endblock %}
 
 {% block content %}
-{% for message in get_flashed_messages() %}
-<div data-section="profile" class="profile hidden">
-  {% include 'profile.html' %}
-</div>
-<div data-section="view-binders" class="view_lorebinders hidden">
-  {% include 'view-binders.html' %}
-</div>
-<div data-section="buy-credits" class="buy_credits hidden">
-  {% include 'buy-credits.html' %}
-</div>
-{% endblock content %}
+  <div>
+    <a href="{{ url_for('accounts.account_view', section='profile') }}">Profile</a>
+    <a href="{{ url_for('accounts.account_view', section='view-binders') }}">View Binders</a>
+    <a href="{{ url_for('accounts.account_view', section='buy-credits') }}">Buy Credits</a>
+  </div>
+  <div data-section="profile" class="profile hidden">
+    {% include 'profile.html' %}
+  </div>
+  <div data-section="view-binders" class="view_lorebinders hidden">
+    {% include 'view-binders.html' %}
+  </div>
+  <div data-section="buy-credits" class="buy_credits hidden">
+    {% include 'buy-credits.html' %}
+  </div>
+{% endblock %}
 
 {% block end_js %}
-<script src="{{ url_for('static', filename='js/visToggle.js') }}"></script>
-{% endblock end_js %}
+  <script src="{{ url_for('static', filename='js/visToggle.js') }}"></script>
+{% endblock %}
