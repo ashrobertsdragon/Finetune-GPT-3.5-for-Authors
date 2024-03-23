@@ -32,7 +32,7 @@ def credit_required(f):
         if session["user_details"]["credits_available"] > 0:
             return f(*args, **kwargs)
         else:
-            return redirect(url_for("buy_credits"))
+            return redirect(url_for("accounts.buy_credits_view"))
     return decorated_function
 
 def login_required(f):
@@ -60,6 +60,6 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not g.get('user'):
-            return redirect(url_for("login_view"))
+            return redirect(url_for("accounts.login_view"))
         return f(*args, **kwargs)
     return decorated_function
