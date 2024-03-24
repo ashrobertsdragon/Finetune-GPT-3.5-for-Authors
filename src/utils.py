@@ -8,6 +8,9 @@ def load_user():
   if "access_token" in session:
       g.user = session.get("user_details")
 
+def inject_user_context():
+    return {'user': g.user}
+
 def random_str():
     """Generate a random 7 character alphanumeric string."""
     return "".join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(7))

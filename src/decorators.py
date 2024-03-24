@@ -1,5 +1,5 @@
 from functools import wraps
-from flask import redirect, session, url_for, g
+from flask import redirect, session, url_for, g, request
 
 
 def credit_required(f):
@@ -61,5 +61,11 @@ def login_required(f):
     def decorated_function(*args, **kwargs):
         if not g.get('user'):
             return redirect(url_for("accounts.login_view"))
+        
+        # Check if the function is account_view and handle the section parameter
+        if f.__name__ == 'account_view':
+            section = request.args.get('section', 'profile')
+            kwargs['section'] = section
+        
         return f(*args, **kwargs)
     return decorated_function
