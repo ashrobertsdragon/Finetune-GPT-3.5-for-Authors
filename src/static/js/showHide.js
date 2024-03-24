@@ -17,12 +17,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const activeSection = urlParams.get('section') || document.querySelector('[data-section]').dataset.section;
   showSection(activeSection);
 
-  document.querySelectorAll('a').forEach(link => {
+  // Select all 'a' tags within the '.body-container' class only
+  document.querySelectorAll('.body-container a').forEach(link => {
     link.addEventListener('click', (event) => {
       event.preventDefault();
       const sectionName = new URLSearchParams(event.currentTarget.search).get('section');
-      showSection(sectionName);
-      window.history.pushState({}, '', event.currentTarget.href);
+      if (sectionName) {
+        showSection(sectionName);
+        window.history.pushState({}, '', event.currentTarget.href);
+      } else {
+        // Alllow default behavior if not a section link
+        window.location.href = event.currentTarget.href;
+      }
     });
   });
 });
