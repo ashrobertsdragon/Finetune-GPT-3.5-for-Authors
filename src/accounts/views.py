@@ -1,5 +1,4 @@
-from decouple import config
-from flask import Blueprint, render_template, redirect, session, url_for, flash, request
+from flask import Blueprint, current_app, render_template, redirect, session, url_for, flash, request
 
 
 from src.supabase import supabase, update_db
@@ -63,14 +62,14 @@ def logout_view():
     session.pop("user_details", None)
     session.pop("access_token", None)
     supabase.auth.sign_out()
-    return redirect(url_for("login_view"))
+    return redirect(url_for("accounts.login_view"))
 
 @accounts_app.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password_view():
-    domain = config("DOMAIN")
+    domain = current_app.config["DOMAIN"]
     form = ForgotPasswordForm()
     if form.validate_on_submit():
-        email = form.email.data
+        email = form.email.dataS
         return supabase.auth.reset_password_email(email, options={"redirect_to":f"{domain}/update-password.html"})
     return render_template("accounts/forgot-password.html", form=form)
 
@@ -165,7 +164,7 @@ def view_binders_view():
 @login_required
 def buy_credits_view():
     if request.method == "GET":
-        return redirect(url_for("accounts.account_view", section="buy-credits"))
+        return redirect(url_for("accounts.account_view", section="buy_credits"))
     form = BuyCreditsForm()
     if form.validate_on_submit():
         num_credits = form.credits.data

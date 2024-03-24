@@ -3,13 +3,12 @@ import time
 from typing import Optional
 
 import stripe
-from decouple import config
-from flask import flash
+from flask import flash, current_app
 
 from src.error_handling import email_admin
 
 def set_stripe_key():
-    stripe.api_key = config("STRIPE_KEY")
+    stripe.api_key = current_app.config("STRIPE_KEY")
 
 def get_id(file_path: str, num_credits: int) -> str:
     """
