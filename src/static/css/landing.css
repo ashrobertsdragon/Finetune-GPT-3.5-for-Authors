@@ -3,6 +3,9 @@ main {
   padding-left: auto;
   margin: 0 auto;
 }
+a.button {
+  text-decoration: none;
+}
 
 .section {
   margin-top: 5em;

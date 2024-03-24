@@ -1,12 +1,13 @@
-{% extends 'accounts/account.html' %}
 {% block content %}
     <h2>Buy Credits</h2>
     <div class="slider-container">
-      <form method="POST" action="{{ url_for('accounts.buy_credits_view') }}">
-        {{ form_csrf_token() }}
-        <label for="credits">Credits: <span id="credits-value">1</span></label>
-        <input type="range" id="credits" name="credits" min="1" max="10" value="{{ form.get('credits', '') }}">
-        <div id="price">Price: $10</div>
+      <form method="POST" class="form-slider" id="credit-slider" action="{{ url_for('accounts.buy_credits_view') }}">
+        {{ buy_credits_form.hidden_tag() }}
+        {{ buy_credits_form.credits.label }}
+        <span id="credits-value">{{ buy_credits_form.credits.data or 1 }}</span>
+        {{ buy_credits_form.credits }}
+        <div id="price">Price: $10</div> <!-- Adjust JS to update this based on credits -->
+        {{ buy_credits_form.submit }}
       </form>
-    </div>
+    </div>    
 {% endblock %}

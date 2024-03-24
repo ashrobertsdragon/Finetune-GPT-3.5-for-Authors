@@ -1,4 +1,3 @@
-{% extends 'accounts/account.html' %}
 {% block content %}
     {% with messages = get_flashed_messages() %}
         {% if messages %}
@@ -11,14 +10,22 @@
     {% endwith %}
     <h1>Profile</h1>
     <form method="post" class="form" id="account-management-form" action="{{ url_for('accounts.profile_view') }}">
-      {{ form_csrf_token() }}
+        {{ account_form.hidden_tag() }}
         <div>
-            <label for="name">Name: {{ user.name }}</label>
-            {{ form.name(value=user.name, id="name") }}
+            {{ account_form.email.label }}
+            {{ account_form.email }}
         </div>
         <div>
-            <label for="email">Email: {{ user.email }}</label>
-            {{ form.email(value=user.email, id="email") }}
+            {{ account_form.first_name.label }}
+            {{ account_form.first_name }}
+        </div>
+        <div>
+            {{ account_form.last_name.label }}
+            {{ account_form.last_name }}
+        </div>
+        <div>
+            {{ account_form.b_day.label }}
+            {{ account_form.b_day }}
         </div>
         <input type="submit" value="Update Profile" class="btn btn-primary" />
     </form>
@@ -29,8 +36,8 @@
     <!-- Password Field -->
     <div class="form-grid" id="div-id_password">
         <h2>Update Password</h2>
-        <form method="POST" action="{{ url_for('accounts.profile_view') }}">
-          {{ form_csrf_token() }}
+        <form method="POST" class="form" id="update-password-form" action="{{ url_for('accounts.profile_view') }}">
+          {{ password_form.hidden_tag() }}
         {{ password_form.new_password.label(class="user-input-label") }}
         <div class="password-container">
             {{ password_form.new_password(id=password_form.new_password.id, class=password_form.new_password.css_class) }}

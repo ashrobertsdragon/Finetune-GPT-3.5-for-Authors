@@ -1,9 +1,8 @@
-
 {% block content %}
     <h1>View Purchased LoreBinders</h1>
-    {{ for lorebinder in lorebinder_data }}
+    {% for binder in binders %}
       <div class="row">
         {{ binder.title }} - {{ binder.author }} - {{ binder.download_path }}
       </div>
-    {{ endfor }}
+    {% endfor %}
 {% endblock %}

@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'normal-base.html' %}
 
 {% block title %}Account Management{% endblock %}
 
@@ -6,11 +6,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/account.css') }}">
 {% endblock %}
-
-{% block extra_js %}
-<script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
-{% endblock %}
-
+S
 {% block content %}
   <div>
     <a href="{{ url_for('accounts.account_view', section='profile') }}">Profile</a>
@@ -18,16 +14,17 @@
     <a href="{{ url_for('accounts.account_view', section='buy-credits') }}">Buy Credits</a>
   </div>
   <div data-section="profile" class="profile hidden">
-    {% include 'profile.html' %}
+    {% include 'accounts/profile.html' %}
   </div>
   <div data-section="view-binders" class="view_lorebinders hidden">
-    {% include 'view-binders.html' %}
+    {% include 'accounts/view-binders.html' %}
   </div>
   <div data-section="buy-credits" class="buy_credits hidden">
-    {% include 'buy-credits.html' %}
+    {% include 'accounts/buy-credits.html' %}
   </div>
 {% endblock %}
 
 {% block end_js %}
   <script src="{{ url_for('static', filename='js/visToggle.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/showHide.js') }}"></script>
 {% endblock %}

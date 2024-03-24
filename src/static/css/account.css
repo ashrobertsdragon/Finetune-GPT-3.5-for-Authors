@@ -7,9 +7,7 @@
 
 @media (max-width: 768px) {
   #credits {
-    -webkit-appearance: slider-vertical;
-    appearance: slider-vertical;
-    writing-mode:vertical-rl;
+    writing-mode: vertical-lr;
     width: 20px;
     height: 200px;
   }

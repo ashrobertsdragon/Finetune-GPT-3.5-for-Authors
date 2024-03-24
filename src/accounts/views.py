@@ -5,7 +5,7 @@ from src.supabase import supabase, update_db
 from src.decorators import login_required
 
 from .forms import SignupForm, LoginForm, AccountManagementForm, UpdatePasswordForm, BuyCreditsForm, ForgotPasswordForm
-from .utils import initialize_user_db
+from .utils import initialize_user_db, get_binders, redirect_after_login
 
 accounts_app = Blueprint("accounts", __name__)
 
@@ -29,6 +29,9 @@ def signup_view():
 
 @accounts_app.route("/login", methods=["GET", "POST"])
 def login_view():
+    if "access_token" in session:
+        auth_id = session["user_details"]["auth_id"]
+        redirect_after_login(auth_id)
     form = LoginForm()
     if form.validate_on_submit():
         try:
@@ -42,17 +45,7 @@ def login_view():
             flash(e.message)
 
         session["access_token"] = access_token
-        try:
-            response = supabase.table("user").select("*").eq("auth_id", auth_id).execute()
-            user_details = response.data[0]
-            session["user_details"] = user_details
-            credits_available = session["user_details"]["credits_available"]
-            if credits_available > 0:
-                return redirect(url_for("binders.lorebinder_form_view"))
-            else:
-                return redirect(url_for("accounts.buy_credits_view"))
-        except Exception as e:
-            flash(e)
+        redirect_after_login(auth_id)
     
     return render_template("accounts/login.html", form=form)
 
@@ -69,12 +62,16 @@ def forgot_password_view():
     domain = current_app.config["DOMAIN"]
     form = ForgotPasswordForm()
     if form.validate_on_submit():
-        email = form.email.dataS
-        return supabase.auth.reset_password_email(email, options={"redirect_to":f"{domain}/update-password.html"})
+        email = form.email.data
+        supabase.auth.reset_password_email(email, options={"redirect_to":f"{domain}/reset-password.html"})
+        flash("An email with instructions to reset your password has been sent", "message")
     return render_template("accounts/forgot-password.html", form=form)
 
-@accounts_app.route("/update-password", methods=["GET", "POST"])
+@accounts_app.route("/reset-password", methods=["GET", "POST"])
 def reset_password_view():
+    access_token = request.args.get("access_token", "")
+    if not access_token:
+        return redirect(url_for("login_view"))
     form = UpdatePasswordForm()
     if form.validate_on_submit():
         new_password = form.new_password.data
@@ -82,20 +79,19 @@ def reset_password_view():
             supabase.auth.update_user({
                 "password": new_password
             })
-            flash("Password successfully updated.", "success")
+            flash("Password successfully updated.", "message")
         except Exception:
             flash("There was a problem updating your password. Please try again.", "error")
             
-    return render_template("accounts/update-password.html", form=form)
+    return render_template("accounts/reset-password.html", form=form)
 
 @accounts_app.route("/account", methods=["GET"])
 @login_required
-def account_view():
-    section = request.args.get("section", "profile")
+def account_view(section="profile"):
     account_form = AccountManagementForm()
     password_form = UpdatePasswordForm()
     buy_credits_form = BuyCreditsForm()
-    binders = session.get("binders", [])
+    binders = get_binders()
 
     return render_template(
         "accounts/account.html",
@@ -132,7 +128,7 @@ def profile_view():
         
         response = update_db()
         if response:
-            flash("Your profile has been updated.", "success")
+            flash("Your profile has been updated.", "message")
         else:
             flash("There was an error updating your profile.", "error")
     
@@ -144,27 +140,20 @@ def profile_view():
             )
             access_token = response.access_token
             session["access_token"] = access_token
-            flash("Password successfully updated.", "success")
+            flash("Password successfully updated.", "message")
         except Exception:
             flash("There was a problem updating your password. Please try again.", "error")
 
-
-@accounts_app.route("/view-binders", methods=["GET", "POST"])
+@accounts_app.route("/view-binders", methods=["GET"])
 @login_required
 def view_binders_view():
-    if request.method == "GET":
-        return redirect(url_for("accounts.account_view"), section="view_binders")
-    owner = session["user_details"]["user"]
-    data = supabase.table("binderTable").select("title", "author", "download_path").filter("owner", eq=owner).execute()
-
-    binders = [{"title": binder["title"], "author": binder["author"], "download_path": binder["download_path"]} for binder in data.data]
-    session["binders"] = binders
+    return redirect(url_for("accounts.account_view", section="view-binders"))
 
 @accounts_app.route("/buy-credits", methods=["GET", "POST"])
 @login_required
 def buy_credits_view():
     if request.method == "GET":
-        return redirect(url_for("accounts.account_view", section="buy_credits"))
+        return redirect(url_for("accounts.account_view", section="buy-credits"))
     form = BuyCreditsForm()
     if form.validate_on_submit():
         num_credits = form.credits.data
