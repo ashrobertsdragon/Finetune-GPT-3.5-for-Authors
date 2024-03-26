@@ -86,6 +86,7 @@ class BuyCreditsForm(FlaskForm):
     credits = IntegerRangeField(
         "Credits:",
         validators=[DataRequired(), NumberRange(min=1, max=10)],
-        render_kw={"aria-label": "Credits to buy"}
+        render_kw={"aria-label": "Credits to buy"},
+        default=1
     )
     submit = SubmitField("Buy Credits", render_kw={"aria-label": "Buy credits"})

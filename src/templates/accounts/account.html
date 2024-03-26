@@ -8,23 +8,40 @@
 {% endblock %}
 S
 {% block content %}
-  <div>
-    <a href="{{ url_for('accounts.account_view', section='profile') }}">Profile</a>
-    <a href="{{ url_for('accounts.account_view', section='view-binders') }}">View Binders</a>
-    <a href="{{ url_for('accounts.account_view', section='buy-credits') }}">Buy Credits</a>
+  <div class="sidebar">
+    <ul class="sidebar-nav">
+      <li>
+        <a href="{{ url_for('accounts.account_view', section='profile') }}">Profile</a>
+      </li>
+      <li>
+        <a href="{{ url_for('accounts.account_view', section='view-binders') }}">View Binders</a>
+      </li>
+      <li>
+        <a href="{{ url_for('accounts.account_view', section='buy-credits') }}">Buy Credits</a>
+      </li>
+    <ul>
   </div>
-  <div data-section="profile" class="profile hidden">
+  {% if section == 'profile' %}
+  <div data-section="profile" id="profile">
     {% include 'accounts/profile.html' %}
   </div>
-  <div data-section="view-binders" class="view_lorebinders hidden">
+{% endif %}
+
+{% if section == 'view-binders' %}
+  <div data-section="view-binders" id="binder-view">
     {% include 'accounts/view-binders.html' %}
   </div>
-  <div data-section="buy-credits" class="buy_credits hidden">
+{% endif %}
+
+{% if section == 'buy-credits' %}
+  <div data-section="buy-credits" id="credit-slider">
     {% include 'accounts/buy-credits.html' %}
   </div>
+{% endif %}
+
 {% endblock %}
 
 {% block end_js %}
   <script src="{{ url_for('static', filename='js/visToggle.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/showHide.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/purchase-slider.js')}}"></script>
 {% endblock %}

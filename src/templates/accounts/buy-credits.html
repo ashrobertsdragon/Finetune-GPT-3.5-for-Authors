@@ -1,13 +1,13 @@
 {% block content %}
-    <h2>Buy Credits</h2>
-    <div class="slider-container">
-      <form method="POST" class="form-slider" id="credit-slider" action="{{ url_for('accounts.buy_credits_view') }}">
-        {{ buy_credits_form.hidden_tag() }}
-        {{ buy_credits_form.credits.label }}
-        <span id="credits-value">{{ buy_credits_form.credits.data or 1 }}</span>
-        {{ buy_credits_form.credits }}
-        <div id="price">Price: $10</div> <!-- Adjust JS to update this based on credits -->
-        {{ buy_credits_form.submit }}
-      </form>
-    </div>    
+<h1 class="account-header">Buy Credits</h1>
+<div class="slider-container">
+  <form method="POST" class="box" id="credit-slider" action="{{ url_for('accounts.buy_credits_view') }}">
+    {{ buy_credits_form.hidden_tag() }}
+    <h3>Credits:  <span class="h3-num" id="credits-num">1</span></h3>
+    {{ buy_credits_form.credits }}
+    <h3>Price: $<span class="h3-num" id="price-num">10</span></h3>
+    {{ buy_credits_form.submit }}
+  </form>
+</div>
+
 {% endblock %}

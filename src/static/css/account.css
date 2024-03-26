@@ -1,14 +1,48 @@
-.slider-container {
-  padding: 20px;
+h3 {
+  font-family: Raleway;
+  text-transform: uppercase;
+  font-size: 1.1rem;
+  letter-spacing: .1rem;
+  opacity: .95;
 }
-#price {
-  margin-top: 10px;
+.h3-num {
+  font-family: "Open Sans";
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin-top: -.1rem;
+}
+.sidebar {
+  position: fixed;
+  width: 150px;
+  height: 100vh;
+  padding: 10px;
+  padding-top: calc(10%);
+}
+.sidebar-nav {
+  margin-left: -20px;
 }
 
-@media (max-width: 768px) {
-  #credits {
-    writing-mode: vertical-lr;
-    width: 20px;
-    height: 200px;
-  }
+.account-header {
+  margin-top: 4em;
+}
+
+.sidebar-nav li {
+  font-size: 1.25rem;
+  line-height: 26px;
+
+}
+.slider-container {
+  padding: 20px;
+  text-align: center; /* Center content */
+  width: 300px;
+  margin: auto;
+}
+
+#credits-value {
+  display: block;
+}
+
+/* Ensures price is on a new line but stays under the slider */
+#price {
+  margin-top: 10px; /* Space between the slider and the price */
 }
