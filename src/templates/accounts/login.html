@@ -22,9 +22,9 @@
             <h1 class="content-title">Login</h1>
             <div class="input-boxes">
                 <!-- Email Field -->
-                <div class="form-grid" id="div-id_email">
-                    {{ form.email.label(class="user-input-label") }}
-                    {{ form.email(id=form.email.id, class=form.email.css_class) }}
+                <div class="flex-form" id="div-id_email">
+                    {{ form.email.label(class="input-label") }}
+                    {{ form.email(size=20) }}
                     {% if form.email.description %}
                         <small class="help-text">{{ form.email.description }}</small>
                     {% endif %}
@@ -35,10 +35,10 @@
                     {% endif %}
                 </div>
                 <!-- Password Field -->
-                <div class="form-grid" id="div-id_password">
-                    {{ form.password.label(class="user-input-label") }}
+                <div class="flex-form" id="div-id_password">
+                    {{ form.password.label(class="input-label") }}
                     <div class="password-container">
-                        {{ form.password(id=form.password.id, class=form.password.css_class) }}
+                        {{ form.password(size=20, class="password-input") }}
                         <span class="material-symbols-outlined" id="eye" onclick="toggleVisibility()">visibility</span>
                     </div>
                     {% if form.password.description %}

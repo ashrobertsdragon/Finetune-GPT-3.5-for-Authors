@@ -9,38 +9,43 @@
         {% endif %}
     {% endwith %}
     <h1>Profile</h1>
-    <form method="post" class="form" id="account-management-form" action="{{ url_for('accounts.profile_view') }}">
+    <div class="form-grid" id="div-id_account">
+      
+    <form method="post" class="box" id="account-management-form" action="{{ url_for('accounts.profile_view') }}">
+      <h2>Update Profile</h2>
         {{ account_form.hidden_tag() }}
-        <div>
-            {{ account_form.email.label }}
-            {{ account_form.email }}
+        <div class="flex-form">
+            {{ account_form.email.label(class="input-label") }}
+            {{ account_form.email(size=20) }}
         </div>
-        <div>
-            {{ account_form.first_name.label }}
-            {{ account_form.first_name }}
+        <div class="flex-form">
+            {{ account_form.first_name.label(class="input-label") }}
+            {{ account_form.first_name(size=20) }}
         </div>
-        <div>
-            {{ account_form.last_name.label }}
-            {{ account_form.last_name }}
+        <div class="flex-form">
+            {{ account_form.last_name.label(class="input-label") }}
+            {{ account_form.last_name(size=20) }}
         </div>
-        <div>
-            {{ account_form.b_day.label }}
-            {{ account_form.b_day }}
+        <div class="flex-form">
+            {{ account_form.b_day.label(class="input-label") }}
+            {{ account_form.b_day(size=20) }}
         </div>
         <input type="submit" value="Update Profile" class="btn btn-primary" />
     </form>
-    <div class="credit-info">
+    </div>
+    <div class="box form-grid" id="credit-info">
         <h2>Credit Balance: {{ user.credits_available }}</h2>
         <h2>Credits Used: {{ user.credits_used }}</h2>
     </div>
     <!-- Password Field -->
     <div class="form-grid" id="div-id_password">
-        <h2>Update Password</h2>
-        <form method="POST" class="form" id="update-password-form" action="{{ url_for('accounts.profile_view') }}">
+        
+        <form method="POST" class="box" id="update-password-form" action="{{ url_for('accounts.profile_view') }}">
+          <h2>Update Password</h2>
           {{ password_form.hidden_tag() }}
-        {{ password_form.new_password.label(class="user-input-label") }}
-        <div class="password-container">
-            {{ password_form.new_password(id=password_form.new_password.id, class=password_form.new_password.css_class) }}
+        {{ password_form.new_password.label(class="input-label") }}
+        <div class="flex-form">
+            {{ password_form.new_password(size=20) }}
             <span class="material-symbols-outlined" id="eye" onclick="toggleVisibility()">visibility</span>
         </div>
         {% if password_form.new_password.description %}

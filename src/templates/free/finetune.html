@@ -31,29 +31,32 @@
         <p id="errorMessage"></p>
     </div>
   </div>
-  <form class="box" method="POST" enctype="multipart/form-data" role="main">
+  <form class="box" method="POST" enctype="multipart/form-data" role="main" action="{{url_for('free.finetune')}}">
     {{ form.hidden_tag() }}
     <div class="opening-info">
         <p class="info-link"><a href="{{ url_for('free.finetune_instructions') }}" target="_blank" aria-label="Read detailed instructions">Instructions</a></p>
         <p class="info-link"><a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" title="OpenAI API keys" aria-label="Get API key from OpenAI">Get API key from OpenAI</a></p>
     </div>
-    <div id="key">
-        {{ form.user_key.label }}
-        {{ form.user_key(id="user_key", class_="form-control") }}
+    <div class="flex-form" id="key">
+        {{ form.user_key.label(class="finetune-label") }}
+        <div class="password-container">
+        {{ form.user_key(id="user_key", class="password-input", size=60) }}
         <span class="material-symbols-outlined" id="eye" onclick="toggleVisibility()">visibility</span>
+      </div>
     </div>
-    <div id="upload">
+    
         <p class="info-link" id="convert-link"><a href="{{ url_for('free.convert_ebook') }}" target="_blank">Convert your ebooks here</a></p>
-        {{ form.file.label }}
-        {{ form.file(id="file", class_="form-control", multiple=true, accept="text/plain") }}
+    <div class="flex-form" id="upload">
+        {{ form.file.label(class="finetune-label") }}
+        {{ form.file(id="file", multiple=true, accept="text/plain") }}
     </div>
     <div id="sys_role">
         {{ form.role.label(id="roleLabel") }}
-        {{ form.role(id="role", class_="form-control", rows=5) }}
+        {{ form.role(id="role", rows=5) }}
     </div>
-    <div id="chunk">
-        {{ form.chunk_type.label }}
-        {{ form.chunk_type(id="chunk_type", class_="form-control") }}
+    <div id="chunk" class="flex-form">
+        {{ form.chunk_type.label(class="finetune-label") }}
+        {{ form.chunk_type(id="chunk_type") }}
     </div>
     <div id="checkboxes">
         <div id="rights">
@@ -62,7 +65,7 @@
         </div>
         <div id="terms">
             {{ form.terms_agreement(id="terms_agreement") }}
-            <label for="terms_agreement">I agree to the <a href="{{ url_for('core.terms_page') }}" target="_blank">terms and conditions</a></label>
+            <label for="terms_agreement" class="terms_agreement_label">I agree to the <a href="{{ url_for('core.terms_page') }}" target="_blank">terms and conditions</a></label>
         </div>
     </div>
     {{ form.submit(class_="btn btn-primary") }}

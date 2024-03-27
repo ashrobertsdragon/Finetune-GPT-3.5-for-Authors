@@ -1,3 +1,4 @@
+/* Global */
 h3 {
   font-family: Raleway;
   text-transform: uppercase;
@@ -11,6 +12,14 @@ h3 {
   font-size: 1.2rem;
   margin-top: -.1rem;
 }
+.form-grid {
+  display: block;
+  max-width: 600px;
+  margin: auto;
+  margin-top: 20px;
+}
+
+/* Sidebar */
 .sidebar {
   position: fixed;
   width: 150px;
@@ -29,11 +38,24 @@ h3 {
 .sidebar-nav li {
   font-size: 1.25rem;
   line-height: 26px;
-
 }
+
+/* Profile */
+#profile {
+  display: block;
+}
+
+#update-password-form,
+#account-management-form {
+  width: 600px;
+  margin: auto;
+  padding: 20px;
+}
+
+/* Buy credits */
 .slider-container {
   padding: 20px;
-  text-align: center; /* Center content */
+  text-align: center;
   width: 300px;
   margin: auto;
 }
@@ -42,7 +64,6 @@ h3 {
   display: block;
 }
 
-/* Ensures price is on a new line but stays under the slider */
 #price {
   margin-top: 10px; /* Space between the slider and the price */
 }

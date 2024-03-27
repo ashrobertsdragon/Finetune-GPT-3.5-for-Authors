@@ -55,15 +55,11 @@ input::file-selector-button:hover {
 
 /* Labels */
 label {
-  display: grid;
   font-size: 1.1em;
   padding-bottom: .25em;
   margin-right: 1rem;
 }
 
-label a {
-  padding-left: .25em;
-}
 
 /* Dark mode */
 body.dark-mode label {
@@ -131,6 +127,40 @@ div {
   text-align: center;
 }
 
+/* Text input fields */
+.flex-form {
+  display: flex;
+  align-items: center;
+}
+.input-label {
+  width: 8rem;
+}
+
+/* Checkboxes */
+#checkboxes {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-top: .5em;
+}
+
+.terms-agreement-label {
+  width: 100px;
+  white-space: nowrap;
+}
+
+#rights, #terms {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0;
+  padding-bottom: 0;
+  flex-wrap: nowrap;
+}
+#rights label,
+#terms label {
+  margin-left: 10px;
+}
+
 /* Help-text */
 .help-text {
   display: none;
@@ -145,7 +175,6 @@ div {
   padding-bottom: 2em;
 }
 
-
 #file_upload {
   text-align: center;
 }
@@ -157,44 +186,16 @@ div {
   margin-bottom: 2em;
 }
 
-#chunk-type {
-  display: flex;
-  justify-content: flex-end;
-}
-
-#chunk-type select {
-  width: auto;
-  margin: auto;
-}
-
-#checkboxes {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-#checkboxes label {
-  font-size: .8em;
-  padding-top: .2em;
-  white-space: nowrap;
-}
-
-#rights, #terms {
-  display: flex;
-  align-items: center;
-  margin-bottom: 0;
-  margin-right: auto;
-  padding-bottom: 0;
-  flex-wrap: nowrap;
-}
-
-#rights input[type="checkbox"], 
-#terms input[type="checkbox"] {
-  margin-right: 5px;
-}
-
 .info-list a {
   font-style: italic;
+}
+
+.finetune-label {
+  width: 10rem;
+}
+
+#convert-link {
+  text-align: center;
 }
 
 /* Error Modal */
@@ -251,24 +252,12 @@ body.dark-mode .modal-content {
   flex-grow: 1;
 }
 
-/* Ebook converter */
-.metadata label {
-  width: 3em;
-}
-#convert-link {
-  text-align: center;
+#eye {
+  color:#1C0B19;
 }
 
-/* Joint */
-#chunk, .metadata {
-  margin-right: auto;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-}
-#chunk, .metadata label {
-  margin-right: .25em;
-  white-space: nowrap;
+body.dark-mode #eye {
+  color:#DBE1E7;
 }
 
 /* Contact form */
@@ -336,26 +325,6 @@ body.dark-mode .modal-content {
   margin-right: auto;
 }
 
-.user-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  max-width: none;
-}
-
-.input-boxes {
-  width: 100%;
-  margin: auto;
-}
-.form-grid {
-  display: grid;
-  grid-template-columns: 30% 50%;
-}
-.user-input-label {
-  align-items: center;
-  text-align: left;
-  padding-right: 10px;
-}
 
 user-input,
 input[type="password"],
@@ -371,11 +340,6 @@ input[type="email"] {
   margin: 0 auto 10px 0;
 }
 
-.form-grid #user-key,
-.form-grid .system-message,
-.form-grid .file-input {
-  margin-left: calc(30% + 10px); /* Align inputs with labels */
-}
 input[type="date"]::-webkit-calendar-picker-indicator {
   right: 10px;
 }
@@ -436,31 +400,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     padding: 10px;
   }
 
-  #checkboxes label {
-    display: block;
-    align-items: center;
-    font-size: 16px;
-    line-height: normal;
-    margin: 8px 0;
-  }
-  #upload label {
-    margin-top: .5em;
-    margin-bottom: .5em;;
-  }
-  #chunk, .metadata, #key {
-    flex-direction: column;
-    align-items: stretch;
-  }
 
-  .form-grid {
-    grid-template-columns: 1fr; /* Stack label and input on small screens */
-  }
 
-  .form-grid label {
-    text-align: left;
-    padding-right: 0;
-  }
-  .user-input {
-    min-height: 48px;
-  }
 }

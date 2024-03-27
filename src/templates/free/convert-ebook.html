@@ -20,30 +20,30 @@
         </ul>
     {% endif %}
   {% endwith %}
-  <form class="box" id="conversionForm" method="post" enctype="multipart/form-data">
+  <form class="box" id="conversionForm" method="post" enctype="multipart/form-data" action="{{ url_for ('free.convert_ebook') }}">
     {{ form.hidden_tag() }}
-    <div class="form" id="upload">
-        {{ form.ebook.label }}
+    <div class="flex-form" id="upload">
+        {{ form.ebook.label(class="input-label") }}
         {{ form.ebook(size=20) }}
     </div>
     <div class="form" id="metadata">
-        <div class="metadata" id="title">
-            {{ form.title.label }}
+        <div class="flex-form" id="title">
+            {{ form.title.label(class="input-label") }}
             {{ form.title(size=20) }}
         </div>
-        <div class="metadata" id="author">
-            {{ form.author.label }}
+        <div class="flex-form" id="author">
+            {{ form.author.label(class="input-label") }}
             {{ form.author(size=20) }}
         </div>
     </div>
-    <div class="form" id="checkboxes">
+    <div id="checkboxes">
       <div id="rights">
         {{ form.rights_confirmation(id="rights_confirmation") }}
         {{ form.rights_confirmation.label }}
     </div>
     <div id="terms">
         {{ form.terms_agreement(id="terms_agreement") }}
-        <label for="terms_agreement">I agree to the <a href="{{ url_for('core.terms_page') }}" target="_blank">terms and conditions</a></label>
+        <label for="terms_agreement" class="terms_agreement_label">I agree to the <a href="{{ url_for('core.terms_page') }}" target="_blank">terms and conditions</a></label>
     </div>
     </div>
     {{ form.submit() }}
