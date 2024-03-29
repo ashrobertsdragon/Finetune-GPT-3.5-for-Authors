@@ -73,8 +73,17 @@
 {% endblock %}
 
 {% block footer %}
-  {% include 'finetune-footer.html' %}
-{% endblock footer %}
+
+  <div>
+    © <a href="https://prosepal.io" target="_blank" rel="noopener">ProsePal</a>
+    <span> | </span>
+    <a href="https://github.com/ashrobertsdragon/Finetune-GPT-3.5-for-Authors">Code available on GitHub under MIT License</a>
+    <span> | </span>
+    <a href="{{ url_for('core.terms_page') }}" title="Terms of service" target="_blank">Terms and Conditions</a>
+    <span> | </span>
+    <a href="{{ url_for('core.privacy_page') }}" title="Privacy policy" target="_blank">Privacy Policy</a>
+  </div>
+{% endblock %}
 {% block end_js %}
   <script src="{{ url_for('static', filename='js/visToggle.js') }}"></script>
   <script>
@@ -90,4 +99,4 @@
     });
     </script>
     
-{% endblock end_js %}
+{% endblock %}

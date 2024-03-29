@@ -91,14 +91,14 @@ def account_view(section="profile"):
     account_form = AccountManagementForm()
     password_form = UpdatePasswordForm()
     buy_credits_form = BuyCreditsForm()
-    binders = get_binders()
+    binders_db = get_binders()
 
     return render_template(
         "accounts/account.html",
         section=section,
         account_form=account_form,
         password_form=password_form,
-        binders=binders,
+        binders_db=binders_db,
         buy_credits_form=buy_credits_form
     )
 

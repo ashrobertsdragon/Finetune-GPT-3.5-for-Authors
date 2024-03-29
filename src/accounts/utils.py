@@ -14,10 +14,10 @@ def get_binders():
     owner = session["user_details"]["id"]
     data = supabase.table("binders").select("title", "author", "download_path").eq("owner", owner).execute()
     if data:
-        binders = [{"title": binder["title"], "author": binder["author"], "download_path": binder["download_path"]} for binder in data.data]
+        binder_db = [{"title": binder["title"], "author": binder["author"], "download_path": binder["download_path"]} for binder in data.data]
     else:
-        binders = Markup("No LoreBinders purchased yet. <a href='/lorebinders'>Get started now</a>")
-    return binders
+        binder_db = []
+    return binder_db
 
 def redirect_after_login(auth_id):
     try:

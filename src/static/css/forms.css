@@ -362,6 +362,13 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   padding: 5px;
 }
 
+.binder-table {
+  width: 400px;
+  align-items: center;
+  display: flex;
+  text-align: flex;
+}
+
 /* Responsive changes */
 @media screen and (max-width: 768px) {
   
@@ -389,7 +396,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   }
   input[type="checkbox"] {
     height: 40px;
-    width: 40 px;
+    width: 40px;
   }
   
   /* Finetuner */

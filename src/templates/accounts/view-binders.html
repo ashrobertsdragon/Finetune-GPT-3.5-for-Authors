@@ -1,8 +1,14 @@
 {% block content %}
     <h1>View Purchased LoreBinders</h1>
-    {% for binder in binders %}
-      <div class="row">
-        {{ binder.title }} - {{ binder.author }} - {{ binder.download_path }}
+    {% if binder_db %}
+      {% for binder in binder_db %}
+        <div class="row">
+          {{ binder.title }} - {{ binder.author }} - {{ binder.download_path }}
+        </div>
+      {% endfor %}
+    {% else %}
+    <div class="box binder-table">
+    <p>You have no purchased any LoreBinders yet. <a href="{{ url_for('binders.lorebinder_form_view') }}" title="Start LoreBinder">Get started on your first one now</a></p>
       </div>
-    {% endfor %}
+  {% endif %}
 {% endblock %}
