@@ -5,8 +5,8 @@ from src.supabase import SupabaseDB
 db = SupabaseDB()
 
 def initialize_user_db(auth_id, email):
-    data = session["user_details"]
-    db.insert_row("user", data, match = {
+    info = session["user_details"]
+    db.insert_row("user", info, match = {
         "auth_id": auth_id,
         "email": email
     })
@@ -14,9 +14,9 @@ def initialize_user_db(auth_id, email):
 def get_binders():
     owner = session["user_details"]["id"]
     match_dict = {"owner": owner}
-    data = db.select_row("binders", match=match_dict, columns=["title", "author", "download_path"])
-    if data:
-        binder_db = [{"title": binder["title"], "author": binder["author"], "download_path": binder["download_path"]} for binder in data.data]
+    binder_data = db.select_row("binders", match=match_dict, columns=["title", "author", "download_path"])
+    if binder_data:
+        binder_db = [{"title": binder["title"], "author": binder["author"], "download_path": binder["download_path"]} for binder in binder_data.data]
     else:
         binder_db = []
     return binder_db
