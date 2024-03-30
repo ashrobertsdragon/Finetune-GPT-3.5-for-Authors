@@ -1,18 +1,20 @@
 from flask import session, redirect, url_for, flash
-from markupsafe import Markup
-from src.supabase import supa_service, supabase
+from src.supabase import SupabaseDB
 
 
+db = SupabaseDB()
 
 def initialize_user_db(auth_id, email):
-    supa_service.table("user").insert({
+    data = session["user_details"]
+    db.insert_row("user", data, match = {
         "auth_id": auth_id,
-        "email": email,
-    }).execute()
+        "email": email
+    })
 
 def get_binders():
     owner = session["user_details"]["id"]
-    data = supabase.table("binders").select("title", "author", "download_path").eq("owner", owner).execute()
+    match_dict = {"owner": owner}
+    data = db.select_row("binders", match=match_dict, columns=["title", "author", "download_path"])
     if data:
         binder_db = [{"title": binder["title"], "author": binder["author"], "download_path": binder["download_path"]} for binder in data.data]
     else:
@@ -21,7 +23,8 @@ def get_binders():
 
 def redirect_after_login(auth_id):
     try:
-        response = supabase.table("user").select("*").eq("auth_id", auth_id).execute()
+        match_dict = {"auth_id": auth_id}
+        response = db.select_row("user", match=match_dict)
         user_details = response.data[0]
         session["user_details"] = user_details
         credits_available = session["user_details"]["credits_available"]
