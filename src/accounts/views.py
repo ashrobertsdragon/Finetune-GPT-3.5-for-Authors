@@ -1,6 +1,5 @@
 from flask import Blueprint, current_app, render_template, redirect, session, url_for, flash, request
 
-
 from src.supabase import supabase, update_db
 from src.decorators import login_required
 
@@ -116,7 +115,7 @@ def profile_view():
             session["user_details"]["email"] = new_email
             try:
                 data = supabase.auth.update_user(
-                  {"email":new_email}
+                  {"email": new_email}
                 )
                 access_token = data.session.access_token
                 session["access_token"] = access_token

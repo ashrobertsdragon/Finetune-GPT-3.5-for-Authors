@@ -4,14 +4,32 @@ from src.supabase import SupabaseDB
 
 db = SupabaseDB()
 
-def initialize_user_db(auth_id, email):
+def initialize_user_db(auth_id: str, email: str) -> None:
+    """
+    Inserts user details into the 'user' table in the database.
+
+    Args:
+        auth_id (str): The authentication ID of the user.
+        email (str): The email address of the user.
+
+    """
     info = session["user_details"]
     db.insert_row("user", info, match = {
         "auth_id": auth_id,
         "email": email
     })
 
-def get_binders():
+def get_binders() -> list:
+    """
+    Get a list of binders owned by the current user.
+
+    Returns:
+        list: A list of dictionaries containing binder information. Each 
+            dictionary contains the following keys:
+                title (str): The title of the binder.
+                author (str): The author of the binder.
+                download_path (str): The download path of the binder.
+    """
     owner = session["user_details"]["id"]
     match_dict = {"owner": owner}
     binder_data = db.select_row("binders", match=match_dict, columns=["title", "author", "download_path"])
@@ -22,6 +40,20 @@ def get_binders():
     return binder_db
 
 def redirect_after_login(auth_id):
+    """
+    Redirects the user after login based on their available credits.
+
+    Args:
+        auth_id (str): The authentication ID of the user.
+
+    Returns:
+        list: A list of dictionaries containing binder information, including
+            title, author, and download path.
+
+    Raises:
+        Exception: If there is an error retrieving the user details or 
+            selecting binder data from the database.
+    """
     try:
         match_dict = {"auth_id": auth_id}
         response = db.select_row("user", match=match_dict)
