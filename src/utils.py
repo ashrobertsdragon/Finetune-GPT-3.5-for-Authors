@@ -20,6 +20,10 @@ def random_str():
     return "".join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(7))
 
 def update_db() -> None:
+    """
+    Update the user's row of the user table with the most current session 
+    user_details dictionionary
+    """
     auth_id = session["user_details"].get("auth_id")
     match = {"auth_id": auth_id}
     db.update_row("user", info=session["user_details"], match=match)
