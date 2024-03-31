@@ -1,6 +1,6 @@
 from flask import session, redirect
 
-from src.supabase import update_db
+from src.utils import update_db
 
 
 def update_credits(user):

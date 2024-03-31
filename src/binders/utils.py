@@ -1,10 +1,10 @@
 import requests
 
-from src.supabase import SupabaseDB
 from src.error_handling import email_admin
-
+from src.supabase import SupabaseDB
 
 db = SupabaseDB
+
 
 def save_binder_data(api_payload: dict, user: str) -> None:
     """
@@ -27,7 +27,8 @@ def save_binder_data(api_payload: dict, user: str) -> None:
     except Exception as e:
         email_admin(f"Exception {e} saving {data} to binderTable")
 
+
 def call_api(api_payload):
-    response = requests.post('PP_API_ENDPOINT', json=api_payload)
+    response = requests.post("PP_API_ENDPOINT", json=api_payload)
     if response.status_code != 200:
         email_admin(f"{response.message} for {api_payload}")
