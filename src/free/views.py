@@ -3,14 +3,11 @@ import logging
 from flask import Blueprint, request, render_template, jsonify
 
 from src.utils import random_str
-from src.logging_config import start_loggers
 
 from .forms import EbookConversionForm, FineTuneForm
 from src.free.utils import make_folder, is_encoding
 
 free_app = Blueprint("free", __name__)
-
-start_loggers()
 error_logger = logging.getLogger("error_logger")
 
 def training_status():

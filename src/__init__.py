@@ -5,6 +5,7 @@ from flask_session import Session
 # Config classes for environment variables
 from config import DevelopmentConfig, TestingConfig, StagingConfig, ProductionConfig
 
+from .logging_config import start_loggers
 from .utils import load_user, inject_user_context
 # Import blueprints
 from src.accounts.views import accounts_app
@@ -12,6 +13,9 @@ from src.binders.views import binders_app
 from src.core.views import core_app
 from src.free.views import free_app
 from src.stripe.views import stripe_app
+
+# Initialize logging
+start_loggers()
 
 app = Flask(__name__)
 

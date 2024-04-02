@@ -1,16 +1,238 @@
-from decouple import config
+import logging
 
+from decouple import config
+from gotrue.types import AuthResponse, UserResponse
 from supabase import create_client, Client
+
 from .error_handling import email_admin
 
-class SupabaseDB():
+
+error_logger = logging.getLogger("error_logger")
+
+class SupabaseClient():
     def __init__(self) -> None:
-        url: str = config("SUPABASE_URL")
+        self.url: str = config("SUPABASE_URL")
         key: str = config("SUPABASE_KEY")
+
+        self.default_client: Client = create_client(self.url, key)
+
+    def create_error_message(
+            self, action: str, updates: dict = None, match: dict = None,
+            email: str = None, table_name: str = None, **kwargs
+        ) -> str:
+        """
+        Create the error message for for logging errors.
+
+        Args:
+            action (str): The action being performed.
+            updates (dict, optional): The updates being made. Defaults to
+                None.
+            match (dict, optional): The matching criteria. Defaults to None.
+            email (str, optional): The email associated with the error.
+                Defaults to None.
+            table_name (str, optional): The name of the table. Defaults to 
+                None.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            str: The error message.
+
+        Example:
+            create_error_message(
+                "insert", updates={"name": "John"}, table_name="users"
+            )
+        """
+        error_message: list = [f"Error performing {action}"]
+
+        arguments = {
+            'table_name': table_name,
+            'updates': updates,
+            'match': match,
+            'email': email,
+            **kwargs
+        }
+        for arg_name, arg_value in arguments.items():
+            if arg_value:
+                error_message.append(f" with {arg_name}: {arg_value}")
+
+        return " ".join(error_message)
+
+    def log_error(
+            self, e: Exception, action: str, *, updates: dict = None,
+            match: dict = None, email: str = None, table_name: str = None,
+            **kwargs
+        ) -> None:
+        """
+        Log an error and send an email to the admin.
+
+        Args:
+            e (Exception): The exception that occurred.
+            action (str): The action being performed.
+            updates (dict, optional): The updates being made. Defaults to 
+                None.
+            match (dict, optional): The matching criteria. Defaults to None.
+            email (str, optional): The email associated with the error.
+                Defaults to None.
+            table_name (str, optional): The name of the table. Defaults to
+                None.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            None
+
+        Example:
+            log_error(
+                Exception("Something went wrong"), "insert",
+                updates={"name": "John"}, table_name="users"
+            )
+        """
+        error_message = self.create_error_message(
+            action, updates=updates, match=match, email=email,
+            table_name=table_name, **kwargs
+        )
+
+        error_message += f"\nException: {str(e)}"
+
+        error_logger.error(error_message)
+        self.send_email_admin(error_message)
+
+    def send_email_admin(error_message):
+        email_admin(error_message)
+
+class SupabaseAuth(SupabaseClient):
+    def sign_up(self, *, email: str, password: str) -> AuthResponse:
+        """
+        Signs up a user with the provided email and password.
+
+        Args:
+            email (str): The email of the user.
+            password (str): The password of the user.
+
+        Returns:
+            AuthResponse: The response object containing the authentication
+                information.
+
+        Raises:
+            Exception: If an error occurs during the sign up process.
+
+        Example:
+            sign_up(email="example@example.com", password="password123")
+        """
+        try:
+            res = self.default_client.auth.sign_up({
+                "email": email,
+                "password": password,
+            })
+            return res
+        except Exception as e:
+            action = "signup"
+            self.log_error(e, action, email=email)
+            raise
+
+    def sign_in(self, *, email: str, password: str) -> AuthResponse:
+        """
+        Signs in a user with the provided email and password.
+
+        Args:
+            email (str): The email of the user.
+            password (str): The password of the user.
+
+        Returns:
+            AuthResponse: The response object containing the authentication
+                information.
+
+        Raises:
+            Exception: If an error occurs during the sign in process.
+
+        Example:
+            sign_in(email="example@example.com", password="password123")
+        """
+        try:
+            data = self.default_client.auth.sign_in_with_password({
+                "email": email,
+                "password": password
+            })
+            return data
+        except Exception as e:
+            action = "login"
+            self.log_error(e, action, email=email)
+            raise
+
+    def sign_out(self) -> None:
+        """
+        Signs out the currently authenticated user.
+
+        Raises:
+            Exception: If an error occurs during the sign out process.
+
+        Example:
+            sign_out()
+        """
+        try:
+            self.default_client.auth.sign_out()
+        except Exception as e:
+            action = "logout"
+            self.log_error(e, action)
+            raise
+
+    def reset_password(self, *, email: str, domain: str) -> None:
+        """
+        Resets the password for a user with the provided email.
+
+        Args:
+            email (str): The email of the user.
+            domain (str): The domain of the application.
+
+        Raises:
+            Exception: If an error occurs during the password reset process.
+
+        Example:
+            reset_password(email="example@example.com", domain="example.com")
+        """
+        try:
+            self.default_client.auth.reset_password_email(
+                email,
+                options={"redirect_to": f"{domain}/reset-password.html"}
+            )
+        except Exception as e:
+            action = "reset_password"
+            self.log_error(e, action, email=email)
+            raise
+
+    def update_user(self, updates: dict) -> UserResponse:
+        """
+        Updates a user with the provided updates.
+
+        Args:
+            updates (dict): A dictionary containing the updates to be made to
+                the user.
+
+        Returns:
+            UserResponse: The response object containing the updated user
+                information.
+
+        Raises:
+            Exception: If an error occurs during the update process.
+
+        Example:
+            update_user(updates={"name": "John", "age": 30})
+        """
+        try:
+            data = self.default_client.auth.update_user(updates)
+            return data
+        except Exception as e:
+            action = "update user"
+            self.log_error(e, action, updates=updates)
+            raise
+
+
+class SupabaseDB(SupabaseClient):
+    def __init__(self) -> None:
+        super().__init__()
+        self.log_error = super().log_error()
         service_role: str = config("SUPABASE_SERVICE_ROLE")
 
-        self.default_client: Client = create_client(url, key)
-        self.service_client: Client = create_client(url, service_role)
+        self.service_client: Client = create_client(self.url, service_role)
     
     def _select_client(self, use_service_role: bool = False) -> Client:
         """
@@ -29,7 +251,8 @@ class SupabaseDB():
             else:
                 return self.default_client
         except Exception as e:
-            email_admin(f"Error {e} accessing client.")
+            action = "accessing client"
+            self.log_error(e, action)
             return None
     
     def _check_table(self, table_name: str, action: str, **kwargs) -> bool:
@@ -50,14 +273,13 @@ class SupabaseDB():
         """
         db_client = self._select_client(use_service_role=True)
         if not db_client.table(table_name).exists():
-            table_error = f"Error: No table {table_name}."
-            message = f"{table_error} Cannot {action} {kwargs}."
-            email_admin(message)
+            e = "No table: "
+            self.log_error(e, action=action, table_name=table_name, kwargs=kwargs)
             return False
         return True
     
     def insert_row(
-        self, table_name: str, *, data: dict, use_service_role: bool = False
+        self, table_name: str, *, updates: dict, use_service_role: bool = False
     ) -> bool:
         """
         Inserts a row into a table.
@@ -93,13 +315,14 @@ class SupabaseDB():
             )
         """
         db_client = self._select_client(use_service_role)
-        if not self._check_table(table_name, action="insert", data=data):
+        action = "insert"
+        if not self._check_table(table_name, action=action, updates=updates):
             return False
         try:
-            db_client.table(table_name).insert(data).execute()
+            db_client.table(table_name).insert(updates).execute()
             return True
         except Exception as e:
-            email_admin(f"Error {e} saving {data} to {table_name}")
+            self.log_error(e, action, updates=updates, table_name=table_name)
             return False
     
     def select_row(
@@ -135,10 +358,11 @@ class SupabaseDB():
             # Output: {"name": "John Doe", "age": 30, "email": "johndoe@example.com"}
         """
         db_client = self._select_client()
-        
+        action = "select"
+
         if not self._check_table(
             table_name,
-            action="select",
+            action=action,
             columns=columns,
             match=match,
         ):
@@ -148,7 +372,8 @@ class SupabaseDB():
                 .select(*columns).eq(**match).execute()
             return response.data if response.data else {}
         except Exception as e:
-            email_admin(f"Error {e} retrieving {columns} for {match}")
+            updates = {"columns": columns}
+            self.log_error(e, action, updates=updates, match=match)
 
     def update_row(self, table_name: str, info: dict, *, match: dict) -> bool:
         """
@@ -182,9 +407,10 @@ class SupabaseDB():
             # Output: True
         """
         db_client = self._select_client()
+        action = "update"
         if not self._check_table(
             table_name,
-            action="update",
+            action=action,
             info=info,
             match=match
         ):
@@ -193,5 +419,5 @@ class SupabaseDB():
             db_client.table(table_name).update(info).eq(**match).execute()
             return True
         except Exception as e:
-            email_admin(f"Error {e}\n updating {info} for {match}")
+            self.log_error(e, action, updates=info, match=match)
             return False
