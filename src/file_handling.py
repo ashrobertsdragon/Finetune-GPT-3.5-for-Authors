@@ -1,5 +1,7 @@
-from .supabase import supabase
-from .error_handling import email_admin
+from .supabase import SupabaseStorage
+
+
+storage = SupabaseStorage()
 
 def upload_supabase_bucket(user_folder, file, *, bucket):
     """
@@ -33,17 +35,10 @@ def upload_supabase_bucket(user_folder, file, *, bucket):
     file_name = file.filename
     upload_path = f"{user_folder}/{file_name}"
 
-    try:
-        file_content = file.read()
-        file_mime_type = file.content_type
-        file.seek(0)
+    file_content = file.read()
+    file_mimetype = file.content_type
+    file.seek(0)
 
-        supabase.storage.from_(bucket).upload(
-            path=upload_path,
-            file=file_content,
-            file_options={"content-type": file_mime_type}
-        )
-    except Exception as e:
-        email_admin(e)
-    
+    storage(bucket, upload_path, file_content, file_mimetype)
+
     return upload_path

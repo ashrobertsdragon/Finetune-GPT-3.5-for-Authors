@@ -44,37 +44,20 @@ class SupabaseClient():
         """
         error_message: list = [f"Error performing {action}"]
 
-        arguments = {
-            'table_name': table_name,
-            'updates': updates,
-            'match': match,
-            'email': email,
-            **kwargs
-        }
+        arguments = {**kwargs}
         for arg_name, arg_value in arguments.items():
             if arg_value:
                 error_message.append(f" with {arg_name}: {arg_value}")
 
         return " ".join(error_message)
 
-    def log_error(
-            self, e: Exception, action: str, *, updates: dict = None,
-            match: dict = None, email: str = None, table_name: str = None,
-            **kwargs
-        ) -> None:
+    def log_error(self, e: Exception, action: str, **kwargs) -> None:
         """
         Log an error and send an email to the admin.
 
         Args:
             e (Exception): The exception that occurred.
             action (str): The action being performed.
-            updates (dict, optional): The updates being made. Defaults to 
-                None.
-            match (dict, optional): The matching criteria. Defaults to None.
-            email (str, optional): The email associated with the error.
-                Defaults to None.
-            table_name (str, optional): The name of the table. Defaults to
-                None.
             **kwargs: Additional keyword arguments.
 
         Returns:
@@ -86,10 +69,7 @@ class SupabaseClient():
                 updates={"name": "John"}, table_name="users"
             )
         """
-        error_message = self.create_error_message(
-            action, updates=updates, match=match, email=email,
-            table_name=table_name, **kwargs
-        )
+        error_message = self.create_error_message(action, **kwargs)
 
         error_message += f"\nException: {str(e)}"
 
@@ -126,7 +106,7 @@ class SupabaseAuth(SupabaseClient):
             return res
         except Exception as e:
             action = "signup"
-            self.log_error(e, action, email=email)
+            super().log_error(e, action, email=email)
             raise
 
     def sign_in(self, *, email: str, password: str) -> AuthResponse:
@@ -155,7 +135,7 @@ class SupabaseAuth(SupabaseClient):
             return data
         except Exception as e:
             action = "login"
-            self.log_error(e, action, email=email)
+            super().log_error(e, action, email=email)
             raise
 
     def sign_out(self) -> None:
@@ -172,7 +152,7 @@ class SupabaseAuth(SupabaseClient):
             self.default_client.auth.sign_out()
         except Exception as e:
             action = "logout"
-            self.log_error(e, action)
+            super().log_error(e, action)
             raise
 
     def reset_password(self, *, email: str, domain: str) -> None:
@@ -196,7 +176,7 @@ class SupabaseAuth(SupabaseClient):
             )
         except Exception as e:
             action = "reset_password"
-            self.log_error(e, action, email=email)
+            super().log_error(e, action, email=email)
             raise
 
     def update_user(self, updates: dict) -> UserResponse:
@@ -222,14 +202,29 @@ class SupabaseAuth(SupabaseClient):
             return data
         except Exception as e:
             action = "update user"
-            self.log_error(e, action, updates=updates)
+            super().log_error(e, action, updates=updates)
             raise
 
+class SupabaseStorage(SupabaseClient):
+    def upload_file(self, bucket, upload_path, file_content, file_mimetype):
+        try:
+            self.default_client.storage.from_(bucket).upload(
+                path=upload_path,
+                file=file_content,
+                file_options={"content-type": file_mimetype}
+            )
+        except Exception as e:
+            action = "upload file"
+            super().log_error(
+                e, action, 
+                upload_path=upload_path,
+                file_content=file_content,
+                file_mimetype=file_mimetype
+            )
 
 class SupabaseDB(SupabaseClient):
     def __init__(self) -> None:
         super().__init__()
-        self.log_error = super().log_error()
         service_role: str = config("SUPABASE_SERVICE_ROLE")
 
         self.service_client: Client = create_client(self.url, service_role)
@@ -252,7 +247,7 @@ class SupabaseDB(SupabaseClient):
                 return self.default_client
         except Exception as e:
             action = "accessing client"
-            self.log_error(e, action)
+            super().log_error(e, action)
             return None
     
     def _check_table(self, table_name: str, action: str, **kwargs) -> bool:
@@ -274,7 +269,7 @@ class SupabaseDB(SupabaseClient):
         db_client = self._select_client(use_service_role=True)
         if not db_client.table(table_name).exists():
             e = "No table: "
-            self.log_error(e, action=action, table_name=table_name, kwargs=kwargs)
+            super().log_error(e, action=action, table_name=table_name, kwargs=kwargs)
             return False
         return True
     
@@ -322,7 +317,7 @@ class SupabaseDB(SupabaseClient):
             db_client.table(table_name).insert(updates).execute()
             return True
         except Exception as e:
-            self.log_error(e, action, updates=updates, table_name=table_name)
+            super().log_error(e, action, updates=updates, table_name=table_name)
             return False
     
     def select_row(
@@ -373,7 +368,7 @@ class SupabaseDB(SupabaseClient):
             return response.data if response.data else {}
         except Exception as e:
             updates = {"columns": columns}
-            self.log_error(e, action, updates=updates, match=match)
+            super().log_error(e, action, updates=updates, match=match)
 
     def update_row(self, table_name: str, info: dict, *, match: dict) -> bool:
         """
@@ -419,5 +414,5 @@ class SupabaseDB(SupabaseClient):
             db_client.table(table_name).update(info).eq(**match).execute()
             return True
         except Exception as e:
-            self.log_error(e, action, updates=info, match=match)
+            super().log_error(e, action, updates=info, match=match)
             return False

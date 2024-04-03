@@ -3,11 +3,11 @@ from flask import (Blueprint, current_app, flash, render_template, redirect,
 
 from src.supabase import SupabaseAuth
 from src.decorators import login_required
+from src.utils import update_db
 
 from .forms import (AccountManagementForm, BuyCreditsForm, ForgotPasswordForm,
                     LoginForm, SignupForm, UpdatePasswordForm)
-from .utils import (get_binders, initialize_user_db, redirect_after_login, 
-                    update_db)
+from .utils import get_binders, initialize_user_db, redirect_after_login
 
 accounts_app = Blueprint("accounts", __name__)
 
