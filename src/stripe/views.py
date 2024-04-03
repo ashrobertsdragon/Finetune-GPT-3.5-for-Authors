@@ -3,14 +3,15 @@ from flask import Blueprint, jsonify, request, session
 
 import stripe
 
-from src.supabase import update_db
 from src.decorators import login_required
+from src.utils import update_db
+
 from .utils import create_stripe_session, set_stripe_key
+
 
 stripe_app = Blueprint("stripe", __name__)
 
 stripe.api_key = None
-
 
 @stripe_app.route("/create_checkout_session", methods=["POST"])
 @login_required
