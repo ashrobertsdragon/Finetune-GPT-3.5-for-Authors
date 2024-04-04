@@ -49,7 +49,8 @@ def login_view():
             flash(str(e))
 
         session["access_token"] = access_token
-        redirect_after_login(auth_id)
+        redirect_str = redirect_after_login(auth_id)
+        return redirect(url_for(redirect_str))
     
     return render_template("accounts/login.html", form=form)
 
@@ -175,4 +176,7 @@ def buy_credits_view():
     form = BuyCreditsForm()
     if form.validate_on_submit():
         num_credits = form.credits.data
-        return redirect(f"/checkout.html?num_credits={num_credits}")
+        return render_template(
+            "stripe/checkout.html",
+            num_credits=num_credits
+        )

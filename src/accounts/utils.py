@@ -1,4 +1,4 @@
-from flask import session, redirect, url_for, flash
+from flask import session, flash
 import logging
 
 from src.supabase import SupabaseDB
@@ -100,4 +100,4 @@ def redirect_after_login(auth_id):
         flash("Error logging in. Please try again later", "error")
         redirect_str = "accounts.logout_view"
 
-    return redirect(url_for(redirect_str))
+    return redirect_str

@@ -1,5 +1,5 @@
 from decouple import config
-from flask import Blueprint, jsonify, request, session
+from flask import Blueprint, jsonify, request, render_template, session
 
 import stripe
 
@@ -13,7 +13,7 @@ stripe_app = Blueprint("stripe", __name__)
 
 stripe.api_key = None
 
-@stripe_app.route("/create_checkout_session", methods=["POST"])
+@stripe_app.route("/create_checkout_session", methods=["GET", "POST"])
 @login_required
 def create_checkout_session():
     customer_email = session["user_details"]["email"]
@@ -33,9 +33,17 @@ def session_status():
         session["user_details"]["credits_available"] += num_credits
         update_db()
 
-    return jsonify(status=stripe_session.status, customer_email=stripe_session.customer_details.email)
+    return jsonify(
+        status=stripe_session.status,
+        customer_email=stripe_session.customer_details.email
+    )
 
 @stripe_app.route('/get_publishable_key', methods=['GET'])
 def get_publishable_key():
     STRIPE_PUBLISHABLE_KEY = config("STRIPE_PUBLIC_KEY")
     return jsonify({'publishable_key': STRIPE_PUBLISHABLE_KEY})
+
+@stripe_app.route("/checkout", methods=['GET'])
+def checkout_view():
+    num_credits = request.args.get("num_credits")
+    return render_template("stripe/checkout.html", num_credits=num_credits)
