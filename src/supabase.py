@@ -8,18 +8,35 @@ from .error_handling import email_admin
 
 
 error_logger = logging.getLogger("error_logger")
+info_logger = logging.getLogger("info_logger")
 
 class SupabaseClient():
+    _mono_state: dict = {}
+
     def __init__(self) -> None:
+        self.__dict__ = self._mono_state
+
         self.url: str = config("SUPABASE_URL")
-        key: str = config("SUPABASE_KEY")
+        
+        if "default_client" not in self.__dict__:
+            key: str = config("SUPABASE_KEY")
+            self.default_client: Client = create_client(self.url, key)
+    
+    def log_info(self, action: str, response: dict) -> None:
+        """
+        Log a Supabase response with the info logger.
 
-        self.default_client: Client = create_client(self.url, key)
+        Args:
+            action (str): The action being performed.
+            response (dict): The dictionary of table data returned.
+        
+        Example:
+            log_info("select", {"email": "example@example.com", "name": "John"})
+        
+        """
+        info_logger.info(f"{action} returned {response}")
 
-    def create_error_message(
-            self, action: str, updates: dict = None, match: dict = None,
-            email: str = None, table_name: str = None, **kwargs
-        ) -> str:
+    def create_error_message(self, action: str, **kwargs) -> str:
         """
         Create the error message for for logging errors.
 
@@ -76,10 +93,12 @@ class SupabaseClient():
         error_logger.error(error_message)
         self.send_email_admin(error_message)
 
-    def send_email_admin(error_message):
+    def send_email_admin(self, error_message) -> None:
         email_admin(error_message)
 
 class SupabaseAuth(SupabaseClient):
+    def __init__(self) -> None:
+        super().__init__()
     def sign_up(self, *, email: str, password: str) -> AuthResponse:
         """
         Signs up a user with the provided email and password.
@@ -99,11 +118,11 @@ class SupabaseAuth(SupabaseClient):
             sign_up(email="example@example.com", password="password123")
         """
         try:
-            res = self.default_client.auth.sign_up({
+            response = self.default_client.auth.sign_up({
                 "email": email,
                 "password": password,
             })
-            return res
+            return response
         except Exception as e:
             action = "signup"
             super().log_error(e, action, email=email)
@@ -225,9 +244,10 @@ class SupabaseStorage(SupabaseClient):
 class SupabaseDB(SupabaseClient):
     def __init__(self) -> None:
         super().__init__()
-        service_role: str = config("SUPABASE_SERVICE_ROLE")
 
-        self.service_client: Client = create_client(self.url, service_role)
+        if "service_client" not in self.__dict__:
+            service_role: str = config("SUPABASE_SERVICE_ROLE")
+            self.service_client: Client = create_client(self.url, service_role)
     
     def _select_client(self, use_service_role: bool = False) -> Client:
         """
@@ -250,31 +270,9 @@ class SupabaseDB(SupabaseClient):
             super().log_error(e, action)
             return None
     
-    def _check_table(self, table_name: str, action: str, **kwargs) -> bool:
-        """
-        Checks if a table exists in the database, and logs error (inside
-        email_admin function) if it does not.
-
-        Args:
-            table_name (str): The name of the table to check.
-            action (str): The verb representing the intended SQL operation 
-                (e.g., "SELECT", "INSERT", "UPDATE", "DELETE").
-            **kwargs (dict, optional): Additional keyword arguments specific 
-                to the intended SQL operation. Can include column names, 
-                data values, etc., depending on the context.
-
-        Returns:
-            bool: True if the table exists, False otherwise.
-        """
-        db_client = self._select_client(use_service_role=True)
-        if not db_client.table(table_name).exists():
-            e = "No table: "
-            super().log_error(e, action=action, table_name=table_name, kwargs=kwargs)
-            return False
-        return True
     
     def insert_row(
-        self, table_name: str, *, updates: dict, use_service_role: bool = False
+        self, *, table_name: str, updates: dict, use_service_role: bool = False
     ) -> bool:
         """
         Inserts a row into a table.
@@ -311,17 +309,16 @@ class SupabaseDB(SupabaseClient):
         """
         db_client = self._select_client(use_service_role)
         action = "insert"
-        if not self._check_table(table_name, action=action, updates=updates):
-            return False
         try:
-            db_client.table(table_name).insert(updates).execute()
+            response = db_client.table(table_name).insert(updates).execute()
+            super().log_info(action, response)
             return True
         except Exception as e:
             super().log_error(e, action, updates=updates, table_name=table_name)
             return False
     
     def select_row(
-        self, table_name: str, *, match: dict, columns: list[str] = ["*"]
+        self, *, table_name: str, match: dict, columns: list[str] = ["*"]
     ) -> dict:
         """
         Retrieves a row or columns from a table based on a matching condition.
@@ -354,23 +351,18 @@ class SupabaseDB(SupabaseClient):
         """
         db_client = self._select_client()
         action = "select"
+        match_name, match_value = next(iter(match.items()))
 
-        if not self._check_table(
-            table_name,
-            action=action,
-            columns=columns,
-            match=match,
-        ):
-            return
         try:
             response = db_client.table(table_name) \
-                .select(*columns).eq(**match).execute()
+                .select(*columns).eq(match_name, match_value).execute()
+            super().log_info(action, response)
             return response.data if response.data else {}
         except Exception as e:
-            updates = {"columns": columns}
-            super().log_error(e, action, updates=updates, match=match)
+            super().log_error(e, action, columns=columns, match=match)
+            return {}
 
-    def update_row(self, table_name: str, info: dict, *, match: dict) -> bool:
+    def update_row(self, *, table_name: str, info: dict, match: dict) -> bool:
         """
         Updates a row in the table with data when the row matches a column.
         Returns True if the update was successful, False otherwise.
@@ -381,8 +373,8 @@ class SupabaseDB(SupabaseClient):
                 row. The keys should be the column names and the values should
                 be the corresponding values to update.
             match (dict): A dictionary representing the matching condition for
-                the row to update. The keys should be the column names and the
-                values should be the corresponding values to match.
+                the row to update. The keys should be the column name and the
+                value should be the corresponding value to match.
 
         Returns:
             bool: True if the update was successful, False otherwise.
@@ -403,15 +395,11 @@ class SupabaseDB(SupabaseClient):
         """
         db_client = self._select_client()
         action = "update"
-        if not self._check_table(
-            table_name,
-            action=action,
-            info=info,
-            match=match
-        ):
-            return False
+        match_name, match_value = next(iter(match.items()))
         try:
-            db_client.table(table_name).update(info).eq(**match).execute()
+            response = db_client.table(table_name).update(info) \
+                .eq(match_name, match_value).execute()
+            super().log_info(action, response)
             return True
         except Exception as e:
             super().log_error(e, action, updates=info, match=match)

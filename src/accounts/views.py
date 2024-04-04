@@ -33,7 +33,7 @@ def signup_view():
 
 @accounts_app.route("/login", methods=["GET", "POST"])
 def login_view():
-    if "access_token" in session:
+    if "access_token" in session and "user_details" in session:
         auth_id = session["user_details"]["auth_id"]
         redirect_after_login(auth_id)
     form = LoginForm()
@@ -141,6 +141,7 @@ def profile_view():
             flash("Your profile has been updated.", "message")
         else:
             flash("There was an error updating your profile.", "error")
+        return redirect(url_for("accounts.account_view", section="profile"))
     
     if password_form.validate_on_submit():
         new_password = password_form.new_password.data
@@ -157,6 +158,7 @@ def profile_view():
                 "Please try again.",
                 "error"
             )
+        return redirect(url_for("accounts.account_view", section="profile"))
 
 @accounts_app.route("/view-binders", methods=["GET"])
 @login_required

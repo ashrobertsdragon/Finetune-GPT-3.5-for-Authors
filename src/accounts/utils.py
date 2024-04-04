@@ -1,7 +1,9 @@
 from flask import session, redirect, url_for, flash
+import logging
+
 from src.supabase import SupabaseDB
 
-
+error_logger = logging.getLogger("error_logger")
 db = SupabaseDB()
 
 def initialize_user_db(auth_id: str, email: str) -> None:
@@ -14,7 +16,7 @@ def initialize_user_db(auth_id: str, email: str) -> None:
 
     """
     info = session["user_details"]
-    db.insert_row("user", info, match = {
+    db.insert_row(table_name="user", info=info, match={
         "auth_id": auth_id,
         "email": email
     })
@@ -32,37 +34,70 @@ def get_binders() -> list:
     """
     owner = session["user_details"]["id"]
     match_dict = {"owner": owner}
-    binder_data = db.select_row("binders", match=match_dict, columns=["title", "author", "download_path"])
+    binder_data = db.select_row(
+        table_name="binders",
+        match=match_dict,
+        columns=["title", "author", "download_path"]
+        )
     if binder_data:
-        binder_db = [{"title": binder["title"], "author": binder["author"], "download_path": binder["download_path"]} for binder in binder_data.data]
+        binder_db = [{
+            "title": binder["title"],
+            "author": binder["author"],
+            "download_path": binder["download_path"]
+        } for binder in binder_data.data]
     else:
         binder_db = []
     return binder_db
 
-def redirect_after_login(auth_id):
+def fetch_user_data(auth_id: str) -> dict:
     """
-    Redirects the user after login based on their available credits.
+    Fetches user data from the database based on the provided authentication
+        ID.
 
     Args:
         auth_id (str): The authentication ID of the user.
 
     Returns:
-        list: A list of dictionaries containing binder information, including
-            title, author, and download path.
-
-    Raises:
-        Exception: If there is an error retrieving the user details or 
-            selecting binder data from the database.
+        dict: A dictionary containing the user data fetched from the database.
     """
-    try:
-        match_dict = {"auth_id": auth_id}
-        response = db.select_row("user", match=match_dict)
-        user_details = response.data[0]
-        session["user_details"] = user_details
-        credits_available = session["user_details"]["credits_available"]
-        if credits_available > 0:
-            return redirect(url_for("binders.lorebinder_form_view"))
-        else:
-            return redirect(url_for("accounts.buy_credits_view"))
-    except Exception as e:
-        flash(e)
+    match_dict = {"auth_id": auth_id}
+    data = db.select_row(table_name="user", match=match_dict)
+    return data
+
+def check_credits(credits_available: int) -> str:
+    """
+    Check the number of credits available and return the corresponding view.
+
+    Args:
+        credits_available (int): The number of credits available for the user.
+
+    Returns:
+        str: The view to redirect the user based on the value of
+        credits_available.
+    """
+    if credits_available > 0:
+        return "binders.lorebinder_form_view"
+    else:
+        return "accounts.buy_credits_view"
+
+def redirect_after_login(auth_id):
+    """
+    Redirects the user to a specific view after successful login.
+
+    Args:
+        auth_id (str): The authentication ID of the user.
+
+    Returns:
+        redirect: A redirect response to the specified view.
+    """
+    data = fetch_user_data(auth_id)
+    
+    if data:
+        session["user_details"] = data[0]
+        credits_available = session["user_details"].get("credits_available")
+        redirect_str = check_credits(credits_available)
+    else:
+        flash("Error logging in. Please try again later", "error")
+        redirect_str = "accounts.logout_view"
+
+    return redirect(url_for(redirect_str))
