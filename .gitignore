@@ -4,7 +4,7 @@
 upload_folder/
 stripe-ids.json
 *.pyc
-__pycache__/*
+__pycache__/
 *.log
 flask_session/
 test.py
