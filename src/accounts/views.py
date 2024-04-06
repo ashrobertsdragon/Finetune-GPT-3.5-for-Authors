@@ -59,16 +59,17 @@ def login_view():
 def logout_view():
     session.pop("user_details", None)
     session.pop("access_token", None)
+    session.pop("_flashes", None)
     auth.sign_out()
     return redirect(url_for("accounts.login_view"))
 
 @accounts_app.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password_view():
-    domain = current_app.config["DOMAIN"]
+    DOMAIN = current_app.config["DOMAIN"]
     form = ForgotPasswordForm()
     if form.validate_on_submit():
         email = form.email.data
-        auth.reset_password(email=email, domain=domain)
+        auth.reset_password(email=email, domain=DOMAIN)
         flash(
             "An email with instructions to reset your password has been sent",
             "message"
