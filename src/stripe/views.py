@@ -1,5 +1,4 @@
-from decouple import config
-from flask import Blueprint, jsonify, request, render_template, session
+from flask import Blueprint, current_app, jsonify, request, render_template, session
 
 import stripe
 
@@ -13,16 +12,23 @@ stripe_app = Blueprint("stripe", __name__)
 
 stripe.api_key = None
 
-@stripe_app.route("/create_checkout_session", methods=["GET", "POST"])
+@stripe_app.route("/create_checkout_session", methods=["POST"])
 @login_required
 def create_checkout_session():
     customer_email = session["user_details"]["email"]
-    num_credits = request.args.get("num_credits", type=int)
+
+    data = request.get_json()
+    num_credits = data.get("num_credits")
+    if not isinstance(num_credits, int) or num_credits < 1 or num_credits > 10:
+        return jsonify({"error": "Invalid number of credits"}), 400
+    
     if not stripe.api_key:
         set_stripe_key()
     stripe_session = create_stripe_session(num_credits, customer_email)
     if stripe_session:
         return jsonify(clientSecret=stripe_session.client_secret)
+    else:
+        return jsonify(num_credits)
 
 @stripe_app.route("/session-status", methods=["GET"])
 @login_required
@@ -40,7 +46,7 @@ def session_status():
 
 @stripe_app.route('/get_publishable_key', methods=['GET'])
 def get_publishable_key():
-    STRIPE_PUBLISHABLE_KEY = config("STRIPE_PUBLIC_KEY")
+    STRIPE_PUBLISHABLE_KEY = current_app.config["STRIPE_PUBLISHABLE_KEY"]
     return jsonify({'publishable_key': STRIPE_PUBLISHABLE_KEY})
 
 @stripe_app.route("/checkout", methods=['GET'])

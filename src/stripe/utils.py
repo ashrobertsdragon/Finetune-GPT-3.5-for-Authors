@@ -1,4 +1,5 @@
 import json
+import os
 import time
 from typing import Optional
 
@@ -8,9 +9,9 @@ from flask import flash, current_app
 from src.error_handling import email_admin
 
 def set_stripe_key():
-    stripe.api_key = current_app.config("STRIPE_KEY")
+    stripe.api_key = current_app.config["STRIPE_KEY"]
 
-def get_id(file_path: str, num_credits: int) -> str:
+def get_id(num_credits: int) -> str:
     """
     Extracts the SKU value from a JSON file based on the num_credits key.
 
@@ -21,11 +22,11 @@ def get_id(file_path: str, num_credits: int) -> str:
     Returns:
     - The SKU value associated with the given num_credits key.
     """
+    file_path = os.path.join("src", "stripe", "stripe-ids.json")
     with open(file_path, 'r') as file:
         data = json.load(file)
 
-    price_id = data.get('stripeIDs', {}).get(num_credits)
-    
+    price_id = data.get('stripeIDs', {}).get(str(num_credits))
     return price_id
 
 def handle_error(error: Exception, override_default: bool = False) -> Optional[str]:
@@ -47,7 +48,7 @@ def handle_error(error: Exception, override_default: bool = False) -> Optional[s
         flash("There was an issue completing your order. Your card was not charged. Please try again later", "error")
     else:
         flash(error.user_message, "error")
-    return None
+    return
 
 def retry_delay(attempt: int) -> int:
     """
@@ -90,13 +91,14 @@ def create_stripe_session(num_credits: int, customer_email: str, attempt: int = 
     try:
         stripe_session = stripe.checkout.Session.create(
             ui_mode="embedded",
-            line_items={"price": price_id, "quantity": 1},
+            line_items={"price": {{ price_id }}, "quantity": 1},
             mode="payment",
             customer_email=customer_email,
             return_url="/return.html?session_id={CHECKOUT_SESSION_ID}",
             automatic_tax={"enabled": True},
             metadata={"num_credits": num_credits},
         )
+        print(line_items)
         return stripe_session
     except stripe.error.CardError as e:
         return handle_error(e, override_default=True)

@@ -176,7 +176,7 @@ def buy_credits_view():
     form = BuyCreditsForm()
     if form.validate_on_submit():
         num_credits = form.credits.data
-        return render_template(
-            "stripe/checkout.html",
+        return redirect(url_for(
+            "stripe.checkout_view",
             num_credits=num_credits
-        )
+        ))
