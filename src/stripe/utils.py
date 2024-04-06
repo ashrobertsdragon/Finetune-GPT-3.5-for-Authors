@@ -5,6 +5,7 @@ from typing import Optional
 
 import stripe
 from flask import flash, current_app
+from decouple import config
 
 from src.error_handling import email_admin
 
@@ -45,9 +46,10 @@ def handle_error(error: Exception, override_default: bool = False) -> Optional[s
 
     email_admin(error)
     if override_default:
-        flash("There was an issue completing your order. Your card was not charged. Please try again later", "error")
-    else:
         flash(error.user_message, "error")
+        
+    else:
+        flash("There was an issue completing your order. Your card was not charged. Please try again later", "error")
     return
 
 def retry_delay(attempt: int) -> int:
@@ -84,21 +86,20 @@ def create_stripe_session(num_credits: int, customer_email: str, attempt: int = 
     - stripe.error.RateLimitError: If the API rate limit is exceeded.
     - stripe.error.APIConnectionError: If there is an error connecting to the Stripe API.
     - Exception: If any other error occurs.
-
     """
-
+    DOMAIN = current_app.config["DOMAIN"]
+    print(DOMAIN)
     price_id = get_id(num_credits)
     try:
         stripe_session = stripe.checkout.Session.create(
             ui_mode="embedded",
-            line_items={"price": {{ price_id }}, "quantity": 1},
+            line_items=[{"price": price_id, "quantity": 1}],
             mode="payment",
             customer_email=customer_email,
-            return_url="/return.html?session_id={CHECKOUT_SESSION_ID}",
+            return_url=DOMAIN + "/return.html?session_id={CHECKOUT_SESSION_ID}",
             automatic_tax={"enabled": True},
             metadata={"num_credits": num_credits},
         )
-        print(line_items)
         return stripe_session
     except stripe.error.CardError as e:
         return handle_error(e, override_default=True)
