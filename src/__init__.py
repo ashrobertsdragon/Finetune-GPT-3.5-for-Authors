@@ -7,6 +7,7 @@ from config import DevelopmentConfig, TestingConfig, StagingConfig, ProductionCo
 
 from .logging_config import start_loggers
 from .utils import load_user, inject_user_context
+
 # Import blueprints
 from src.accounts.views import accounts_app
 from src.binders.views import binders_app
@@ -48,4 +49,6 @@ app.register_blueprint(stripe_app)
 
 # Session storage
 app.config["SESSION_TYPE"] = "filesystem"
+app.config["SESSION_COOKIE_HTTPONLY"] = True
 Session(app)
+
