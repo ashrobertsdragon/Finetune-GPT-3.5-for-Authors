@@ -12,7 +12,7 @@ stripe_app = Blueprint("stripe", __name__)
 
 stripe.api_key = None
 
-@stripe_app.route("/create_checkout_session", methods=["POST"])
+@stripe_app.route("/create-checkout-session", methods=["POST"])
 @login_required
 def create_checkout_session():
     customer_email = session["user_details"]["email"]
@@ -33,23 +33,39 @@ def create_checkout_session():
 @stripe_app.route("/session-status", methods=["GET"])
 @login_required
 def session_status():
-    stripe_session = stripe.checkout.Session.retrieve(request.args.get("session_id"))
-    num_credits = stripe_session.metadata.num_credits
-    if stripe_session.status == "paid":
-        session["user_details"]["credits_available"] += num_credits
-        update_db()
+    try:
+        stripe_session = stripe.checkout.Session.retrieve(request.args.get("session_id"))
+        if stripe_session.status == "complete":
+            num_credits = stripe_session.metadata.num_credits
+            session["user_details"]["credits_available"] += num_credits
+            update_db()
 
-    return jsonify(
-        status=stripe_session.status,
-        customer_email=stripe_session.customer_details.email
-    )
+        return jsonify(
+            status=stripe_session.status,
+            customer_email=stripe_session.customer_details.email
+        )
+    except stripe.RateLimitError:
+        pass
+    except Exception:
+        pass
 
-@stripe_app.route('/get_publishable_key', methods=['GET'])
+@stripe_app.route("/get-publishable-key", methods=["GET"])
 def get_publishable_key():
     STRIPE_PUBLISHABLE_KEY = current_app.config["STRIPE_PUBLISHABLE_KEY"]
-    return jsonify({'publishable_key': STRIPE_PUBLISHABLE_KEY})
+    return jsonify({"publishable_key": STRIPE_PUBLISHABLE_KEY})
 
-@stripe_app.route("/checkout", methods=['GET'])
+@stripe_app.route("/get-domain", methods=["GET"])
+def get_domain():
+    DOMAIN = current_app.config["DOMAIN"]
+    return jsonify({"domain": DOMAIN})
+
+@stripe_app.route("/checkout", methods=["GET"])
+@login_required
 def checkout_view():
     num_credits = request.args.get("num_credits")
     return render_template("stripe/checkout.html", num_credits=num_credits)
+
+@stripe_app.route("/return", methods=["GET"])
+@login_required
+def return_view():
+    return render_template("stripe/return.html")

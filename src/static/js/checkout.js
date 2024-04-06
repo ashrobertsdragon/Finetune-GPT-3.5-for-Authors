@@ -1,13 +1,13 @@
 // Fetch publishable key
 async function fetchPublishableKey() {
-  const response = await fetch('/get_publishable_key');
+  const response = await fetch('/get-publishable-key');
   const data = await response.json();
   return data.publishable_key;
 }
 
 function getUrlParameter(name) {
-  const searchParams = new URLSearchParams(window.location.search);
-  const value = searchParams.get(name);
+  const urlParams = new URLSearchParams(window.location.search);
+  const value = urlParams.get(name);
   return value ? parseInt(value, 10) : null; // Ensuring the value is treated as an integer
 }
 
@@ -24,7 +24,7 @@ async function initialize() {
     return;
   }
 
-  const response = await fetch("/create_checkout_session", {
+  const response = await fetch("/create-checkout-session", {
       method: "POST",
       headers: {
         'Content-Type': 'application/json',

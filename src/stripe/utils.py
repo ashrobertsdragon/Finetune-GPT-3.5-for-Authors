@@ -5,7 +5,6 @@ from typing import Optional
 
 import stripe
 from flask import flash, current_app
-from decouple import config
 
 from src.error_handling import email_admin
 
@@ -88,7 +87,6 @@ def create_stripe_session(num_credits: int, customer_email: str, attempt: int = 
     - Exception: If any other error occurs.
     """
     DOMAIN = current_app.config["DOMAIN"]
-    print(DOMAIN)
     price_id = get_id(num_credits)
     try:
         stripe_session = stripe.checkout.Session.create(
@@ -101,9 +99,9 @@ def create_stripe_session(num_credits: int, customer_email: str, attempt: int = 
             metadata={"num_credits": num_credits},
         )
         return stripe_session
-    except stripe.error.CardError as e:
+    except stripe.CardError as e:
         return handle_error(e, override_default=True)
-    except (stripe.error.RateLimitError, stripe.error.APIConnectionError) as e:
+    except (stripe.RateLimitError, stripe.APIConnectionError) as e:
         attempt = retry_delay(attempt)
         if attempt < 2:
             return create_stripe_session(price_id, customer_email, attempt)
