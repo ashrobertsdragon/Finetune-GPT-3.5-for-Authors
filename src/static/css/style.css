@@ -413,6 +413,46 @@ input:not(:checked) + .slider:before {
   border-radius: 50%;
 }
 
+  /* Update Modal */
+.update-modal {
+  position: absolute;
+  top: 50px;
+  width: 100%;
+  background-color: #f0f0f0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+
+body.dark-mode .update-modal {
+  background-color: #392139;
+}
+
+.update-info {
+  font-size: 1rem;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+#close {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+#close span {
+  font-size: 2rem;
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+#close span:hover {
+  color: #33222e;
+  transform: scale(1.2);
+}
+
+body.dark-mode #close span:hover {
+  color: #A4A9AD;
+}
+
   /* Section */
 section {
   margin-top: 3rem;

@@ -51,4 +51,3 @@ app.register_blueprint(stripe_app)
 app.config["SESSION_TYPE"] = "filesystem"
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 Session(app)
-

@@ -125,7 +125,7 @@ class SupabaseAuth(SupabaseClient):
             return response
         except Exception as e:
             action = "signup"
-            super().log_error(e, action, email=email)
+            self.log_error(e, action, email=email)
             raise
 
     def sign_in(self, *, email: str, password: str) -> AuthResponse:
@@ -154,7 +154,7 @@ class SupabaseAuth(SupabaseClient):
             return data
         except Exception as e:
             action = "login"
-            super().log_error(e, action, email=email)
+            self.log_error(e, action, email=email)
             raise
 
     def sign_out(self) -> None:
@@ -171,7 +171,7 @@ class SupabaseAuth(SupabaseClient):
             self.default_client.auth.sign_out()
         except Exception as e:
             action = "logout"
-            super().log_error(e, action)
+            self.log_error(e, action)
             raise
 
     def reset_password(self, *, email: str, domain: str) -> None:
@@ -195,7 +195,7 @@ class SupabaseAuth(SupabaseClient):
             )
         except Exception as e:
             action = "reset_password"
-            super().log_error(e, action, email=email)
+            self.log_error(e, action, email=email)
             raise
 
     def update_user(self, updates: dict) -> UserResponse:
@@ -221,7 +221,7 @@ class SupabaseAuth(SupabaseClient):
             return data
         except Exception as e:
             action = "update user"
-            super().log_error(e, action, updates=updates)
+            self.log_error(e, action, updates=updates)
             raise
 
 class SupabaseStorage(SupabaseClient):
@@ -234,7 +234,7 @@ class SupabaseStorage(SupabaseClient):
             )
         except Exception as e:
             action = "upload file"
-            super().log_error(
+            self.log_error(
                 e, action, 
                 upload_path=upload_path,
                 file_content=file_content,
@@ -267,10 +267,24 @@ class SupabaseDB(SupabaseClient):
                 return self.default_client
         except Exception as e:
             action = "accessing client"
-            super().log_error(e, action)
+            self.log_error(e, action)
             return None
     
+    def _validate_type(self, value:any, *, name:str, is_type:type):
+        if not value:
+            raise ValueError(f"{name} must have value")
+        if not isinstance(value, is_type):
+          raise ValueError(f"{name} must be {is_type.__name__}")
     
+    def _validate_string(self, value:any, name:str):
+        self._validate_type(value, name=name, is_type=str)
+    
+    def _validate_dict(self, value:any, name:str):
+        self._validate_type(value, name=name, is_type=dict)
+    
+    def _validate_table(self, value:any):
+        self.validate_string(value, name="table_name")
+
     def insert_row(
         self, *, table_name: str, updates: dict, use_service_role: bool = False
     ) -> bool:
@@ -292,6 +306,8 @@ class SupabaseDB(SupabaseClient):
             bool: True if the update was successful, False otherwise.
 
         Raises:
+            ValueError: If the updates argument is not a dictionary, or
+                table_name is not a string.
             Exception: If there is an error while inserting the row, an 
                 exception will be raised and logged.
 
@@ -309,12 +325,19 @@ class SupabaseDB(SupabaseClient):
         """
         db_client = self._select_client(use_service_role)
         action = "insert"
+
+        try:
+            self._validate_table(table_name)
+            self._validate_dict(updates, "updates")
+        except ValueError as e:
+            self.log_error(e, action, updates=updates, table_name=table_name)
+
         try:
             response = db_client.table(table_name).insert(updates).execute()
-            super().log_info(action, response)
+            self.log_info(action, response)
             return True
         except Exception as e:
-            super().log_error(e, action, updates=updates, table_name=table_name)
+            self.log_error(e, action, updates=updates, table_name=table_name)
             return False
     
     def select_row(
@@ -326,8 +349,10 @@ class SupabaseDB(SupabaseClient):
         Args:
             table_name (str): The name of the table to retrieve the row from.
             match (dict): A dictionary representing the matching condition.
-                The keys should be the column names and the values should be 
-                the corresponding values to match.
+                The key should be the column name and the value should be 
+                the corresponding value to match.
+            ValueError: If the match argument is not a dictionary, or
+                table_name is not a string.
             columns (list[str], optional): A list of column names to retrieve 
                 from the row. Defaults to ["*"], which retrieves all columns.
 
@@ -336,6 +361,8 @@ class SupabaseDB(SupabaseClient):
                 found matching the condition, an empty dictionary is returned.
 
         Raises:
+            ValueError: If the match argument is not a dictionary, or
+                table_name is not a string.
             Exception: If there is an error while retrieving the row, an
                 exception will be raised and logged.
 
@@ -351,16 +378,84 @@ class SupabaseDB(SupabaseClient):
         """
         db_client = self._select_client()
         action = "select"
+
+        try:
+            self._validate_table(table_name)
+            self._validate_dict(match, "match")
+            
+        except ValueError as e:
+            self.log_error(e, action, match=match, table_name=table_name)
+
         match_name, match_value = next(iter(match.items()))
 
         try:
             response = db_client.table(table_name) \
-                .select(*columns).eq(match_name, match_value).execute()
-            super().log_info(action, response)
+                .select(*columns) \
+                .eq(match_name, match_value) \
+                .execute()
+            self.log_info(action, response)
             return response.data if response.data else {}
         except Exception as e:
-            super().log_error(e, action, columns=columns, match=match)
+            self.log_error(e, action, columns=columns, match=match)
             return {}
+        
+    def select_rows(
+            self, *, table_name:str, matches:dict, columns:list[str]=["*"]
+        ) -> list[dict]:
+        """
+        Selects rows from a table based on matching conditions.
+
+        Args:
+            table_name (str): The name of the table to select rows from.
+            matches (dict): A dictionary representing the matching conditions.
+                The keys should be column names and the values should be the 
+                corresponding values to match.
+            columns (list[str], optional): A list of column names to retrieve
+                from the rows. Defaults to ["*"], which retrieves all columns.
+
+        Returns:
+            list[dict]: A list of dictionaries representing the selected rows.
+                If no rows are found matching the conditions, an empty list is
+                returned.
+
+        Raises:
+            ValueError: If the matches argument is not a dictionary or if any
+                value in the matches dictionary is not a list, or if
+                table_name is not a string.
+            Exception: If there is an error while selecting the rows, an
+                exception will be raised and logged.
+
+        Example:
+            supabase_db = SupabaseDB()
+            result = supabase_db.select_rows(
+                table_name="users",
+                matches={"name": ["John Doe"], "age": [30, 40]},
+                columns=["name", "age", "email"]
+            )
+        """
+        db_client = self._select_client()
+        action = "select"
+        
+        try:
+            self._validate_table(table_name)
+            self._validate_dict(matches, "match")
+            for key, value in matches.items():
+                if not isinstance(value, list):
+                    raise ValueError(f"Value for filter '{key}' must be a list")
+        except ValueError as e:
+            self.log_error(e, action,matches=matches, table_name=table_name)
+
+            
+        try:
+            response = db_client.table(table_name) \
+                .select(*columns) \
+                .in_(matches) \
+                .execute()
+            self.log_info(action, response)
+            return response.data if response.data else [{}]
+        except Exception as e:
+            self.log_error(e, action, columns=columns, matches=matches)
+            return [{}]
 
     def update_row(self, *, table_name: str, info: dict, match: dict) -> bool:
         """
@@ -380,6 +475,8 @@ class SupabaseDB(SupabaseClient):
             bool: True if the update was successful, False otherwise.
 
         Raises:
+            ValueError: If the match argument is not a dictionary, or
+                table_name is not a string.
             Exception: If there is an error while updating the row, an
                 exception will be raised and logged.
 
@@ -395,12 +492,23 @@ class SupabaseDB(SupabaseClient):
         """
         db_client = self._select_client()
         action = "update"
+
+        try:
+            self._validate_table(table_name)
+            self._validate_dict(match, "match")
+
+            for key, value in match.items():
+                if not isinstance(value, list):
+                    raise ValueError(f"Value for filter '{key}' must be a list")
+        except ValueError as e:
+            self.log_error(e, action,match=match, table_name=table_name)
+
         match_name, match_value = next(iter(match.items()))
         try:
             response = db_client.table(table_name).update(info) \
                 .eq(match_name, match_value).execute()
-            super().log_info(action, response)
+            self.log_info(action, response)
             return True
         except Exception as e:
-            super().log_error(e, action, updates=info, match=match)
+            self.log_error(e, action, updates=info, match=match)
             return False

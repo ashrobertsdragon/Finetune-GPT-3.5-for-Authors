@@ -1,0 +1,8 @@
+{% if update_message %}
+  <div class="update-modal shown">
+    {% for message in update_message %}
+      <p class="update-info">{{ message.message }} from {{ message.start_time }} to {{ message.end_time }}</p>
+      <div id="close"><span class="material-symbols-outlined">close</span></div>
+    {% endfor %}
+  </div>
+{% endif %}
