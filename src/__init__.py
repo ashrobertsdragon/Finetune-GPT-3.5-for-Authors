@@ -1,6 +1,7 @@
 from decouple import config
 from flask import Flask
 from flask_session import Session
+from flask_talisman import Talisman
 
 # Config classes for environment variables
 from config import DevelopmentConfig, TestingConfig, StagingConfig, ProductionConfig
@@ -19,6 +20,7 @@ from src.stripe.views import stripe_app
 start_loggers()
 
 app = Flask(__name__)
+Talisman(app)
 
 env_config = {
     "development": DevelopmentConfig,
@@ -50,4 +52,5 @@ app.register_blueprint(stripe_app)
 # Session storage
 app.config["SESSION_TYPE"] = "filesystem"
 app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SECURE"] = True
 Session(app)
