@@ -1,7 +1,9 @@
 const closeButton = document.getElementById("close");
-const parentDiv = closeButton.parentElement;
+const parentDiv = document.getElementById("parentDiv");
 
-closeButton.addEventListener("click", function() {
-  parentDiv.classList.remove("shown");
-  parentDiv.classList.add("hidden");
-});
+if (closeButton && parentDiv) {
+  closeButton.addEventListener("click", function() {
+    parentDiv.classList.remove("shown");
+    parentDiv.classList.add("hidden");
+  });
+}
