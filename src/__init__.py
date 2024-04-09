@@ -21,7 +21,6 @@ from src.stripe.views import stripe_app
 start_loggers()
 
 app = Flask(__name__)
-Talisman(app)
 
 env_config = {
     "development": DevelopmentConfig,
@@ -42,7 +41,6 @@ def before_each_request():
 
 app.context_processor(inject_user_context)
 
-
 # Register Blueprints
 app.register_blueprint(accounts_app)
 app.register_blueprint(binders_app)
@@ -50,9 +48,24 @@ app.register_blueprint(core_app)
 app.register_blueprint(free_app)
 app.register_blueprint(stripe_app)
 
-# Session storage
-app.config["SESSION_TYPE"] = "filesystem"
-app.config["SESSION_COOKIE_HTTPONLY"] = True
-app.config["SESSION_COOKIE_SECURE"] = True
+
 Session(app)
-cache.init_app(app)
+cache.init_app(
+    app,
+    config={
+        "CACHE_TYPE": app.config["CACHE_TYPE"],
+        "CACHE_DEFAULT_TIMEOUT": app.config["CACHE_DEFAULT_TIMEOUT"]   
+    }
+)
+
+Talisman(
+    app,
+    force_https=app.config["TALISMAN_FORCE_HTTPS"],
+    force_file_save=app.config["TALISMAN_FORCE_FILE_SAVE"],
+    session_cookie_secure=app.config["TALISMAN_SESSION_COOKIE_SECURE"],
+    session_cookie_samesite=app.config["TALISMAN_SESSION_COOKIE_SAMESITE"],
+    frame_options_allow_from=app.config["TALISMAN_FRAME_OPTIONS_ALLOW_FROM"],
+    content_security_policy=app.config["TALISMAN_CSP"],
+    strict_transport_security=app.config["TALISMAN_HSTS"]
+)
+print(app.config["TALISMAN_CSP"])

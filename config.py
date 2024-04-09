@@ -10,6 +10,67 @@ class Config(object):
 
     FLASK_SECRET_KEY = config("SECRET_KEY", default="guess-me")
 
+    SESSION_TYPE = "filesystem"
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SECURE = True
+
+    CACHE_TYPE = "SimpleCache"
+    CACHE_DEFAULT_TIMEOUT = 14320
+
+    TALISMAN_FORCE_HTTPS = True
+    TALISMAN_FORCE_FILE_SAVE = True
+    TALISMAN_X_XSS_PROTECTION = True
+    TALISMAN_SESSION_COOKIE_SECURE = True
+    TALISMAN_SESSION_COOKIE_SAMESITE = "Lax"
+    TALISMAN_FRAME_OPTIONS_ALLOW_FROM = "https://www.google.com"
+    TALISMAN_CSP = {
+        "default-src": [
+            "'self'",
+            config("SUPABASE_URL")
+        ],
+        "connect-src": [
+            "'self'",
+            "https://*.googletagmanager.com",
+            "https://*.google-analytics.com",
+            "https://*.analytics.google.com"
+        ],
+        "font-src": [
+            "'self'",
+            "https://fonts.gstatic.com"
+        ],
+        "frame-src": [
+          "https://youtube.com",
+          "https://connect-js.stripe.com",
+          "https://js.stripe.com"
+        ],
+        "img-src": [
+            "'self'",
+            "https://*.stripe.com",
+            "https://*.google-analytics.com",
+            "https://*.googletagmanager.com"
+        ],
+        "style-src": [
+            "'self'",
+            "https://fonts.googleapis.com",
+            "sha256-0hAheEzaMe6uXIKV4EehS9pu1am1lj/KnnzrOYqckXk="
+        ],
+        "script-src": [
+            "'self'",
+            "https://*.googletagmanager.com",
+            "https://assets.mailerlite.com",
+            "https://js.stripe.com",
+            "https://connect-js.stripe.com",
+            "'unsafe-inline'",
+            "'unsafe-eval'"
+        ]
+    }
+
+    TALISMAN_HSTS = {
+        "max-age": 31536000,
+        "includeSubDomains": True
+    }
+
+
     def define_upload(self):
         self.UPLOAD_FOLDER = self.UPLOAD_FOLDER
         os.makedirs(self.UPLOAD_FOLDER, exist_ok=True)
