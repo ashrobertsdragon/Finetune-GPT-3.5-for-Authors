@@ -6,6 +6,7 @@ from flask_talisman import Talisman
 # Config classes for environment variables
 from config import DevelopmentConfig, TestingConfig, StagingConfig, ProductionConfig
 
+from .cache import cache
 from .logging_config import start_loggers
 from .utils import load_user, inject_user_context
 
@@ -54,3 +55,4 @@ app.config["SESSION_TYPE"] = "filesystem"
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SECURE"] = True
 Session(app)
+cache.init_app(app)
