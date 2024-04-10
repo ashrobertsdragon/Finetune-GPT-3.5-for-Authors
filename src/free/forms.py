@@ -36,6 +36,7 @@ class FineTuneForm(FlaskForm):
     ])
     role = TextAreaField("System message", validators=[DataRequired()])
     chunk_type = SelectField("Fine tuning method", choices=[
+        ("placeholder", "Choose one"),
         ("sliding_window_small", "Sliding Window (chapter-level)"),
         ("sliding_window_large", "Sliding Window (book-level)"),
         ("dialogue_prose", "Dialogue/Prose"),
