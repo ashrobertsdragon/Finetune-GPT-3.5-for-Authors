@@ -24,7 +24,7 @@
                 <!-- Email Field -->
                 <div class="flex-form" id="div-id_email">
                     {{ form.email.label(class="input-label") }}
-                    {{ form.email(size=20) }}
+                    {{ form.email(size=30, class="input-box") }}
                     {% if form.email.description %}
                         <small class="help-text">{{ form.email.description }}</small>
                     {% endif %}
@@ -38,7 +38,7 @@
                 <div class="flex-form" id="div-id_password">
                     {{ form.password.label(class="input-label") }}
                     <div class="password-container">
-                        {{ form.password(size=20, class="password-input") }}
+                        {{ form.password(size=30, class="input-box") }}
                         <span class="material-symbols-outlined" id="eye" onclick="toggleVisibility()">visibility</span>
                     </div>
                     {% if form.password.description %}

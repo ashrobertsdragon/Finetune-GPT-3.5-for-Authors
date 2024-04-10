@@ -136,6 +136,7 @@ div {
   width: 8rem;
 }
 
+
 /* Checkboxes */
 #checkboxes {
   display: flex;
@@ -240,24 +241,20 @@ body.dark-mode .modal-content {
 
 /* Visibility toggle icon */
 .password-container {
-  display: flex;
+  display: inline-block;
   align-items: center;
   position: relative;
-  padding: 0;
-  margin: 0;
 }
 
-.password-input {
-  padding-right: 30px;
-  flex-grow: 1;
-}
 
 #eye {
+  position: absolute;
+  font-size: 1.75rem;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-80%);
   color:#1C0B19;
-}
-
-body.dark-mode #eye {
-  color:#DBE1E7;
+  cursor: pointer;
 }
 
 /* Contact form */
@@ -332,7 +329,7 @@ input[type="text"],
 input[type="date"],
 input[type="email"] {
   font-size: 1rem;
-  max-width: 40ch;
+  max-width: 30ch;
   width: 100%;
   box-sizing: border-box;
   height: 40px;

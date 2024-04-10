@@ -52,7 +52,10 @@ class Config(object):
         "style-src": [
             "'self'",
             "https://fonts.googleapis.com",
-            "sha256-0hAheEzaMe6uXIKV4EehS9pu1am1lj/KnnzrOYqckXk="
+            "sha256-0hAheEzaMe6uXIKV4EehS9pu1am1lj/KnnzrOYqckXk=",
+            "'unsafe-inline'",
+            "'unsafe-hashes'"
+
         ],
         "script-src": [
             "'self'",
@@ -61,7 +64,8 @@ class Config(object):
             "https://js.stripe.com",
             "https://connect-js.stripe.com",
             "'unsafe-inline'",
-            "'unsafe-eval'"
+            "'unsafe-eval'",
+            "'unsafe-hashes'"
         ]
     }
 
