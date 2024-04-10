@@ -1,13 +1,11 @@
-{% extends 'forms-base.html' %}
+{% extends 'password-base.html' %}
 
 {% block title %}ProsePal's GPT 3.5 Finetuner{% endblock %}
 
-{% block extra_css %}
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
-{% endblock extra_css %}
 {% block extra_js %}
   <script src="{{ url_for('static', filename='js/finetuner.js') }}"></script>
   <script src="{{ url_for('static', filename='js/invalid-input.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/changePlaceholder.js') }}"></script>
 {% endblock extra_js %}
 
 {% block content %}
@@ -41,7 +39,7 @@
         {{ form.user_key.label(class="finetune-label") }}
         <div class="password-container">
         {{ form.user_key(id="user_key", class="password-input", size=60) }}
-        <span class="material-symbols-outlined" id="eye" onclick="toggleVisibility()">visibility</span>
+        <span class="material-symbols-outlined" id="eye">visibility</span>
       </div>
     </div>
     
@@ -83,20 +81,4 @@
     <span> | </span>
     <a href="{{ url_for('core.privacy_page') }}" title="Privacy policy" target="_blank">Privacy Policy</a>
   </div>
-{% endblock %}
-{% block end_js %}
-  <script src="{{ url_for('static', filename='js/visToggle.js') }}"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      var selectElement = document.getElementById('id_chunk_type');
-      selectElement.addEventListener('change', function() {
-        // Check if the current value is not the placeholder
-        if(this.value !== '') {
-          // Disable or remove the placeholder option
-          this.options[0].disabled = true;
-        }
-      });
-    });
-    </script>
-    
 {% endblock %}
