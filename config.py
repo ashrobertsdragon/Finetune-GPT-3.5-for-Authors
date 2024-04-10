@@ -25,14 +25,15 @@ class Config(object):
     TALISMAN_FRAME_OPTIONS_ALLOW_FROM = "https://www.google.com"
     TALISMAN_CSP = {
         "default-src": [
-            "'self'",
-            config("SUPABASE_URL")
+            "'self'"
         ],
         "connect-src": [
             "'self'",
             "https://*.googletagmanager.com",
             "https://*.google-analytics.com",
-            "https://*.analytics.google.com"
+            "https://*.analytics.google.com",
+            config["SUPABASE_URL"],
+            config["MAILERLITE_URL"]
         ],
         "font-src": [
             "'self'",
@@ -52,14 +53,13 @@ class Config(object):
         "style-src": [
             "'self'",
             "https://fonts.googleapis.com",
-            "sha256-0hAheEzaMe6uXIKV4EehS9pu1am1lj/KnnzrOYqckXk="
+            "sha256-0hAheEzaMe6uXIKV4EehS9pu1am1lj/KnnzrOYqckXk=",
         ],
         "script-src": [
             "'self'",
             "https://*.googletagmanager.com",
-            "https://assets.mailerlite.com",
             "https://js.stripe.com",
-            "https://connect-js.stripe.com"
+            "https://connect-js.stripe.com",
         ]
     }
 

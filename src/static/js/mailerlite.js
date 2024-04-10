@@ -1,5 +1,24 @@
-(function(w,d,e,u,f,l,n){w[f]=w[f]||function(){(w[f].q=w[f].q||[])
-.push(arguments);},l=d.createElement(e),l.async=1,l.src=u,
-n=d.getElementsByTagName(e)[0],n.parentNode.insertBefore(l,n);})
-(window,document,'script','https://assets.mailerlite.com/js/universal.js','ml');
-ml('account', '811253');
+document.addEventListener('DOMContentLoaded', function() {
+    var form = document.getElementById('waitlist-form');
+    
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var formData = new FormData(form);
+        
+        fetch('/ml-join-waitlist', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.status === 'success') {
+                document.getElementById('container').innerHTML = data.html;
+            } else {
+                document.getElementById('container').innerHTML = '<p>Failed to subscribe. Please try again.</p>';
+            }
+        })
+        .catch(error => {
+            document.getElementById('container').innerHTML = '<p>Error occurred. Please try again later.</p>';
+        });
+    });
+});
