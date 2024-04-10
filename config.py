@@ -32,8 +32,8 @@ class Config(object):
             "https://*.googletagmanager.com",
             "https://*.google-analytics.com",
             "https://*.analytics.google.com",
-            config["SUPABASE_URL"],
-            config["MAILERLITE_URL"]
+            config("SUPABASE_URL"),
+            config("MAILERLITE_URL")
         ],
         "font-src": [
             "'self'",
