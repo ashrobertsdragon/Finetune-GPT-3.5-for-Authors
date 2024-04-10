@@ -1,9 +1,8 @@
-{% extends 'normal-base.html' %}
+{% extends 'password-base.html' %}
 
 {% block title %}Account Management{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/account.css') }}">
 {% endblock %}
 S
@@ -42,6 +41,5 @@ S
 {% endblock %}
 
 {% block end_js %}
-  <script src="{{ url_for('static', filename='js/visToggle.js') }}"></script>
   <script src="{{ url_for('static', filename='js/purchase-slider.js')}}"></script>
 {% endblock %}

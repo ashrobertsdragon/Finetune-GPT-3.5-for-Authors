@@ -68,4 +68,3 @@ Talisman(
     content_security_policy=app.config["TALISMAN_CSP"],
     strict_transport_security=app.config["TALISMAN_HSTS"]
 )
-print(app.config["TALISMAN_CSP"])

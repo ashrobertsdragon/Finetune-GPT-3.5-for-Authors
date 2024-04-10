@@ -1,10 +1,7 @@
-{% extends "forms-base.html" %}
+{% extends "password-base.html" %}
 
 {% block title %}Login{% endblock %}
 
-{% block extra_css %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
-{% endblock extra_css %}
 
 {% block content %}
     <div class="form box">
@@ -39,7 +36,7 @@
                     {{ form.password.label(class="input-label") }}
                     <div class="password-container">
                         {{ form.password(size=30, class="input-box") }}
-                        <span class="material-symbols-outlined" id="eye" onclick="toggleVisibility()">visibility</span>
+                        <span class="material-symbols-outlined" id="eye">visibility</span>
                     </div>
                     {% if form.password.description %}
                         <small class="help-text">{{ form.password.description }}</small>
@@ -61,11 +58,3 @@
         </div>
     </div>
 {% endblock content %}
-
-{% block footer %}
-
-{% endblock footer %}
-
-{% block end_js %}
-    <script src="{{ url_for('static', filename='js/visToggle.js') }}"></script>
-{% endblock end_js %}

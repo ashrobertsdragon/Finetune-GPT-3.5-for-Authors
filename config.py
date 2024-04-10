@@ -52,20 +52,14 @@ class Config(object):
         "style-src": [
             "'self'",
             "https://fonts.googleapis.com",
-            "sha256-0hAheEzaMe6uXIKV4EehS9pu1am1lj/KnnzrOYqckXk=",
-            "'unsafe-inline'",
-            "'unsafe-hashes'"
-
+            "sha256-0hAheEzaMe6uXIKV4EehS9pu1am1lj/KnnzrOYqckXk="
         ],
         "script-src": [
             "'self'",
             "https://*.googletagmanager.com",
             "https://assets.mailerlite.com",
             "https://js.stripe.com",
-            "https://connect-js.stripe.com",
-            "'unsafe-inline'",
-            "'unsafe-eval'",
-            "'unsafe-hashes'"
+            "https://connect-js.stripe.com"
         ]
     }
 

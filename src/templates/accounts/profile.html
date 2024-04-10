@@ -42,20 +42,23 @@
         
         <form method="POST" class="box" id="update-password-form" action="{{ url_for('accounts.profile_view') }}">
           <h2>Update Password</h2>
-          {{ password_form.hidden_tag() }}
-        {{ password_form.new_password.label(class="input-label") }}
-        <div class="flex-form">
-            {{ password_form.new_password(size=20) }}
-            <span class="material-symbols-outlined" id="eye" onclick="toggleVisibility()">visibility</span>
-        </div>
-        {% if password_form.new_password.description %}
-            <small class="help-text">{{ password_form.new_password.description }}</small>
-        {% endif %}
-        {% if password_form.new_password.errors %}
-            {% for error in password_form.new_password.errors %}
-                <div class="error">{{ error }}</div>
-            {% endfor %}
-        {% endif %}
-        <input type="submit" value="Change Password" class="btn btn-primary" />
+          {{ password_form.hidden_tag() }}        
+          <div class="flex-form" id="div-id_password">
+          {{ password_form.new_password.label(class="input-label") }}
+          <div class="password-container">
+              {{ password_form.new_password(size=30, class="input-bow") }}
+              <span class="material-symbols-outlined" id="eye">visibility</span>
+          </div>
+          {% if password_form.new_password.description %}
+              <small class="help-text">{{ password_form.new_password.description }}</small>
+          {% endif %}
+          {% if password_form.new_password.errors %}
+              {% for error in password_form.new_password.errors %}
+                  <div class="error">{{ error }}</div>
+              {% endfor %}
+          {% endif %}
+          </div>
+          <input type="submit" value="Change Password" class="btn btn-primary" />
+        </form>
     </div>
 {% endblock content %}

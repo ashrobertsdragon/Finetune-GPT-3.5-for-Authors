@@ -13,3 +13,8 @@ function toggleVisibility() {
     }
   }
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+  var eyeIcon = document.getElementById("eye");
+  eyeIcon.addEventListener("click", toggleVisibility);
+});
