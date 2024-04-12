@@ -22,7 +22,7 @@
     {% endif %}
   {% endwith %}
   <form method="POST" class="form box" enctype="multipart/form-data">
-    {{ form.hidden_tag() }}
+    {{ form.csrf_token }}
     <div class="form-group">
       {{ form.author.label }} {{ form.author(class_="form-control metadata") }}
       <span class="text-muted">{{ form.author.errors }}</span>
