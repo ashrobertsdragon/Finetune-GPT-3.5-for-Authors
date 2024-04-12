@@ -1,6 +1,43 @@
+html, body {
+  max-width: 100%;
+  margin: 0;
+  color: #1c0b1c;
+}
+
+h1 {
+  font-family: 'Share Tech', sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 1.875rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  transform: scale(1, 1.25);
+  letter-spacing: .05em;
+}
+
+p {
+  display: inline-block;
+  padding: 20px;
+  text-align: center;
+  font-family: 'Exo', sans-serif;
+  font-weight: 300;
+  font-size: 1.125rem;
+  line-height: 26px;
+}
+
+a {
+  transition: color 0.3s ease;
+  color: inherit;
+  text-decoration: underline;
+}
+
+a:hover {
+  color: #33222e;
+  transform: scale(1, 1.25);
+}
+
 .ml-subscribe-container {
-  max-width: 400px;
-  width: 100%;
+  max-width: 550px;
   background-color: #f6f6f6;
   border-width: 0px;
   border-color: transparent;
@@ -14,44 +51,69 @@
   text-align: center;
 }
 
-ml-subscribe-input {
-  background-color: #006600 !important;
-  border-color: #006600;
+.ml-subscribe-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.ml-subscribe-input {
+  background-color: #DBE1E7;
+  color: #1d0b1a;
+  border-color: #cccccc;
+  border-radius: 4px;
   border-style: solid;
   border-width: 1px;
-  border-radius: 6px;
-  box-shadow: none;
-  color: #DBE1E7 !important;
-  cursor: pointer;
-  font-family: 'Exo', sans-serif;
-  font-size: 16px !important;
-  text-align: center;
+  font-family: 'Source Sans Pro', Arial, Helvetica, sans-serif;
   font-weight: 400;
+  font-size: 16px;
   line-height: 20px;
-  margin: 0 !important;
-  padding: 10px !important;
-  width: 100%;
+  box-sizing: border-box;
+  overflow-y: initial;
+  text-align: left;
+  cursor: pointer;
+  padding: 10px;
+  width: 320px;
   height: auto;
+  margin-right: 8px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .ml-subscribe-button {
-  background-color: #006600 !important;
+  background-color: #006600;
   border-color: #006600;
   border-style: solid;
   border-width: 1px;
   border-radius: 6px;
   box-shadow: none;
-  color: #DBE1E7 !important;
+  color: #DBE1E7;
   cursor: pointer;
   font-family: 'Exo', sans-serif;
-  font-size: 16px !important;
+  font-size: 16px;
   text-align: center;
   font-weight: 400;
+  text-transform: uppercase;
   line-height: 20px;
-  margin: 0 !important;
-  padding: 10px !important;
-  width: 100%;
+  padding: 10px;
+  width: 160px !important;
   height: auto;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+@media (max-width: 550px) {
+  .ml-subscribe-input {
+    width: 95%;
+    height: 48px;
+    margin-right: 0;
+  }
+  .ml-subscribe-button {
+    width: 95% !important;
+    margin-top: 10px;
+    height: 48px;
+  }
 }

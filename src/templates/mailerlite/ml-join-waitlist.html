@@ -2,8 +2,10 @@
 {% block ml_title%} Join Waitlist iframe{% endblock %}<
 
 {% block ml_container %}
-    <h1>Join the Waitlist</h1>
-    <form id="ml-join-waitlist-form" class="ml-subscribe-container" action="{{ url_for('mailerlite.waitlist_form_view') }}" method="post">
+    
+    <div class="ml-subscribe-container">
+      <h1>Join the Waitlist</h1>
+    <form id="ml-join-waitlist-form" action="{{ url_for('mailerlite.waitlist_form_view') }}" method="post">
       {{ form.csrf_token }}
       {{ form.email.label(class="ml-subscribe-label") }}
       {{ form.email(class="ml-subscribe-input") }}
@@ -18,4 +20,5 @@
       {{ form.submit(class="ml-subscribe-button") }}
       <p>You can unsubscribe anytime. For more details, review our <a href="{{url_for("core.privacy_page") }}" target="_blank">Privacy Policy</a>.</p>
     </form>
+    </div>
 {% endblock %}
