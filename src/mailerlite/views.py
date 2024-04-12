@@ -1,11 +1,10 @@
-from flask import Blueprint, current_app, jsonify, render_template
+from flask import Blueprint, current_app, render_template, redirect
 
-from .utils import MLClient
+from .utils import add_subscriber
 from .forms import WaitListSignupForm
 
 
 mailerlite_app = Blueprint("mailerlite", __name__)
-mailerlite = MLClient()
 
 @mailerlite_app.route("/ml-join-waitlist", methods=["GET", "POST"])
 def waitlist_form_view():
@@ -13,17 +12,20 @@ def waitlist_form_view():
     if form.validate_on_submit():
         email = form.email.data
         GROUP_ID:int = current_app.config["MAILERLITE_WAITLIST_ID"]
-        subscriber_id = mailerlite.add_subscriber(email)
-        is_added = mailerlite.assign_subscriber(subscriber_id, group_id=GROUP_ID)
-        if is_added:
-            return jsonify(
-                status="success",
-                html=render_template("mailerlite/ml-success.html")
+        response = add_subscriber(email, groups=[GROUP_ID])
+        if response.data:
+            return redirect(render_template("mailerlite/ml-success.html"))
+        elif response.errors:
+            error_message = response.errors.get("email", "Invalid email")[0]
+            return render_template(
+                "mailerlite/ml-join-waitlist.html",
+                form=form,
+                error_message=error_message
             )
         else:
-            return jsonify(
-                status="fail",
-                html=render_template("mailerlite/ml-join-waitlist.html", form=form)
+            return render_template(
+                "mailerlite/ml-join-waitlist.html",
+                form=form
             )
     return render_template("mailerlite/ml-join-waitlist.html", form=form)
 

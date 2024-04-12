@@ -51,6 +51,28 @@ a:hover {
   text-align: center;
 }
 
+.alert {
+  margin: 40px auto;
+  max-width: 200px;
+  text-align: center;
+  text-transform: uppercase;
+  padding: 20px;
+  font-size: 1.1em;
+  background-color: #DBE1E7;
+  border-color: #8c1c1c;
+  border-width: 2px;
+  border-style: solid;
+  box-sizing: border-box;
+  border-radius: 6px;
+}
+#error {
+  color: #8c1c1c;
+  font-weight: 200;
+  font-size: 1rem;
+  padding-left: 10px;
+  padding-right: 5px;
+}
+
 .ml-subscribe-label {
   position: absolute;
   width: 1px;
