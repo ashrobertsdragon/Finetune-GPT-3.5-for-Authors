@@ -16,6 +16,7 @@ from src.binders.views import binders_app
 from src.core.views import core_app
 from src.free.views import free_app
 from src.stripe.views import stripe_app
+from src.mailerlite.views import mailerlite_app
 
 # Initialize logging
 start_loggers()
@@ -47,6 +48,7 @@ app.register_blueprint(binders_app)
 app.register_blueprint(core_app)
 app.register_blueprint(free_app)
 app.register_blueprint(stripe_app)
+app.register_blueprint(mailerlite_app)
 
 
 Session(app)

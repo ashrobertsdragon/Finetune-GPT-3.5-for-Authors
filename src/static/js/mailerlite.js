@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    var form = document.getElementById('waitlist-form');
+    var form = document.getElementById('ml-join-waitlist-form');
     
     form.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -12,13 +12,13 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if(data.status === 'success') {
-                document.getElementById('container').innerHTML = data.html;
+                document.getElementById('ml-outer-container').innerHTML = data.html;
             } else {
-                document.getElementById('container').innerHTML = '<p>Failed to subscribe. Please try again.</p>';
+                document.getElementById('ml-outer-container').innerHTML = '<p>Failed to subscribe. Please try again.</p>';
             }
         })
         .catch(error => {
-            document.getElementById('container').innerHTML = '<p>Error occurred. Please try again later.</p>';
+            document.getElementById('ml-outer-container').innerHTML = '<p>Error occurred. Please try again later.</p>';
         });
     });
 });
