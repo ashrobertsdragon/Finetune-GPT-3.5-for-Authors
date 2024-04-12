@@ -40,6 +40,7 @@ class Config(object):
             "https://fonts.gstatic.com"
         ],
         "frame-src": [
+          "'self'",
           "https://youtube.com",
           "https://connect-js.stripe.com",
           "https://js.stripe.com"

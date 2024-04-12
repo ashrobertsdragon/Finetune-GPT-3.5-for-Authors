@@ -74,10 +74,6 @@ a.button {
 #single1 {
   font-weight: 500;
 }
-.ml-form {
-  transform: none;
-  padding-bottom: 20px;
-}
 
 .hero, .solution, .features, .call-to-action, .waitlist, .faq-question {
   background: linear-gradient(0deg, #bbe5ed, #c4e1eb, #ccdfe9);
@@ -181,13 +177,16 @@ body.dark-mode .feature{
 }
 
 .waitlist {
-  display: block;
   max-width: 600px;
-  margin: 5em auto 2em;
+  align-items: center;
+  height: auto;
 }
-.waitlist h1 {
-  text-align: center;
+.waitlist iframe {
+  width: 400px;
+  border: none;
+  padding: 20px;
 }
+
 body.dark-mode .hero::after, 
 body.dark-mode .features::after, 
 body.dark-mode .call-to-action::after, 

@@ -3,13 +3,10 @@ from flask import Blueprint, current_app, jsonify, render_template
 from .utils import MLClient
 from .forms import WaitListSignupForm
 
+
 mailerlite_app = Blueprint("mailerlite", __name__)
 mailerlite = MLClient()
 
-@mailerlite_app.route("/")
-def landing_page():
-    form = WaitListSignupForm()
-    return render_template("mailerlite/index.html", form=form)
 @mailerlite_app.route("/ml-join-waitlist", methods=["GET", "POST"])
 def waitlist_form_view():
     form = WaitListSignupForm()
@@ -28,7 +25,7 @@ def waitlist_form_view():
                 status="fail",
                 html=render_template("mailerlite/ml-join-waitlist.html", form=form)
             )
-    return render_template("ml-join-waitlist.html", form=form)
+    return render_template("mailerlite/ml-join-waitlist.html", form=form)
 
 @mailerlite_app.route("/ml-sucess", methods=["GET"])
 def ml_success_view():
