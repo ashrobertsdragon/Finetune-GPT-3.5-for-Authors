@@ -15,7 +15,8 @@
   {% endif %}
   {% with messages = get_flashed_messages() %}
     {% if messages %}
-      <div class="flash-modal">
+      <script src="{{ url_for('static', filename='js/closeModal.js') }}"></script>
+  <div class="flash-modal">
         <span class="material-symbols-outlined close-icon">
           close
           </span>
