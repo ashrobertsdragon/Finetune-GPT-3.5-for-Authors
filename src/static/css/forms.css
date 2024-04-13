@@ -203,40 +203,38 @@ div {
 .error-modal {
   display: none; /* Hide the modal by default */
   position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0,0,0,0.4);
-}
-
-.error-modal-content {
-  background-color: #DBE1E7;
-  color: #1C0B19;
-  margin: 15% auto;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 400px;
   padding: 20px;
-  border: 1px solid #BBE5ED;
-  width: 50%;
-  text-align: center;
-}
-body.dark-mode .error-modal-content {
-  background-color: #1C0B19;
-  color: #DBE1E7;
-  border: 1px solid #3F5C7D
+  background-color: #c7c9cc;
+  color: #600d0d;
+  border-color: #600d0d;
+  border-width: 2px;
+  border-style: solid;
+  box-sizing: border-box;
+  border-radius: 6px;
 }
 
-.error-modal-close {
-  color: #BBE5ED;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-  cursor: pointer;
+.error-modal-title {
+  color: #600d0d;
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  opacity: 0.8;
+  line-height: 1.2;
+}
+
+.err-circle {
+  font-weight: 300;
+  padding-right: 10px;
+  transform: translateY(.2rem);
 }
 
 .error {
-  color: #ff0000; /* Adjust color as needed */
+  color: #ff0000;
   font-size: .9em;
+  vertical-align: middle;
 }
 
 .flash-modal {
@@ -291,7 +289,6 @@ body.dark-mode .flash-modal {
   align-items: center;
   position: relative;
 }
-
 
 #eye {
   position: absolute;

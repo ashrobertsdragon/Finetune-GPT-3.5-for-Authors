@@ -23,16 +23,6 @@
     function showErrorModal() {
       var modal = document.getElementById("errorModal");
       modal.style.display = "block";
-
-      var closeButton = modal.querySelector(".close");
-      closeButton.onclick = function() {
-        modal.style.display = "none";
-      }
-      window.onclick = function(event) {
-        if (event.target == modal) {
-          modal.style.display = "none";
-        }
-      }
     }
 
     document.addEventListener("DOMContentLoaded", function() {
