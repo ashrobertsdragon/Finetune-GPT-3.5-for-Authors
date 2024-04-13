@@ -8,15 +8,20 @@
 {% endblock extra_js %}
 
 {% block content %}
-  {% with messages = get_flashed_messages() %}
-    {% if messages %}
-        <ul class="flashes">
-        {% for message in messages %}
-        <li>{{ message }}</li>
-        {% endfor %}
-        </ul>
-    {% endif %}
-  {% endwith %}
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+  <div class="flash-modal">
+    <span class="material-symbols-outlined close-icon">
+      close
+      </span>
+    <ul class="flashes">
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  </div>
+{% endif %}
+{% endwith %}
   <form class="box" id="conversionForm" method="post" enctype="multipart/form-data" action="{{ url_for ('free.convert_ebook') }}">
     {{ form.csrf_token }}
     <div class="flex-form" id="upload">

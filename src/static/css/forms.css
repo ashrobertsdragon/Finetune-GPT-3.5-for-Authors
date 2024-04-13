@@ -199,8 +199,8 @@ div {
   text-align: center;
 }
 
-/* Error Modal */
-.modal {
+/* Modals */
+.error-modal {
   display: none; /* Hide the modal by default */
   position: fixed;
   z-index: 1;
@@ -211,7 +211,7 @@ div {
   background-color: rgba(0,0,0,0.4);
 }
 
-.modal-content {
+.error-modal-content {
   background-color: #DBE1E7;
   color: #1C0B19;
   margin: 15% auto;
@@ -220,13 +220,13 @@ div {
   width: 50%;
   text-align: center;
 }
-body.dark-mode .modal-content {
+body.dark-mode .error-modal-content {
   background-color: #1C0B19;
   color: #DBE1E7;
   border: 1px solid #3F5C7D
 }
 
-.close {
+.error-modal-close {
   color: #BBE5ED;
   float: right;
   font-size: 28px;
@@ -237,6 +237,52 @@ body.dark-mode .modal-content {
 .error {
   color: #ff0000; /* Adjust color as needed */
   font-size: .9em;
+}
+
+.flash-modal {
+  z-index: 9999;
+  display: block;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 400px;
+  padding: 20px;
+  background-color: #c7c9cc;
+  border-color: #370808;
+  border-width: 2px;
+  border-style: solid;
+  box-sizing: border-box;
+  border-radius: 6px;
+}
+
+body.dark-mode .flash-modal {
+  background-color: #2a0f25;
+}
+
+.flashes {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  margin-top: 5px;
+  font-size: 1.1em;
+}
+
+.flashes li {
+  padding-bottom: 10px;
+}
+
+.close-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  margin: 0;
+  padding: 0;
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 200,
+    'GRAD' 0,
+    'opsz' 20;
 }
 
 /* Visibility toggle icon */

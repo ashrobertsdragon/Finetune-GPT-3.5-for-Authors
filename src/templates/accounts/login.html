@@ -5,15 +5,20 @@
 
 {% block content %}
     <div class="form box">
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <ul class="flashes">
-                {% for message in messages %}
-                <li>{{ message }}</li>
-                {% endfor %}
-                </ul>
-            {% endif %}
-        {% endwith %}
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash-modal">
+          <span class="material-symbols-outlined close-icon">
+            close
+            </span>
+          <ul class="flashes">
+          {% for message in messages %}
+          <li>{{ message }}</li>
+          {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+    {% endwith %}
         <form id="login-form" class="form" method="post" action="{{ url_for('accounts.login_view') }}">
             {{ form.csrf_token }}
             <h1 class="content-title">Login</h1>

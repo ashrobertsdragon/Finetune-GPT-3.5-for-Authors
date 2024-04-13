@@ -12,14 +12,19 @@
   <div class="box hidden" id="status" role="status updates" aria-label="Status Updates">
     <h2>Fine tuning status:</h2>
     {% with messages = get_flashed_messages() %}
-      {% if messages %}
-          <ul class="flashes">
-          {% for message in messages %}
-          <li>{{ message }}</li>
-          {% endfor %}
-          </ul>
-      {% endif %}
-    {% endwith %}
+    {% if messages %}
+      <div class="flash-modal">
+        <span class="material-symbols-outlined close-icon">
+          close
+          </span>
+        <ul class="flashes">
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  {% endwith %}
     <p id="statusMessage"></p>
   </div>
   <div id="errorModal" class="modal" aria-labelledby="modalTitle" aria-describedby="errorMessage">

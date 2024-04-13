@@ -15,11 +15,16 @@
   {% endif %}
   {% with messages = get_flashed_messages() %}
     {% if messages %}
+      <div class="flash-modal">
+        <span class="material-symbols-outlined close-icon">
+          close
+          </span>
         <ul class="flashes">
         {% for message in messages %}
         <li>{{ message }}</li>
         {% endfor %}
         </ul>
+      </div>
     {% endif %}
   {% endwith %}
   <form method="post">
