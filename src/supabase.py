@@ -283,7 +283,7 @@ class SupabaseDB(SupabaseClient):
         self._validate_type(value, name=name, is_type=dict)
     
     def _validate_table(self, value:any):
-        self.validate_string(value, name="table_name")
+        self._validate_string(value, name="table_name")
 
     def insert_row(
         self, *, table_name: str, updates: dict, use_service_role: bool = False
