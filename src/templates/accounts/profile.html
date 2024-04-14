@@ -39,9 +39,11 @@
         {{ account_form.submit_account(class="btn btn-primary")}}
     </form>
     </div>
-    <div class="box form-grid" id="credit-info">
+    <div class="form-grid" id="credit-info">
+      <div class="box" id="credit-info-inner">
         <h2>Credit Balance: {{ user.credits_available }}</h2>
         <h2>Credits Used: {{ user.credits_used }}</h2>
+      </div>
     </div>
     <!-- Password Field -->
     <div class="form-grid" id="div-id_password">

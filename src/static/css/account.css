@@ -1,4 +1,9 @@
 /* Global */
+h2 {
+  text-align: center;
+  margin-bottom: 2em;
+}
+
 h3 {
   font-family: Raleway;
   text-transform: uppercase;
@@ -6,12 +11,14 @@ h3 {
   letter-spacing: .1rem;
   opacity: .95;
 }
+
 .h3-num {
   font-family: "Open Sans";
   font-weight: 700;
   font-size: 1.2rem;
   margin-top: -.1rem;
 }
+
 .form-grid {
   display: block;
   max-width: 600px;
@@ -19,6 +26,9 @@ h3 {
   margin-top: 20px;
 }
 
+label {
+  margin-left: 20px;
+}
 /* Sidebar */
 .sidebar {
   position: fixed;
@@ -28,7 +38,7 @@ h3 {
   padding-top: calc(10%);
 }
 .sidebar-nav {
-  margin-left: -20px;
+  margin-left: -100%;
 }
 
 .account-header {
@@ -46,7 +56,8 @@ h3 {
 }
 
 #update-password-form,
-#account-management-form {
+#account-management-form,
+#credit-info-inner {
   width: 600px;
   margin: auto;
   padding: 20px;
