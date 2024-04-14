@@ -3,9 +3,10 @@
 {% block title %}Account Management{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/account.css') }}">
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/account.css') }}">
 {% endblock %}
-S
+
 {% block content %}
   <div class="sidebar">
     <ul class="sidebar-nav">
