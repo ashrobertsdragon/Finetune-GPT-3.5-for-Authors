@@ -1,3 +1,4 @@
+import logging
 import secrets
 import string
 from flask import g, session
@@ -5,7 +6,8 @@ from flask import g, session
 from .supabase import SupabaseDB
 
 db = SupabaseDB()
-
+error_logger = logging.getLogger("error_logger")
+info_logger = logging.getLogger("info_logger")
 
 def load_user():
   g.user = None
@@ -24,7 +26,10 @@ def update_db() -> None:
     Update the user's row of the user table with the most current session 
     user_details dictionionary
     """
-    auth_id = session["user_details"].get("auth_id")
+    try:
+        auth_id = session["user_details"]["auth_id"]
+    except Exception:
+        error_logger.error(f"auth_id not found in {session["user_details"]}")
     match = {"auth_id": auth_id}
     db.update_row("user", info=session["user_details"], match=match)
 

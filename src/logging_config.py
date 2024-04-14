@@ -1,42 +1,146 @@
 import logging
+import os
 from decouple import config
+from typing import Optional
+from logging import Logger, Handler, Formatter
 
 from google.cloud import logging as cloud_logging
+
+
+class TypeLogger():
+    """
+    A class that provides a logging functionality with customizable log levels
+    and log handlers.
+
+    Attributes:
+        name (str): The name of the logger.
+        logger (Logger): The Logger object.
+        handler (Optional[Handler]): The Handler object. Defaults to local
+            FileHandler.
+        formatter (Formatter): The Formatter object.
+    
+    Methods:
+        __init__: Initializes the TypeLogger object.
+            Args:
+                self
+                name (str): The name of the logger.
+                handler (Optional[Handler]): The optional handler object.
+
+        __call__: Calls the log method.
+            Args:
+                self
+                message (str): The message to log.
+
+        _get_logger: Creates a logger object.
+            Args:
+                self
+                name (str): The name of the logger.
+                
+        _get_log_level: Returns the log level from the logger name.
+            Args:
+                self
+                name (str): The name of the logger.
+
+        _get_file_handler: Returns a local file handler object with a file
+            name of the logger's name/level and .log extension.
+            Args:
+                self
+                name (str): The name of the logger.
+
+        _get_formatter: Returns a formatter object.
+
+        _setup_logger: Sets up the logger, setting the level, adding the
+            handler, and setting the formatter.
+            Args:
+                self
+                name (str): The name of the logger.
+
+        log: Logs a message using the logger.
+            Args:
+                self
+                message (str): The message to log.
+
+    Example:
+        >>>info_logger = TypeLogger("info")
+        >>>info_logger("Info logger initialized")
+
+        >cat info.log
+
+        Output:
+        2024-04-13 23:33:39,228 - Info logger initialized
+    """
+    def __init__(self, *, name: str, handler: Optional[Handler] = None) -> None:
+        self.name = name
+        self.logger = self._get_logger(name)
+        self.handler = handler if handler else self._get_file_handler(name)
+        self.formatter = self._get_formatter()
+        self._setup_logger()
+    
+    def __call__(self, message: str) -> None:
+        self.log(message)
+
+    def _get_logger(self, name: str) -> Logger:
+        logger_name: str = f"{name}_logger"
+        return logging.getLogger(logger_name)
+    
+    def _get_log_level(self) -> int:
+
+        name: str = self.name.upper()
+        try:
+            log_level = getattr(logging, name)
+        except AttributeError:
+            raise ValueError(f"Invalid log level name: {name}")
+        return log_level
+        
+    def _get_file_handler(self, name: str) -> Handler:
+        filename: str = f"{name}.log"
+        file_path = os.path.join("logs", filename)
+        return logging.FileHandler(file_path)
+
+    def _get_formatter(self) -> Formatter:
+        return logging.Formatter(
+            "%(asctime)s - %(message)s"
+        )
+
+    def _setup_logger(self, name: str) -> None:
+        log_level: int = self._get_log_level(name)
+        self.logger.setLevel(log_level)
+        self.logger.addHandler(self.file_handler)
+        self.file_handler.setFormatter(self.formatter)
+
+    def log(self, message) -> None:
+        """
+        Log a message using the logger.
+
+        Args:
+            message (str): The message to be logged.
+
+        Returns:
+            None
+
+        Example:
+            logger = Logger("my_logger")
+            logger.log("This is a log message")
+        """
+        self.logger.log(self.logger.level, message)
 
 def start_loggers():
     "Starts loggers for error and info logs"
 
     environment = config("FLASK_ENV", "development") # Default to development if FLASK_ENV is not set
 
-    error_logger = logging.getLogger("error_logger")
-    info_logger = logging.getLogger("info_logger")
-
     if environment in ["staging", "production"]:
         # Initialize Google Cloud Logging
         logging_client = cloud_logging.Client()
         cloud_handler = logging_client.get_default_handler()
 
-        error_logger.setLevel(logging.ERROR)
-        error_logger.addHandler(cloud_handler)
+        error_logger = Logger(name="error", handler=cloud_handler)
+        info_logger = Logger(name="info", handler=cloud_handler)
 
-        info_logger.setLevel(logging.INFO)
-        info_logger.addHandler(cloud_handler)
     else:
         # Initialize local file logging
-        error_log_filename = "error.log"
-        info_log_filename = "info.log"
-
-        error_handler = logging.FileHandler(error_log_filename)
-        info_handler = logging.FileHandler(info_log_filename)
-
-        error_logger.setLevel(logging.ERROR)
-        error_logger.addHandler(error_handler)
-
-        info_logger.setLevel(logging.INFO)
-        info_logger.addHandler(info_handler)
-
-        formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-
-        error_handler.setFormatter(formatter)
-        info_handler.setFormatter(formatter)
+        error_logger = Logger(name="error")
+        info_logger = Logger(name="info")
+    
+    return error_logger, info_logger
 
