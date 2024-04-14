@@ -1,9 +1,13 @@
-document.getElementById("credits").oninput = function() {
-  var numCredits = this.value;
-  var price = calculatePrice(numCredits);
-  document.getElementById("credits-num").innerText = numCredits;
-  document.getElementById("price-num").innerText = price;
-};
+const credits = document.getElementById("credits")
+
+if (credits) {
+  credits.oninput = function() {
+    var numCredits = this.value;
+    var price = calculatePrice(numCredits);
+    document.getElementById("credits-num").innerText = numCredits;
+    document.getElementById("price-num").innerText = price;
+  };
+}
 
 function calculatePrice(numCredits) {
   // Price structure
