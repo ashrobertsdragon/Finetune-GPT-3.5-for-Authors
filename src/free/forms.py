@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed, FileField
-from wtforms import BooleanField, SelectField, StringField, SubmitField, TextAreaField
+from wtforms import (BooleanField, PasswordField, SelectField, StringField,
+                    SubmitField, TextAreaField)
 from wtforms.validators import DataRequired, Length, Regexp
 
 class EbookConversionForm(FlaskForm):
@@ -21,7 +22,7 @@ class EbookConversionForm(FlaskForm):
     submit = SubmitField("Convert")
     
 class FineTuneForm(FlaskForm):
-    user_key = StringField("OpenAI API key", validators=[
+    user_key = PasswordField("OpenAI API key", validators=[
         DataRequired(), 
         Regexp("^sk-", message="Key must start with 'sk-'"),
         Length(
@@ -32,7 +33,7 @@ class FineTuneForm(FlaskForm):
     ])
     file = FileField("Upload Text File(s)", validators=[
         DataRequired(),
-        FileAllowed(["txt", "text"], "Text files only!")
+        FileAllowed(["txt", "text"], "Text files only")
     ])
     role = TextAreaField("System message", validators=[DataRequired()])
     chunk_type = SelectField("Fine tuning method", choices=[
