@@ -24,7 +24,7 @@
 {% endif %}
 {% endwith %}
   <form class="box" id="conversionForm" method="post" enctype="multipart/form-data" action="{{ url_for ('free.convert_ebook') }}">
-    {{ form.csrf_token() }}
+    {{ form.hidden_tag() }}
     <div class="flex-form" id="upload">
         {{ form.ebook.label(class="input-label") }}
         {{ form.ebook(size=20) }}

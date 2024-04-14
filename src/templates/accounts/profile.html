@@ -48,7 +48,7 @@
         
         <form method="POST" class="box" id="update-password-form" action="{{ url_for('accounts.profile_view') }}">
           <h2>Update Password</h2>
-          {{ password_form.csrf_token() }}        
+          {{ password_form.hidden_tag() }}        
           <div class="flex-form" id="div-id_password">
           {{ password_form.new_password.label(class="input-label") }}
           <div class="password-container">

@@ -20,7 +20,7 @@
       {% endif %}
     {% endwith %}
         <form class="user-form" method="POST" action="{{ url_for('accounts.signup_view') }}">
-            {{ form.csrf_token() }}
+            {{ form.hidden_tag() }}
             <h1>Become a Pal to your Prose</h1>
             <div id="required-div">
                 <h3 class="required-text">All fields are required.</h3>

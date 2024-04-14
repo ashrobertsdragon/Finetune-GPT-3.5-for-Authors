@@ -26,7 +26,7 @@
     {% endif %}
   {% endwith %}
   <form method="POST" class="form box" enctype="multipart/form-data">
-    {{ form.csrf_token() }}
+    {{ form.hidden_tag() }}
     <div class="flex-form">
       {{ form.author.label(class="input-label") }} {{ form.author(class="input-box metadata") }}
       <span class="text-muted">{{ form.author.errors }}</span>

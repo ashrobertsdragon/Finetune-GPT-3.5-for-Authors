@@ -21,7 +21,7 @@
       {% endif %}
     {% endwith %}
         <form id="login-form" class="form" method="post" action="{{ url_for('accounts.login_view') }}">
-            {{ form.csrf_token() }}
+            {{ form.hidden_tag() }}
             <h1 class="content-title">Login</h1>
             <div class="input-boxes">
                 <!-- Email Field -->

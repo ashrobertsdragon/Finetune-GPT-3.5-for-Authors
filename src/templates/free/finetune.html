@@ -38,7 +38,7 @@
   </div>
 
   <form class="box" method="POST" enctype="multipart/form-data" role="main" action="{{url_for('free.finetune')}}">
-    {{ form.csrf_token() }}
+    {{ form.hidden_tag() }}
     <div class="opening-info">
         <p class="info-link"><a href="{{ url_for('free.finetune_instructions') }}" target="_blank" aria-label="Read detailed instructions">Instructions</a></p>
         <p class="info-link"><a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" title="OpenAI API keys" aria-label="Get API key from OpenAI">Get API key from OpenAI</a></p>

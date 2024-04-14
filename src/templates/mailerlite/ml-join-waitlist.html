@@ -12,7 +12,7 @@
       </div>
     {% endif %}
     <form id="ml-join-waitlist-form" action="{{ url_for('mailerlite.waitlist_form_view') }}" method="post">
-      {{ form.csrf_token() }}
+      {{ form.hidden_tag() }}
       {{ form.email.label(class="ml-subscribe-label") }}
       {{ form.email(class="ml-subscribe-input") }}
       {% if form.email.description %}
