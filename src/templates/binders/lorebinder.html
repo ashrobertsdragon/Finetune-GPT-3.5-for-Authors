@@ -2,9 +2,7 @@
 
 {% block title %}LoreBinder Setup{% endblock %}
 
-{% block extra_css %}
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
-{% endblock extra_css %}
+
 
 {% block extra_js %}
   <script src="{{ url_for('static', filename='javascript/invalid-input.js') }}"></script>
@@ -28,38 +26,38 @@
     {% endif %}
   {% endwith %}
   <form method="POST" class="form box" enctype="multipart/form-data">
-    {{ form.csrf_token }}
-    <div class="form-group">
-      {{ form.author.label }} {{ form.author(class_="form-control metadata") }}
+    {{ form.csrf_token() }}
+    <div class="flex-form">
+      {{ form.author.label(class="input-label") }} {{ form.author(class="input-box metadata") }}
       <span class="text-muted">{{ form.author.errors }}</span>
     </div>
-    <div class="form-group">
-      {{ form.title.label }} {{ form.title(class_="form-control metadata") }}
+    <div class="flex-form">
+      {{ form.title.label(class="input-label") }} {{ form.title(class="input-box metadata") }}
       <span class="text-muted">{{ form.title.errors }}</span>
     </div>
-    <div class="form-group form-check">
+    <div class="flex-form form-check">
       {{ form.is_first_person.label }}
       {{ form.is_first_person }}
     </div>
-    <div class="form-group" id="narrator-container" style="display: none;">
-      {{ form.narrator.label }} {{ form.narrator(class_="form-control") }}
+    <div class="flex-form" id="narrator-container" style="display: none;">
+      {{ form.narrator.label }} {{ form.narrator(class="input-box") }}
       <span class="text-muted">{{ form.narrator.errors }}</span>
     </div>
-    <div class="form-group">
-      {{ form.character_attributes_input.label }} 
-      {{ form.character_attributes_input(class_="metadata") }}
+    <div class="flex-form">
+      {{ form.character_attributes_input.label(class="input-label") }} 
+      {{ form.character_attributes_input(class="metadata") }}
       <span class="text-muted">{{ form.character_attributes_input.errors }}</span>
     </div>
-    <div class="form-group">
-      {{ form.other_attributes_input.label }} 
-      {{ form.other_attributes_input(class_="metadata") }}
+    <div class="flex-form">
+      {{ form.other_attributes_input.label(class="input-label") }} 
+      {{ form.other_attributes_input(class="metadata") }}
       <span class="text-muted">{{ form.other_attributes_input.errors }}</span>
     </div>
-    <div class="form-group">
-      {{ form.file_upload.label }} {{ form.file_upload(accept=".docx,.epub,.pdf,.txt") }}
+    <div class="flex-form">
+      {{ form.file_upload.label(class="input-label") }} {{ form.file_upload(accept=".docx,.epub,.pdf,.txt") }}
       <span class="text-muted">{{ form.file_upload.errors }}</span>
     </div>
-    <button type="submit" class="btn btn-primary">{{ form.submit.label }}</button>
+    {{ form.submit(class="btn btn-primary")}}
   </form>
 {% endblock content %}
 {% block footer %}

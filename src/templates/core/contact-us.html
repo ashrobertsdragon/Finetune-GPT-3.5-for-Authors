@@ -28,9 +28,14 @@
       </div>
     {% endif %}
   {% endwith %}
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Send Message</button>
+  <form class="contact-form form box" method="post" action="{{ url_for('core.contact_us_view') }}">
+    {{ form.csrf_token() }}
+    {{ form.name.label(class="input-label") }}
+    {{ form.name(class="input-box") }}
+    {{ form.email.label(class="input-label") }}
+    {{ form.email(class="input-box") }}
+    {{ form.message.label(class="input-label") }}
+    {{ form.message }}
+    {{ form.submit(class="btn btn-primary")}}
   </form>
 {% endblock content %}

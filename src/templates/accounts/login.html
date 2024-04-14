@@ -21,7 +21,7 @@
       {% endif %}
     {% endwith %}
         <form id="login-form" class="form" method="post" action="{{ url_for('accounts.login_view') }}">
-            {{ form.csrf_token }}
+            {{ form.csrf_token() }}
             <h1 class="content-title">Login</h1>
             <div class="input-boxes">
                 <!-- Email Field -->
@@ -41,7 +41,7 @@
                 <div class="flex-form" id="div-id_password">
                     {{ form.password.label(class="input-label") }}
                     <div class="password-container">
-                        {{ form.password(size=30, class="input-box") }}
+                        {{ form.password(size=30, class="input-box", id="id_password") }}
                         <span class="material-symbols-outlined" id="eye">visibility</span>
                     </div>
                     {% if form.password.description %}
@@ -54,7 +54,7 @@
                     {% endif %}
                 </div>
             </div>
-            <input type="submit" value="Login" class="btn btn-primary">
+            {{ form.submit(class="btn btn-primary")}}
         </form>
         <div class="forgot-password">
           <p><a href="{{ url_for('accounts.forgot_password_view')}}" title="Forgot password">Forgot password?</a></p>

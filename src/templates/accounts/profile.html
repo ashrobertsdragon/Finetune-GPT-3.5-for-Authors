@@ -36,7 +36,7 @@
             {{ account_form.b_day.label(class="input-label") }}
             {{ account_form.b_day(size=20) }}
         </div>
-        <input type="submit" value="Update Profile" class="btn btn-primary" />
+        {{ account_form.submit_account(class="btn btn-primary")}}
     </form>
     </div>
     <div class="box form-grid" id="credit-info">
@@ -48,11 +48,11 @@
         
         <form method="POST" class="box" id="update-password-form" action="{{ url_for('accounts.profile_view') }}">
           <h2>Update Password</h2>
-          {{ password_form.hidden_tag() }}        
+          {{ password_form.csrf_token() }}        
           <div class="flex-form" id="div-id_password">
           {{ password_form.new_password.label(class="input-label") }}
           <div class="password-container">
-              {{ password_form.new_password(size=30, class="input-bow") }}
+              {{ password_form.new_password(size=30, class="input-box", id="id_password") }}
               <span class="material-symbols-outlined" id="eye">visibility</span>
           </div>
           {% if password_form.new_password.description %}
@@ -64,7 +64,7 @@
               {% endfor %}
           {% endif %}
           </div>
-          <input type="submit" value="Change Password" class="btn btn-primary" />
+          {{ password_form.submit_password(class="btn btn-primary")}}
         </form>
     </div>
 {% endblock content %}

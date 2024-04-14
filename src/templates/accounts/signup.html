@@ -19,8 +19,8 @@
         </div>
       {% endif %}
     {% endwith %}
-        <form class="user-form" method="POST" role="main" action="{{ url_for('accounts.signup_view') }}">
-            {{ form.csrf_token }}
+        <form class="user-form" method="POST" action="{{ url_for('accounts.signup_view') }}">
+            {{ form.csrf_token() }}
             <h1>Become a Pal to your Prose</h1>
             <div id="required-div">
                 <h3 class="required-text">All fields are required.</h3>
@@ -43,7 +43,7 @@
               <div class="flex-form" id="div-id_password">
                   {{ form.password.label(class="input-label") }}
                   <div class="password-container">
-                      {{ form.password(size=30, class="input-box") }}
+                      {{ form.password(size=30, class="input-box", id="id_password") }}
                       <span class="material-symbols-outlined" id="eye">visibility</span>
                   </div>
                   {% if form.password.description %}
@@ -62,7 +62,7 @@
                     {{ form.terms_agreement.label(class="user-input-label") }}
                 </div>
             </div>
-            <input type="submit" value="Signup" class="btn btn-primary">
+            {{ form.submit(class="btn btn-primary")}}
         </form>
         <div class="switch-auth">
             Already have an account? <a href="{{ url_for('accounts.login_view') }}" id="login-link">Login</a>
@@ -70,6 +70,3 @@
     </div>
 {% endblock %}
 
-{% block footer %}
-    {% include "normal-footer.html" %}
-{% endblock footer %}

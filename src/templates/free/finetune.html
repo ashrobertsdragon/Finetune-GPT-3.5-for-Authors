@@ -7,6 +7,7 @@
   <script src="{{ url_for('static', filename='js/invalid-input.js') }}"></script>
   <script src="{{ url_for('static', filename='js/changePlaceholder.js') }}"></script>
   <script src="{{ url_for('static', filename='js/closeModal.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/visToggle.js') }}"></script>
 {% endblock extra_js %}
 
 {% block content %}
@@ -26,7 +27,7 @@
     <h2>Fine tuning status:</h2>
     <p id="statusMessage"></p>
   </div>
-  <div id="errorModal" class="modal" aria-labelledby="modalTitle" aria-describedby="errorMessage">
+  <div id="errorModal" class="error-modal" aria-labelledby="modalTitle" aria-describedby="errorMessage">
       <span class="material-symbols-outlined close-icon">
         close
         </span>
@@ -37,22 +38,22 @@
   </div>
 
   <form class="box" method="POST" enctype="multipart/form-data" role="main" action="{{url_for('free.finetune')}}">
-    {{ form.csrf_token }}
+    {{ form.csrf_token() }}
     <div class="opening-info">
         <p class="info-link"><a href="{{ url_for('free.finetune_instructions') }}" target="_blank" aria-label="Read detailed instructions">Instructions</a></p>
         <p class="info-link"><a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" title="OpenAI API keys" aria-label="Get API key from OpenAI">Get API key from OpenAI</a></p>
     </div>
     <div class="flex-form" id="key">
-        {{ form.user_key.label(class="finetune-label") }}
+        {{ form.user_key.label(class="input-label") }}
         <div class="password-container">
-        {{ form.user_key(id="user_key", class="password-input", size=60) }}
-        <span class="material-symbols-outlined" id="eye">visibility</span>
-      </div>
+          {{ form.user_key(id="user_key", class="password-input", size=60) }}
+          <span class="material-symbols-outlined" id="eye">visibility</span>
+        </div>
     </div>
     
         <p class="info-link" id="convert-link"><a href="{{ url_for('free.convert_ebook') }}" target="_blank">Convert your ebooks here</a></p>
     <div class="flex-form" id="upload">
-        {{ form.file.label(class="finetune-label") }}
+        {{ form.file.label(class="input-label") }}
         {{ form.file(id="file", multiple=true, accept="text/plain") }}
     </div>
     <div id="sys_role">
@@ -60,7 +61,7 @@
         {{ form.role(id="role", rows=5) }}
     </div>
     <div id="chunk" class="flex-form">
-        {{ form.chunk_type.label(class="finetune-label") }}
+        {{ form.chunk_type.label(class="input-label") }}
         {{ form.chunk_type(id="chunk_type") }}
     </div>
     <div id="checkboxes">
