@@ -4,6 +4,8 @@ const errorModal = document.querySelector('.error-modal');
 
 const modal = flashModal || errorModal;
 
-closeIcon.addEventListener('click', () => {
-  modal.style.display = 'none';
-});
+if (closeIcon) {
+  closeIcon.addEventListener('click', () => {
+    modal.style.display = 'none';
+  });
+};
