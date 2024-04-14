@@ -410,34 +410,45 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 /* Responsive changes */
-@media screen and (max-width: 768px) {
+@media only screen and (max-width: 600px) {
   
+  .input-label {
+    margin-top: 10px;
+  }
 	/* Inputs */
   input[type="password"],
   input[type="text"],
   input[type="date"],
   input[type="email"],
+  input[type="file"],
   select,
   textarea,
   .user-input {
+    width: 95%;
     height: 60px;
-    width: 100%;
-    box-sizing: border-box;
-  }
-  input[type="file"] {
-    width: 100%;
-    height: 60px;
+    margin-right: 0;
     margin-bottom: 10px;
     box-sizing: border-box;
   }
+
   input::file-selector-button {
     height: 48px;
     margin-right: 10px;
   }
+  
   input[type="checkbox"] {
-    height: 40px;
-    width: 40px;
+    height: 48px;
+    width: 48px;
   }
+
+    /* Buttons */
+    input[type="submit"],
+    button {
+      min-height: 48px;
+      width: 100%;
+      padding: 10px;
+      box-sizing: border-box;
+    }
   
   /* Finetuner */
   .form-container,
@@ -446,7 +457,5 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     box-shadow: none;
     padding: 10px;
   }
-
-
 
 }

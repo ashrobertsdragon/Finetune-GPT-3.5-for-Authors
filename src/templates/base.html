@@ -16,6 +16,7 @@
   {% block extra_css %}
   <!-- Placeholder for page-specific CSS -->
     {% endblock extra_css %}
+  <script src="{{ url_for('static', filename='js/responsive.js') }}"></script>
   <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
   {% block extra_js %}
   <!-- Placeholder for page-specific JavaScript -->
@@ -23,7 +24,7 @@
 </head>
 <body class="light-mode">
 
-  {% include 'header.html' %}
+  <div id="header-container"></div>
   {% include 'core/updates.html' %}
   {% block content_container %}
   <!-- Placeholder for the main content of each page -->

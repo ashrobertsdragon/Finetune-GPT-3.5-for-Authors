@@ -266,12 +266,8 @@ img {
 /* Responsive Design */
 @media (max-width: 768px) {
 
-  .header, .hero, .features, .call-to-action, .waitlist {
-    padding: 20px;
-  }
-
-  .call-to-action {
-    max-width: 95%;
+  section {
+    flex-direction: column;
   }
 
   .feature {
@@ -299,10 +295,6 @@ img {
     width: 100%;
   }
 
-  .section {
-    flex-direction: column;
-    align-items: stretch;
-  }
   
   .text-box, .image-box {
     flex: none;

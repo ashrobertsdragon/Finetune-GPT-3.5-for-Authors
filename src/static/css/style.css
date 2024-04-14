@@ -25,9 +25,9 @@ p {
   font-family: 'Exo', sans-serif;
   font-weight: 300;
   font-size: 1.125rem;
-  line-height: 26px;
+  line-height: 1.625;
   margin-top: 0;
-  margin-bottom: 10px;
+  margin-bottom: .625rem;
   text-align: justify;
 }
 
@@ -413,6 +413,15 @@ input:not(:checked) + .slider:before {
   border-radius: 50%;
 }
 
+/* Mobile Navigation */
+.mobile-nav {
+  display: none;
+}
+
+.mobile-nav-toggle {
+  display: none;
+}
+
   /* Update Modal */
 .update-modal {
   position: absolute;
@@ -497,7 +506,7 @@ footer.dark-mode {
 
 
 /* Responsive changes */
-@media screen and (max-width: 786px) {
+@media only screen and (max-width: 1024px) {
 
   /* General styling */
   html, body {
@@ -505,12 +514,28 @@ footer.dark-mode {
   }
 
   /* Header */
-    .header {
-    justify-content: space-between;
-    height: auto;
+  .mobile-nav-toggle {
+    display: block;
+    cursor: pointer;
     padding: 10px;
   }
-  
+
+  #mobile-nav-checkbox:checked ~ .mobile-nav {
+    display: block;
+  }
+
+  .mobile-nav li {
+    text-align: center;
+    padding: 10px;
+  }
+
+  .mobile-nav {
+    position: absolute;
+    top: 50px;
+    left: 0;
+    width: 100%;
+  }
+
   #logo {
     height: 48px;
     width: 48px;
@@ -522,56 +547,73 @@ footer.dark-mode {
   }
 
   .switch {
-    width: 72px;
-    height: 48px;
+    width: 48px;
+    height: 72px;
     margin: 0;
     position: relative;
   }
 
   .slider {
-    width: 100%;
-    height: 44px;
+    width: 44px;
+    height: 100%;
     border-radius: 44px;
   }
 
   .slider:before {
-    width: 40px;
-    height: 36px;
+    width: 36px;
+    height: 40px;
     position: absolute;
     left: 4px;
     bottom: 4px;
   }
 
   input:checked + .slider:before {
-    -webkit-transform: translateX(24px);
-    -ms-transform: translateX(24px);
-    transform: translateX(24px);
-  }
-
-  ul li.logo,
-  ul li.header-list {
-    float: none;
-  }
-  
-  /* Buttons */
-  input[type="submit"],
-  button {
-    min-height: 48px;
-    width: 100%;
-    padding: 10px;
-    box-sizing: border-box;
-  }
-
-  /* Show/hide button */
-  button#showButton {
-    width: 48px;
-    height: 48px;
-    margin: auto;
-    padding: 8px;
-    margin-top: .25em;
-    margin-right: 1.4em;
+    -webkit-transform: translateY(24px);
+    -ms-transform: translateY(24px);
+    transform: translateY(24px);
   }
 
 }
 
+@media only screen and (max-width: 600px) {
+  h1 {
+    font-size: 1.5rem;
+    line-height: 1.3;
+    margin-bottom: 1.5rem;
+  }
 
+  h2 {
+    font-size: 0.75rem;
+    line-height: 1.2;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  p {
+    font-size: .85rem;
+    line-height: 1.375;
+    margin-bottom: 0.5rem;
+    text-align: left;
+  }
+}
+
+@media only screen and (min-width: 601px) and (max-width: 1024px) {
+  h1 {
+    font-size: 1.75rem;
+    line-height: 1.25;
+    margin-bottom: 1.75rem;
+  }
+
+  h2 {
+    font-size: 0.9325rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.2;
+  }
+
+  p {
+    font-size: 1.05rem;
+    line-height: 1.4;
+    margin-bottom: 0.5625rem;
+  }
+}

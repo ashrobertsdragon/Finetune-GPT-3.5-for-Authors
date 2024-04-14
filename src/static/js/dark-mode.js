@@ -1,31 +1,37 @@
-document.addEventListener('DOMContentLoaded', (event) => {
+document.addEventListener('headerUpdated', initializeDarkMode);
+
+function initializeDarkMode() {
   const toggleSwitch = document.getElementById('darkModeToggle');
+  if (!toggleSwitch) return;
+
   const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
-
-  function updateModeElements() {
-    logo.src = document.body.classList.contains("dark-mode") ? '/static/images/logo-dark.png' : '/static/images/logo.png';
-    toggleLabel.textContent = document.body.classList.contains("dark-mode") ? "Light mode" : "Dark mode";
-    const endError = document.getElementById('endError');
-    if (endError) {
-      endError.src = document.body.classList.contains("dark-mode") ? "/static/images/alert-dark.png" : "/static/images/alert-light.png";
-    }
-  }
-
-  // Set the initial mode
   if (prefersDarkScheme.matches) {
     toggleSwitch.checked = true;
-    document.body.classList.add("dark-mode");
-    document.body.classList.remove("light-mode");
+    toggleDarkMode(true);
   } else {
-    document.body.classList.add("light-mode");
-    document.body.classList.remove("dark-mode");
+    toggleSwitch.checked = false;
+    toggleDarkMode(false);
   }
-  updateModeElements();
 
-  // Listen for toggle switch
   toggleSwitch.addEventListener('change', () => {
-    document.body.classList.toggle("dark-mode");
-    document.body.classList.toggle("light-mode");
-    updateModeElements();
+    toggleDarkMode(toggleSwitch.checked);
   });
-})
+}
+
+function toggleDarkMode(enable) {
+  document.body.classList.toggle("dark-mode", enable);
+  document.body.classList.toggle("light-mode", !enable);
+  updateModeElements(enable);
+}
+
+function updateModeElements(isDarkMode) {
+  const logo = document.getElementById('logo');
+  const toggleLabel = document.getElementById('toggleLabel');
+  const endError = document.getElementById('endError');
+
+  logo.src = isDarkMode ? '/static/images/logo-dark.png' : '/static/images/logo.png';
+  toggleLabel.textContent = isDarkMode ? "Light mode" : "Dark mode";
+  if (endError) {
+    endError.src = isDarkMode ? "/static/images/alert-dark.png" : "/static/images/alert-light.png";
+  }
+}

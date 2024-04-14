@@ -31,6 +31,14 @@ def contact_us_view():
 
     return render_template("core/contact-us.html", form=form)
 
+@core_app.route("/get-header", methods=["GET"])
+def get_header():
+    return render_template("core/header.html")
+
+@core_app.route("/get-mobile-header", methods=["GET"])
+def get_mobile_header():
+    return render_template("core/mobile-header.html")
+
 @core_app.route("/check-update", methods=["GET"])
 def check_update_view():
     update_message = get_update_message()

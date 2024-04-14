@@ -1,8 +1,8 @@
 function toggleVisibility() {
   var apiKeyInput = document.getElementById("user_key");
   var passwordInput = document.getElementById("id_password");
+  var inputElement = apiKeyInput || passwordInput;
 
-  var inputElement = apiKeyInput ? apiKeyInput : passwordInput;
   if (inputElement) {
     var currentType = inputElement.getAttribute("type");
     inputElement.setAttribute("type", currentType === "password" ? "text" : "password");
@@ -16,5 +16,7 @@ function toggleVisibility() {
 
 document.addEventListener("DOMContentLoaded", function() {
   var eyeIcon = document.getElementById("eye");
-  eyeIcon.addEventListener("click", toggleVisibility);
+  eyeIcon.addEventListener("click", function() {
+    toggleVisibility();
+  });
 });

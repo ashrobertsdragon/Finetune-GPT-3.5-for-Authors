@@ -1,0 +1,41 @@
+<header>
+  <nav class="header-nav">
+    <span class="material-symbols-outlined" id="header-nav-toggle">menu</span>
+    <ul class="header-menu">
+      <li class="header-list"><a href="{{ url_for('binders.lorebinder_form_view') if g.user else url_for('core.landing_page') }}">LoreBinders</a></li>
+      <li class="dropdown header-list"><a href="#">Free Tools</a>
+        <ul class="dropdown-content">
+          <li class="dropdown-item"><a href="{{ url_for('free.finetune') }}">GPT 3.5 Finetuner</a></li>
+          <li class="dropdown-item sub"><a href="{{ url_for('free.finetune_instructions') }}">Instructions</a></li>
+          <li class="dropdown-item"><a href="{{ url_for('free.convert_ebook') }}">Convert-ebook</a></li>
+        </ul>
+      </li>
+      {% if g.user %}
+        <li class="dropdown header-right" id="account"><a href="{{ url_for('accounts.profile_view') }}">Account</a>
+          <ul class="dropdown-content last">
+            <li class="dropdown-item account"><a href="{{ url_for('accounts.profile_view') }}">Profile</a></li>
+            <li class="dropdown-item account"><a href="{{ url_for('accounts.buy_credits_view') }}">Buy Credits</a></li>
+            <li class="dropdown-item account"><a href="{{ url_for('accounts.view_binders_view') }}">Past Purchases</a></li>
+            <li class="credit-item"><p class="credits">Credits: {{ g.user.credits_available }}</p></li>
+            <li class="dropdown-item account"><a href="{{ url_for('accounts.logout_view') }}">Logout</a></li>
+          </ul>
+        </li>
+      {% else %}
+        <li class="header-list header-right"><a href="{{ url_for('accounts.signup_view') }}">Sign Up</a></li>
+        <li class="header-list header-right"><a href="{{ url_for('accounts.login_view') }}">Log In</a></li>
+      {% endif %}
+    </ul>
+    <div class="header-logo">
+      <a href="{{ url_for('core.landing_page') }}" title="homepage">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="ProsePal logo" id="header-logo">
+      </a>
+    </div>
+    <div id="header-toggle">
+      <p id="toggleLabel">Dark mode</p>
+      <label class="switch">
+        <input type="checkbox" id="darkModeToggle" aria-label="Enable dark mode">
+        <span class="slider round"></span>
+      </label>
+    </div>
+  </nav>
+</header>
