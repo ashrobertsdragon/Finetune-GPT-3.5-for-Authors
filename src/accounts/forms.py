@@ -44,7 +44,7 @@ class LoginForm(FlaskForm):
 
 class ForgotPasswordForm(FlaskForm):
     email = EmailField(
-        Markup("Enter the email address you signed up with<br \>and you will receive a link to reset your<br \>password"),
+        Markup("Enter the email address you signed up with<br \\>and you will receive a link to reset your<br \\>password"),
         validators=[Email()], 
         render_kw={"aria-label": "Enter email address", "autocomplete": "email"}
     )
