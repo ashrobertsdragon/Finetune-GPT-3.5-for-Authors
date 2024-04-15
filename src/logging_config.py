@@ -74,7 +74,7 @@ class TypeLogger():
         self.logger = self._get_logger(name)
         self.handler = handler if handler else self._get_file_handler(name)
         self.formatter = self._get_formatter()
-        self._setup_logger()
+        self._setup_logger(name)
     
     def __call__(self, message: str) -> None:
         self.log(message)
@@ -94,19 +94,22 @@ class TypeLogger():
         
     def _get_file_handler(self, name: str) -> Handler:
         filename: str = f"{name}.log"
-        file_path = os.path.join("logs", filename)
+        log_path = "logs"
+        os.makedirs(log_path, exist_ok=True)
+
+        file_path = os.path.join(log_path, filename)
         return logging.FileHandler(file_path)
 
     def _get_formatter(self) -> Formatter:
         return logging.Formatter(
-            "%(asctime)s - %(message)s"
+            "%(asctime)s -%(levelname)s:%(message)s"
         )
 
     def _setup_logger(self, name: str) -> None:
-        log_level: int = self._get_log_level(name)
+        log_level: int = self._get_log_level()
         self.logger.setLevel(log_level)
-        self.logger.addHandler(self.file_handler)
-        self.file_handler.setFormatter(self.formatter)
+        self.logger.addHandler(self.handler)
+        self.handler.setFormatter(self.formatter)
 
     def log(self, message) -> None:
         """
@@ -134,13 +137,13 @@ def start_loggers():
         logging_client = cloud_logging.Client()
         cloud_handler = logging_client.get_default_handler()
 
-        error_logger = Logger(name="error", handler=cloud_handler)
-        info_logger = Logger(name="info", handler=cloud_handler)
+        error_logger = TypeLogger(name="error", handler=cloud_handler)
+        info_logger = TypeLogger(name="info", handler=cloud_handler)
 
     else:
         # Initialize local file logging
-        error_logger = Logger(name="error")
-        info_logger = Logger(name="info")
-    
+        error_logger = TypeLogger(name="error")
+        info_logger = TypeLogger(name="info")
+
     return error_logger, info_logger
 

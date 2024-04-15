@@ -5,6 +5,7 @@ from gotrue.types import AuthResponse, UserResponse
 from supabase import create_client, Client
 
 from .error_handling import email_admin
+from .logging_config import start_loggers
 
 
 error_logger = logging.getLogger("error_logger")
@@ -13,15 +14,38 @@ info_logger = logging.getLogger("info_logger")
 class SupabaseClient():
     _mono_state: dict = {}
 
+    def _get_env_value(self, key: str) -> str:
+        if isinstance(key, str):
+            try:
+                return config(key)
+            except Exception:
+                raise LookupError(f"Supabase API {key} not found")
+        else:
+            raise TypeError(f"{key} must be string")
+
+    def _get_loggers(self):
+        try:
+            global error_logger, info_logger
+            if 'error_logger' not in globals() or 'info_logger' not in globals():
+                raise LookupError
+        except LookupError:
+            error_logger, info_logger = start_loggers()
+        self.error_logger = error_logger
+        self.info_logger = info_logger
+
     def __init__(self) -> None:
         self.__dict__ = self._mono_state
+        self._get_loggers()
 
-        self.url: str = config("SUPABASE_URL")
+        try:
+            self.url: str = self._get_env_value("SUPABASE_URL")
+        except Exception:
+            raise LookupError("Supabase API URL not found")
         
         if "default_client" not in self.__dict__:
-            key: str = config("SUPABASE_KEY")
+            key: str = self._get_env_value("SUPABASE_KEY")
             self.default_client: Client = create_client(self.url, key)
-    
+
     def log_info(self, action: str, response: dict) -> None:
         """
         Log a Supabase response with the info logger.
@@ -246,7 +270,7 @@ class SupabaseDB(SupabaseClient):
         super().__init__()
 
         if "service_client" not in self.__dict__:
-            service_role: str = config("SUPABASE_SERVICE_ROLE")
+            service_role: str = super()._get_env_value("SUPABASE_SERVICE_ROLE")
             self.service_client: Client = create_client(self.url, service_role)
     
     def _select_client(self, use_service_role: bool = False) -> Client:

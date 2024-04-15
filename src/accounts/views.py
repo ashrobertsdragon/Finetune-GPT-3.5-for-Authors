@@ -121,46 +121,50 @@ def profile_view():
         return redirect(url_for("accounts.account_view", section="profile"))
     account_form = AccountManagementForm()
     password_form = UpdatePasswordForm()
-    if account_form.validate_on_submit():
-        form = account_form
-        if form.email.data:
-            new_email = form.email.data
-            session["user_details"]["email"] = new_email
-            try:
-                data = auth.update_user(
-                    {"email": new_email}
-                )
-                access_token = data.session.access_token
-                session["access_token"] = access_token
-            except Exception:
-                flash("Email update failed", "Error")
-        session["user_details"]["f_name"] = form.first_name.data
-        session["user_details"]["l_name"] = form.last_name.data
-        session["user_details"]["b_day"] = form.b_day.data
-        
-        response = update_db()
-        if response:
-            flash("Your profile has been updated.", "message")
-        else:
-            flash("There was an error updating your profile.", "error")
-        return redirect(url_for("accounts.account_view", section="profile"))
-    
-    if password_form.validate_on_submit():
-        new_password = password_form.new_password.data
-        try:
-            response = auth.update_user(
-                {"password":new_password}
-            )
-            access_token = response.access_token
-            session["access_token"] = access_token
-            flash("Password successfully updated.", "message")
-        except Exception:
-            flash(
-                "There was a problem updating your password. "
-                "Please try again.",
-                "error"
-            )
-        return redirect(url_for("accounts.account_view", section="profile"))
+    try:
+      if account_form.validate_on_submit():
+          form = account_form
+          if form.email.data:
+              new_email = form.email.data
+              session["user_details"]["email"] = new_email
+              try:
+                  data = auth.update_user(
+                      {"email": new_email}
+                  )
+                  access_token = data.session.access_token
+                  session["access_token"] = access_token
+              except Exception:
+                  flash("Email update failed", "Error")
+          session["user_details"]["f_name"] = form.first_name.data
+          session["user_details"]["l_name"] = form.last_name.data
+          session["user_details"]["b_day"] = form.b_day.data
+          
+          response = update_db()
+          if response:
+              flash("Your profile has been updated.", "message")
+          else:
+              flash("There was an error updating your profile.", "error")
+          return redirect(url_for("accounts.account_view", section="profile"))
+
+      if password_form.validate_on_submit():
+          new_password = password_form.new_password.data
+          try:
+              response = auth.update_user(
+                  {"password":new_password}
+              )
+              access_token = response.access_token
+              session["access_token"] = access_token
+              flash("Password successfully updated.", "message")
+          except Exception:
+              flash(
+                  "There was a problem updating your password. "
+                  "Please try again.",
+                  "error"
+              )
+          return redirect(url_for("accounts.account_view", section="profile"))
+    except Exception as e:
+        print(e)
+        return redirect(url_for(logout_view))
 
 @accounts_app.route("/view-binders", methods=["GET"])
 @login_required

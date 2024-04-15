@@ -29,7 +29,13 @@ def update_db() -> None:
     try:
         auth_id = session["user_details"]["auth_id"]
     except Exception:
-        error_logger.error(f"auth_id not found in {session["user_details"]}")
+        error_logger(f"auth_id not found in {session["user_details"]}")
+    try:
+        info = session["user_details"]
+        if not isinstance(info, dict):
+            raise TypeError(f"{info} must be a dictionary. Received type {type(info)}")
+    except TypeError as e:
+        error_logger(str(e))
     match = {"auth_id": auth_id}
-    db.update_row("user", info=session["user_details"], match=match)
+    return db.update_row("user", info=info, match=match)
 
