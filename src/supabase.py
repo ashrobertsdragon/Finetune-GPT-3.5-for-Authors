@@ -45,6 +45,8 @@ class SupabaseClient():
         if "default_client" not in self.__dict__:
             key: str = self._get_env_value("SUPABASE_KEY")
             self.default_client: Client = create_client(self.url, key)
+            if self.default_client:
+                self.log_info(action=f"Initialized client {__name__}", response={})
 
     def log_info(self, action: str, response: dict) -> None:
         """
@@ -522,8 +524,8 @@ class SupabaseDB(SupabaseClient):
             self._validate_dict(match, "match")
 
             for key, value in match.items():
-                if not isinstance(value, list):
-                    raise ValueError(f"Value for filter '{key}' must be a list")
+                if not isinstance(value, str):
+                    raise ValueError(f"Value for filter '{key}' must be a string")
         except ValueError as e:
             self.log_error(e, action,match=match, table_name=table_name)
 
