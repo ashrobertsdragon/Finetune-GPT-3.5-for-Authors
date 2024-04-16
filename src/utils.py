@@ -37,5 +37,5 @@ def update_db() -> None:
     except TypeError as e:
         error_logger(str(e))
     match = {"auth_id": auth_id}
-    return db.update_row("user", info=info, match=match)
+    return db.update_row(table_name="user", info=info, match=match)
 
