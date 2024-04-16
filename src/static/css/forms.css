@@ -261,9 +261,10 @@ body.dark-mode .flash-modal {
 .flashes {
   list-style-type: none;
   padding: 0;
+  padding-top: 1rem;
   margin: 0;
   margin-top: 5px;
-  font-size: 1.1em;
+  font-size: 1.1rem;
 }
 
 .flashes li {
