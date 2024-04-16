@@ -5,9 +5,9 @@ from src.supabase import SupabaseAuth
 from src.decorators import login_required
 from src.utils import update_db
 
-from .forms import (AccountManagementForm, BuyCreditsForm, ForgotPasswordForm,
+from .forms import (BuyCreditsForm, ForgotPasswordForm,
                     LoginForm, SignupForm, UpdatePasswordForm)
-from .utils import get_binders, initialize_user_db, redirect_after_login
+from .utils import get_binders, initialize_user_db, preload_account_management_form, redirect_after_login, update_email, update_user_details
 
 accounts_app = Blueprint("accounts", __name__)
 
@@ -100,7 +100,7 @@ def reset_password_view():
 @accounts_app.route("/account", methods=["GET"])
 @login_required
 def account_view(section="profile"):
-    account_form = AccountManagementForm()
+    account_form = preload_account_management_form()
     password_form = UpdatePasswordForm()
     buy_credits_form = BuyCreditsForm()
     binders_db = get_binders()
@@ -119,52 +119,44 @@ def account_view(section="profile"):
 def profile_view():
     if request.method == "GET":
         return redirect(url_for("accounts.account_view", section="profile"))
-    account_form = AccountManagementForm()
+    account_form = preload_account_management_form()
     password_form = UpdatePasswordForm()
-    try:
-      if account_form.validate_on_submit():
-          form = account_form
-          if form.email.data:
-              new_email = form.email.data
-              session["user_details"]["email"] = new_email
-              try:
-                  data = auth.update_user(
-                      {"email": new_email}
-                  )
-                  access_token = data.session.access_token
-                  session["access_token"] = access_token
-              except Exception:
-                  flash("Email update failed", "Error")
-          session["user_details"]["f_name"] = form.first_name.data
-          session["user_details"]["l_name"] = form.last_name.data
-          session["user_details"]["b_day"] = form.b_day.data
-          
-          response = update_db()
-          if response:
-              flash("Your profile has been updated.", "message")
-          else:
-              flash("There was an error updating your profile.", "error")
-          return redirect(url_for("accounts.account_view", section="profile"))
+    if account_form.is_submitted():
+        if account_form.validate_on_submit():
+            email = account_form.email.data
+            user_data = {
+                "f_name": account_form.first_name.data or "",
+                "l_name": account_form.last_name.data or "",
+                "b_day": account_form.b_day.data or ""
+            }
+            update_email(email, auth)
+            update_user_details(user_data)
 
-      if password_form.validate_on_submit():
-          new_password = password_form.new_password.data
-          try:
-              response = auth.update_user(
-                  {"password":new_password}
-              )
-              access_token = response.access_token
-              session["access_token"] = access_token
-              flash("Password successfully updated.", "message")
-          except Exception:
-              flash(
-                  "There was a problem updating your password. "
-                  "Please try again.",
-                  "error"
-              )
-          return redirect(url_for("accounts.account_view", section="profile"))
-    except Exception as e:
-        print(e)
-        return redirect(url_for(logout_view))
+            response = update_db()
+            if response:
+                flash("Your profile has been updated.", "message")
+            else:
+                flash("There was an error updating your profile.", "error")
+        else:
+            print(account_form.errors)
+            flash("There was an error updating your profile.", "error")
+
+    if password_form.validate_on_submit():
+        new_password = password_form.new_password.data
+        try:
+            response = auth.update_user(
+                {"password":new_password}
+            )
+            access_token = response.access_token
+            session["access_token"] = access_token
+            flash("Password successfully updated.", "message")
+        except Exception:
+            flash(
+                "There was a problem updating your password. "
+                "Please try again.",
+                "error"
+            )
+    return redirect(url_for("accounts.account_view", section="profile"))
 
 @accounts_app.route("/view-binders", methods=["GET"])
 @login_required
