@@ -2,7 +2,11 @@ from flask_wtf import FlaskForm
 from markupsafe import Markup
 from wtforms import (EmailField, PasswordField, BooleanField, StringField,
                     DateField, SubmitField, IntegerRangeField)
-from wtforms.validators import DataRequired, Email, Length, NumberRange
+from wtforms.validators import DataRequired, Email, Length, Optional, NumberRange
+
+def value_or_none(form, field):
+    return field.data or None
+
 
 class SignupForm(FlaskForm):
     email = EmailField(
@@ -45,7 +49,7 @@ class LoginForm(FlaskForm):
 class ForgotPasswordForm(FlaskForm):
     email = EmailField(
         Markup("Enter the email address you signed up with<br \\>and you will receive a link to reset your<br \\>password"),
-        validators=[Email()], 
+        validators=[DataRequired(), Email()], 
         render_kw={"aria-label": "Enter email address", "autocomplete": "email"}
     )
     submit = SubmitField("Reset Password", render_kw={"aria-label": "Request reset password link"})
@@ -54,23 +58,22 @@ class ForgotPasswordForm(FlaskForm):
 class AccountManagementForm(FlaskForm):
     email = EmailField(
         "Email address:",
-        validators=[Email()], 
+        validators=[DataRequired(), Email()], 
         render_kw={"aria-label": "Update email address", "auto-complete": "email"},
-        filters=[lambda x: x or None]
     )
     first_name = StringField(
         "First name:",
-        render_kw={"aria-label": "First name", "autocomplete": "given-name"},
-        filters=[lambda x: x or None]
+        validators=[Optional()],
+        render_kw={"aria-label": "First name", "autocomplete": "given-name"}
     )
     last_name = StringField(
         "Last name:",
-        render_kw={"aria-label": "First name", "autocomplete": "family-name"},
-        filters=[lambda x: x or None]
+        validators=[Optional()],
+        render_kw={"aria-label": "First name", "autocomplete": "family-name"}
     )
     b_day = DateField(
         "Birthdate:",
-        filters=[lambda x: x or None],
+        validators=[Optional()],
         render_kw={"aria-label": "Birthdate, format YYYY-MM-DD", "autocomplete": "bday"}
     )
     submit_account = SubmitField("Update Account")
