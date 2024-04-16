@@ -23,18 +23,46 @@
         <div class="flex-form">
             {{ account_form.email.label(class="input-label") }}
             {{ account_form.email(size=20) }}
+            {% if account_form.email.errors %}
+              <ul class="error">
+                {% for error in account_form.email.errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
         </div>
         <div class="flex-form">
             {{ account_form.first_name.label(class="input-label") }}
             {{ account_form.first_name(size=20) }}
+            {% if account_form.first_name.errors %}
+              <ul class="error">
+                {% for error in account_form.first_name.errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
         </div>
         <div class="flex-form">
             {{ account_form.last_name.label(class="input-label") }}
             {{ account_form.last_name(size=20) }}
+            {% if account_form.last_name.errors %}
+              <ul class="error">
+                {% for error in account_form.last_name.errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
         </div>
         <div class="flex-form">
             {{ account_form.b_day.label(class="input-label") }}
             {{ account_form.b_day(size=20) }}
+            {% if account_form.b_day.errors %}
+              <ul class="error">
+                {% for error in account_form.b_day.errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
         </div>
         {{ account_form.submit_account(class="btn btn-primary")}}
     </form>
