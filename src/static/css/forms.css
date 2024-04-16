@@ -272,6 +272,7 @@ body.dark-mode .flash-modal {
 
 .close-icon {
   position: absolute;
+  cursor: pointer;
   top: 10px;
   right: 10px;
   margin: 0;
@@ -435,7 +436,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     height: 48px;
     margin-right: 10px;
   }
-  
+
   input[type="checkbox"] {
     height: 48px;
     width: 48px;
