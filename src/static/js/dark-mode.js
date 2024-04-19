@@ -29,7 +29,9 @@ function updateModeElements(isDarkMode) {
   const toggleLabel = document.getElementById('toggleLabel');
   const endError = document.getElementById('endError');
 
-  logo.src = isDarkMode ? '/static/images/logo-dark.png' : '/static/images/logo.png';
+  if (logo) {
+    logo.src = isDarkMode ? '/static/images/logo-dark.png' : '/static/images/logo.png';
+  };
   toggleLabel.textContent = isDarkMode ? "Light mode" : "Dark mode";
   if (endError) {
     endError.src = isDarkMode ? "/static/images/alert-dark.png" : "/static/images/alert-light.png";

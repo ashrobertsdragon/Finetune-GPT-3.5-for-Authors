@@ -1,7 +1,7 @@
 <header>
   <nav class="header-nav">
     <span class="material-symbols-outlined" id="header-nav-toggle">menu</span>
-    <ul class="header-menu">
+    <ul class="header-menu hidden" id="mobile-menu">
       <li class="header-list"><a href="{{ url_for('binders.lorebinder_form_view') if g.user else url_for('core.landing_page') }}">LoreBinders</a></li>
       <li class="dropdown header-list"><a href="#">Free Tools</a>
         <ul class="dropdown-content">
@@ -25,12 +25,12 @@
         <li class="header-list header-right"><a href="{{ url_for('accounts.login_view') }}">Log In</a></li>
       {% endif %}
     </ul>
-    <div class="header-logo">
+    <div class="logo">
       <a href="{{ url_for('core.landing_page') }}" title="homepage">
-        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="ProsePal logo" id="header-logo">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="ProsePal logo" id="logo">
       </a>
     </div>
-    <div id="header-toggle">
+    <div id="toggle">
       <p id="toggleLabel">Dark mode</p>
       <label class="switch">
         <input type="checkbox" id="darkModeToggle" aria-label="Enable dark mode">
