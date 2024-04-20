@@ -1,0 +1,10 @@
+{% extends 'normal-base.html' %}
+{% block title %}Free Tools by ProsePal{% endblock %}
+{% block content %}
+  <h1>Free Tools by ProsePal</h1>
+  <ul class="free-list">
+    <li class="dropdown-item"><a href="{{ url_for('free.finetune') }}">GPT 3.5 Finetuner</a></li>
+    <li class="dropdown-item sub"><a href="{{ url_for('free.finetune_instructions') }}">Instructions</a></li>
+    <li class="dropdown-item"><a href="{{ url_for('free.convert_ebook') }}">Convert-ebook</a></li>
+  </ul>
+{% endblock %}

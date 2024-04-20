@@ -8,7 +8,7 @@ function initialize() {
   };
   
   if (account & dropMenu) {
-    dropMenu.addEventListener("tap", toggleMenu);
+    account.addEventListener("tap", toggleMenu);
   }
 };
 

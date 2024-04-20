@@ -6,36 +6,34 @@
     <a href="{{ url_for('free.free_page') }}" title="Free tools">
       <span class="material-symbols-outlined tab" id="free">featured_seasonal_and_gifts</span>
     </a>
-    <div id="toggle">
+    <div class="tab pointer" id="toggle">
       <label class="switch">
         <span class="material-symbols-outlined" id="darkModeToggle" aria-label="Enable dark mode">dark_mode</span>
       </label>
-      </div>
+    </div>
     {% if g.user %}
-    <div class="acccount-menu"
-      <a href="{{ url_for('accounts.profile_view') }}" title="Account">
+      <div class="acccount-menu">
           <div class="icon-with-badge">
             <span class="material-symbols-outlined tab" id="account">account_circle</span>
             <span class="credit-ticker">{{ g.user.credits_available }}</span>
           </div>
           <ul class="mobile-dropdown hidden">
             <li class="mobile-dropdown-item account">
-            <a href="{{ url_for('accounts.profile_view') }} title="Profile">Profile</a>
-          </li>
-          <li class="mobile-dropdown-item account">
-            <a href="{{ url_for('accounts.buy_credits_view') }}" title="Buy Credits">Buy Credits</a>
-          </li>
-          <li class="mobile-dropdown-item account">
-            <a href="{{ url_for('accounts.view_binders_view') }}" title="Past purchases">Past Purchases</a>
-          </li>
-          <li class="credit-item">
-            <p class="credits">Credits: {{ g.user.credits_available }}</p>
-          </li>
-          <li class="mobile-dropdown-item account">
-          <a href="{{ url_for('accounts.logout_view') }}" title="Log out">Logout</a>
-        </li>
-        </ul>
-      </a>
+              <a href="{{ url_for('accounts.profile_view') }} title="Profile">Profile</a>
+            </li>
+            <li class="mobile-dropdown-item account">
+              <a href="{{ url_for('accounts.buy_credits_view') }}" title="Buy Credits">Buy Credits</a>
+            </li>
+            <li class="mobile-dropdown-item account">
+              <a href="{{ url_for('accounts.view_binders_view') }}" title="Past purchases">Past Purchases</a>
+            </li>
+            <li class="credit-item">
+              <p class="credits">Credits: {{ g.user.credits_available }}</p>
+            </li>
+            <li class="mobile-dropdown-item account">
+              <a href="{{ url_for('accounts.logout_view') }}" title="Log out">Logout</a>
+            </li>
+          </ul>
       </div>
     {% else %}
       <a href="{{ url_for('accounts.signup_view') }}">Sign Up</a>

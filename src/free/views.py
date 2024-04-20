@@ -114,4 +114,4 @@ def finetune_instructions():
 
 @free_app.route("/free", methods=["GET"])
 def free_page():
-    return render_template("free.html")
+    return render_template("free/free.html")
