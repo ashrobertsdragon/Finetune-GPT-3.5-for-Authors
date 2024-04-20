@@ -4,16 +4,6 @@ function initializeDarkMode() {
   const toggleSwitch = document.getElementById("darkModeToggle");
   if (!toggleSwitch) return;
 
-  const isCheckbox = toggleSwitch instanceof HTMLInputElement;
-  function controlSwitch(enable) {
-    if (isCheckbox) {
-      toggleSwitch.checked = enable;
-    } else {
-      updateIcon(enable);
-    };
-    toggleDarkMode(enable);
-  };
-
   function isDarkMode() {
     if (isCheckbox) {
       return toggleSwitch.checked;
@@ -22,13 +12,19 @@ function initializeDarkMode() {
     };
   };
 
+  const isCheckbox = toggleSwitch instanceof HTMLInputElement;
   const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
   if (prefersDarkScheme.matches) {
-    controlSwitch(true);
+    if (isCheckbox) {
+      toggleSwitch.checked = true;
+    } else {
+      updateIcon(true);
+    };
+    toggleDarkMode(true);
   };
 
   toggleSwitch.addEventListener("click", () => {
-    toggleDarkMode(controlSwitch(isDarkMode));
+    toggleDarkMode(isDarkMode);
   });
 }
 
@@ -41,7 +37,7 @@ function toggleDarkMode(enable) {
 function updateIcon(isDarkMode) {
   const toggleSwitch = document.getElementById("darkModeToggle");
   if (toggleSwitch && toggleSwitch.textContent) {
-    toggleSwitch.textContent = isDarkMode ? "light_mode" : "dark_mode";
+    toggleSwitch.textContent = isDarkMode ? "dark_mode" : "light_mode";
   }
 }
 
@@ -54,10 +50,10 @@ function updateModeElements(isDarkMode) {
     logo.src = isDarkMode ? "/static/images/logo-dark.png" : "/static/images/logo.png";
   };
   if (toggleLabel) {
-    toggleLabel.textContent = isDarkMode ? "Light mode" : "Dark mode";
+    toggleLabel.textContent = isDarkMode ? "Dark mode" : "Light mode";
   };
   if (endError) {
-    endError.src = isDarkMode ? "/static/images/alert-dark.png" : "/static/images/alert-light.png";
+    endError.src = isDarkMode ?l "/static/images/alert-dark.png" : "/static/images/alert-light.png";
   };
   updateIcon(isDarkMode);
 }
