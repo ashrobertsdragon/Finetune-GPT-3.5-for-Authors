@@ -7,8 +7,8 @@ function initialize() {
     dropMenu.classList.toggle("shown");
   };
   
-  if (account && ) {
-    menuToggle.addEventListener("click", toggleMenu);
+  if (account & dropMenu) {
+    dropMenu.addEventListener("tap", toggleMenu);
   }
 };
 
