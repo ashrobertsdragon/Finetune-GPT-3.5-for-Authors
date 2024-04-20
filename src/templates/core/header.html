@@ -5,7 +5,7 @@
         <img src="{{ url_for('static', filename='images/logo.png') }}" alt="ProsePal logo" id="logo">
       </a></li>
       <li class="header-list"><a href="{{ url_for('binders.lorebinder_form_view') if g.user else url_for('core.landing_page') }}">LoreBinders</a></li>
-      <li class="dropdown header-list"><a href="#">Free Tools</a>
+      <li class="dropdown header-list"><a href="{{ url_for('free.free_page') }}">Free Tools</a>
         <ul class="dropdown-content">
           <li class="dropdown-item"><a href="{{ url_for('free.finetune') }}">GPT 3.5 Finetuner</a></li>
           <li class="dropdown-item sub"><a href="{{ url_for('free.finetune_instructions') }}">Instructions</a></li>

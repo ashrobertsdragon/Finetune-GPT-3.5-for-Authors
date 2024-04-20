@@ -413,6 +413,41 @@ input:not(:checked) + .slider:before {
   border-radius: 50%;
 }
 
+  /* Mobile header */
+.tab {
+  background-color:#A3D8F4;
+  border-radius: 25%;
+  font-size: 36px;
+  height: 48px;
+  width: 48px;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-bottom: 15px;
+  padding-top: 25px;
+}
+
+body.dark-mode .tab {
+  background-color:#251126;
+}
+
+.icon-with-badge {
+  position: relative;
+  display: inline-block;
+}
+
+.credit-ticker {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: #3F5C7D; 
+  font-size: 12px; 
+  padding: 2px;
+  border-radius: 50%; /
+}
+
+body.dark-mode .credit-ticker {
+  background-color: #A4A9AD;
+}
 
   /* Update Modal */
 .update-modal {
@@ -515,98 +550,6 @@ footer.dark-mode {
   body.dark-mode header {
     background-color: #1c0b19
   }
-
-  /* hamburger icon */
-  #header-nav-toggle {
-    display: block;
-    cursor: pointer;
-    padding: 10px;
-    position: absolute;
-    top: 10px;
-    left: 10px;
-  }
-
-  .header-menu {
-    position: fixed;
-    top: 10px;
-    left: 20px;
-    width: 200px;
-    height: 50px;
-    top: 0;
-    margin-left: calc(-50vw + 50%);
-    box-sizing: border-box;
-    padding: 0;
-    align-items: center;
-    background-color: #A3D8F4;
-    font-family: 'Exo', sans-serif;
-    font-weight: 300;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    font-size: 1.125rem;
-    text-align: center;
-    z-index: 10
-  }
-
-  body.dark-mode .header-menu {
-    background-color: #251126;
-  }
-
-  .header-menu li {
-    width: 100%;
-    padding: 10px;
-  }
-
-  ul.dropdown-content {
-    position: static;
-    box-shadow: none;
-    left: 200px;
-  }
-
-  ul.dropdown-content li a {
-    padding: 10px 20px;
-  }
-
-
-  #logo {
-    height: 48px;
-    width: 48px;
-  }
-
-  #toggle {
-    padding: 0;
-    position: absolute;
-    top: 10px;
-    right: 10px;
-
-  }
-
-  .switch {
-    width: 48px;
-    height: 72px;
-    margin: 0;
-    position: relative;
-  }
-
-  .slider {
-    width: 44px;
-    height: 100%;
-    border-radius: 44px;
-  }
-
-  .slider:before {
-    width: 36px;
-    height: 40px;
-    position: absolute;
-    left: 4px;
-    bottom: 4px;
-  }
-
-  input:checked + .slider:before {
-    -webkit-transform: translateY(24px);
-    -ms-transform: translateY(24px);
-    transform: translateY(24px);
-  }
-
 }
 
 @media only screen and (max-width: 600px) {

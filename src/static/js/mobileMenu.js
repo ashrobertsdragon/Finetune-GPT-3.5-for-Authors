@@ -1,14 +1,13 @@
 function initialize() {
-  const menuToggle = document.getElementById("header-nav-toggle");
-  const headerMenu = document.getElementById("mobile-menu");
+  const dropMenu = document.getElementById("mobile-drowpdown");
+  const account = document.getElementById("account-menu");
 
   function toggleMenu() {
-    headerMenu.classList.toggle("hidden");
-    headerMenu.classList.toggle("shown");
-    menuToggle.innerText = menuToggle.innerText === "menu" ? "menu_open" : "menu";
+    dropMenu.classList.toggle("hidden");
+    dropMenu.classList.toggle("shown");
   };
   
-  if (menuToggle && headerMenu) {
+  if (account && ) {
     menuToggle.addEventListener("click", toggleMenu);
   }
 };

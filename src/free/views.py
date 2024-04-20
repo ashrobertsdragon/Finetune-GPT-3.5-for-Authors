@@ -111,3 +111,7 @@ def status():
 @free_app.route("/finetune/instructions", methods=["GET"])
 def finetune_instructions():
     return render_template("free/instructions.html")
+
+@free_app.route("/free", methods=["GET"])
+def free_page():
+    return render_template("free.html")

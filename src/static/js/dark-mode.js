@@ -27,12 +27,18 @@ function toggleDarkMode(enable) {
 function updateModeElements(isDarkMode) {
   const logo = document.getElementById('logo');
   const toggleLabel = document.getElementById('toggleLabel');
+  const spanText = document.getElementById('darkModeToggle')
   const endError = document.getElementById('endError');
 
   if (logo) {
     logo.src = isDarkMode ? '/static/images/logo-dark.png' : '/static/images/logo.png';
   };
-  toggleLabel.textContent = isDarkMode ? "Light mode" : "Dark mode";
+  if (spanText && spanText.textContent) {
+    spanText.textContent = isDarkMode ? "light_mode" : "dark_mode";
+  }
+  if (toggleLabel) {
+    toggleLabel.textContent = isDarkMode ? "Light mode" : "Dark mode";
+  };
   if (endError) {
     endError.src = isDarkMode ? "/static/images/alert-dark.png" : "/static/images/alert-light.png";
   }
