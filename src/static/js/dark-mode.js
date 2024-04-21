@@ -4,11 +4,11 @@ function initializeDarkMode() {
   const toggleSwitch = document.getElementById("darkModeToggle");
   if (!toggleSwitch) return;
 
-  function isDarkMode() {
+  function currentDarkMode() {
     if (isCheckbox) {
       return toggleSwitch.checked;
     } else {
-      return toggleSwitch.textContent === "dark_mode";
+      return toggleSwitch.textContent === "light_mode";
     };
   };
 
@@ -17,43 +17,45 @@ function initializeDarkMode() {
   if (prefersDarkScheme.matches) {
     if (isCheckbox) {
       toggleSwitch.checked = true;
-    } else {
-      updateIcon(true);
     };
     toggleDarkMode(true);
   };
 
   toggleSwitch.addEventListener("click", () => {
-    toggleDarkMode(isDarkMode);
+    console.log("current mode is: ", currentDarkMode());
+    toggleDarkMode(!currentDarkMode());
   });
 }
 
 function toggleDarkMode(enable) {
+  console.log("current value of enable is: ", enable)
   document.body.classList.toggle("dark-mode", enable);
   document.body.classList.toggle("light-mode", !enable);
+  console.log("class:", document.body.classList);
   updateModeElements(enable);
 }
 
-function updateIcon(isDarkMode) {
+function updateIcon(darkMode) {
   const toggleSwitch = document.getElementById("darkModeToggle");
   if (toggleSwitch && toggleSwitch.textContent) {
-    toggleSwitch.textContent = isDarkMode ? "dark_mode" : "light_mode";
+    toggleSwitch.textContent = darkMode ? "light_mode" : "dark_mode";
+    console.log("toggle text: ", toggleSwitch.textContent)
   }
 }
 
-function updateModeElements(isDarkMode) {
+function updateModeElements(darkMode) {
   const logo = document.getElementById("logo");
   const toggleLabel = document.getElementById("toggleLabel");
   const endError = document.getElementById("endError");
 
   if (logo) {
-    logo.src = isDarkMode ? "/static/images/logo-dark.png" : "/static/images/logo.png";
+    logo.src = darkMode ? "/static/images/logo.png" : "/static/images/logo-dark.png";
   };
   if (toggleLabel) {
-    toggleLabel.textContent = isDarkMode ? "Dark mode" : "Light mode";
+    toggleLabel.textContent = darkMode ? "Light mode" : "Dark mode";
   };
   if (endError) {
-    endError.src = isDarkMode ? "/static/images/alert-dark.png" : "/static/images/alert-light.png";
+    endError.src = darkMode ? "/static/images/alert-light.png" : "/static/images/alert-dark.png";
   };
-  updateIcon(isDarkMode);
+  updateIcon(darkMode);
 }
