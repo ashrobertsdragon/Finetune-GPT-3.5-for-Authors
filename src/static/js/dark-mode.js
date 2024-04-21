@@ -27,7 +27,6 @@ function initializeDarkMode() {
 }
 
 function toggleDarkMode(enable) {
-  console.log("current value of enable is: ", enable)
   document.body.classList.toggle("dark-mode", enable);
   document.body.classList.toggle("light-mode", !enable);
   updateModeElements(enable);
