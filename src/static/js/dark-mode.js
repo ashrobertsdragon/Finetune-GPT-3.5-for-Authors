@@ -53,7 +53,7 @@ function updateModeElements(isDarkMode) {
     toggleLabel.textContent = isDarkMode ? "Dark mode" : "Light mode";
   };
   if (endError) {
-    endError.src = isDarkMode ?l "/static/images/alert-dark.png" : "/static/images/alert-light.png";
+    endError.src = isDarkMode ? "/static/images/alert-dark.png" : "/static/images/alert-light.png";
   };
   updateIcon(isDarkMode);
 }
