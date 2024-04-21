@@ -16,7 +16,9 @@ function toggleVisibility() {
 
 document.addEventListener("DOMContentLoaded", function() {
   var eyeIcon = document.getElementById("eye");
-  eyeIcon.addEventListener("click", function() {
-    toggleVisibility();
-  });
+  if (eyeIcon) {
+    eyeIcon.addEventListener("click", function() {
+      toggleVisibility();
+    })
+  }
 });
