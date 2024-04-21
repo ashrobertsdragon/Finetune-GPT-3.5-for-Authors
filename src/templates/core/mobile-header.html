@@ -1,25 +1,27 @@
 <header>
-  <nav class="header-nav" id="lorebinder">
-    <div class="tab">
+  <nav class="header-nav">
+    <div class="tab first" id="lorebinder">
       <a href="{{ url_for('binders.lorebinder_form_view') if g.user else url_for('core.landing_page') }}" title="Start LoreBinder">
         <span class="material-symbols-outlined">auto_stories</span>
+        <h6>Lorebinder</h6>
       </a>
     </div>
     <div class="tab" id="free">
     <a href="{{ url_for('free.free_page') }}" title="Free tools">
       <span class="material-symbols-outlined">featured_seasonal_and_gifts</span>
+      <h6>Free tools</h6>
     </a>
     </div>
-    <div class="tab pointer" id="toggle">
-      <label class="switch">
-        <span class="material-symbols-outlined" id="darkModeToggle" aria-label="Enable dark mode">dark_mode</span>
-      </label>
+    <div class="tab" id="mobile-toggle">
+      <span class="material-symbols-outlined" id="darkModeToggle" aria-label="Enable dark mode">dark_mode</span>
+      <h6 id="toggleLabel">Dark mode</h6>
     </div>
     {% if g.user %}
-      <div class="tab acccount-menu" id="account">
+      <div class="tab" id="account-menu">
           <div class="icon-with-badge">
             <span class="material-symbols-outlined">account_circle</span>
             <span class="credit-ticker">{{ g.user.credits_available }}</span>
+            <h6>Account</h6>
           </div>
           <ul class="mobile-dropdown hidden">
             <li class="mobile-dropdown-item account">
@@ -40,7 +42,12 @@
           </ul>
       </div>
     {% else %}
-      <a href="{{ url_for('accounts.signup_view') }}">Sign Up</a>
+      <div class="tab last">
+        <a href="{{ url_for('accounts.signup_view') }}">
+          <span class="material-symbols-outlined" id="signup">login</span>
+          <h6>Signup</h6>
+        </a>
+      </div>
     {% endif %}
   </nav>
 </header>

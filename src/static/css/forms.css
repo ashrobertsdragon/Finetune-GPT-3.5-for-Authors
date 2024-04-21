@@ -451,13 +451,5 @@ input[type="date"]::-webkit-calendar-picker-indicator {
       padding: 10px;
       box-sizing: border-box;
     }
-  
-  /* Finetuner */
-  .form-container,
-  #user_key {
-    width: 100%;
-    box-shadow: none;
-    padding: 10px;
-  }
 
 }
