@@ -25,16 +25,13 @@
           </div>
           <ul class="mobile-dropdown hidden" id="dropdown">
             <li class="mobile-dropdown-item account">
-              <a href="{{ url_for('accounts.profile_view') }} title="Profile">Profile</a>
+              <a href="{{ url_for('accounts.profile_view') }}" title="Profile">Profile</a>
             </li>
             <li class="mobile-dropdown-item account">
               <a href="{{ url_for('accounts.buy_credits_view') }}" title="Buy Credits">Buy Credits</a>
             </li>
             <li class="mobile-dropdown-item account">
               <a href="{{ url_for('accounts.view_binders_view') }}" title="Past purchases">Past Purchases</a>
-            </li>
-            <li class="credit-item">
-              <p class="credits">Credits: {{ g.user.credits_available }}</p>
             </li>
             <li class="mobile-dropdown-item account">
               <a href="{{ url_for('accounts.logout_view') }}" title="Log out">Logout</a>
