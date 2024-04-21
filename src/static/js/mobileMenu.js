@@ -1,5 +1,5 @@
 function initialize() {
-  const dropMenu = document.getElementById("mobile-drowpdown");
+  const dropMenu = document.getElementById("dropdown");
   const account = document.getElementById("account-menu");
 
   function toggleMenu() {
@@ -7,8 +7,9 @@ function initialize() {
     dropMenu.classList.toggle("shown");
   };
   
-  if (account & dropMenu) {
+  if (account && dropMenu) {
     account.addEventListener("tap", toggleMenu);
+    account.addEventListener("click", toggleMenu);
   }
 };
 

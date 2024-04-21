@@ -23,7 +23,7 @@
             <span class="credit-ticker">{{ g.user.credits_available }}</span>
             <h6>Account</h6>
           </div>
-          <ul class="mobile-dropdown hidden">
+          <ul class="mobile-dropdown hidden" id="dropdown">
             <li class="mobile-dropdown-item account">
               <a href="{{ url_for('accounts.profile_view') }} title="Profile">Profile</a>
             </li>
