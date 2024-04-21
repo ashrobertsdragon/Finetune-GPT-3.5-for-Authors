@@ -1,20 +1,24 @@
 <header>
-  <nav class="header-nav">
-    <a href="{{ url_for('binders.lorebinder_form_view') if g.user else url_for('core.landing_page') }}" title="Start LoreBinder">
-      <span class="material-symbols-outlined tab" id="lorebinder">auto_stories</span>
-    </a>
+  <nav class="header-nav" id="lorebinder">
+    <div class="tab">
+      <a href="{{ url_for('binders.lorebinder_form_view') if g.user else url_for('core.landing_page') }}" title="Start LoreBinder">
+        <span class="material-symbols-outlined">auto_stories</span>
+      </a>
+    </div>
+    <div class="tab" id="free">
     <a href="{{ url_for('free.free_page') }}" title="Free tools">
-      <span class="material-symbols-outlined tab" id="free">featured_seasonal_and_gifts</span>
+      <span class="material-symbols-outlined">featured_seasonal_and_gifts</span>
     </a>
+    </div>
     <div class="tab pointer" id="toggle">
       <label class="switch">
         <span class="material-symbols-outlined" id="darkModeToggle" aria-label="Enable dark mode">dark_mode</span>
       </label>
     </div>
     {% if g.user %}
-      <div class="acccount-menu">
+      <div class="tab acccount-menu" id="account">
           <div class="icon-with-badge">
-            <span class="material-symbols-outlined tab" id="account">account_circle</span>
+            <span class="material-symbols-outlined">account_circle</span>
             <span class="credit-ticker">{{ g.user.credits_available }}</span>
           </div>
           <ul class="mobile-dropdown hidden">
