@@ -22,7 +22,6 @@ function initializeDarkMode() {
   };
 
   toggleSwitch.addEventListener("click", () => {
-    console.log("current mode is: ", currentDarkMode());
     toggleDarkMode(!currentDarkMode());
   });
 }
@@ -31,7 +30,6 @@ function toggleDarkMode(enable) {
   console.log("current value of enable is: ", enable)
   document.body.classList.toggle("dark-mode", enable);
   document.body.classList.toggle("light-mode", !enable);
-  console.log("class:", document.body.classList);
   updateModeElements(enable);
 }
 
@@ -39,7 +37,6 @@ function updateIcon(darkMode) {
   const toggleSwitch = document.getElementById("darkModeToggle");
   if (toggleSwitch && toggleSwitch.textContent) {
     toggleSwitch.textContent = darkMode ? "light_mode" : "dark_mode";
-    console.log("toggle text: ", toggleSwitch.textContent)
   }
 }
 
