@@ -29,25 +29,73 @@ h3 {
 label {
   margin-left: 20px;
 }
-/* Sidebar */
-.sidebar {
-  position: fixed;
-  width: 150px;
-  height: 100vh;
-  padding: 10px;
-  padding-top: calc(10%);
-}
-.sidebar-nav {
-  margin-left: -100%;
-}
 
 .account-header {
   margin-top: 4em;
 }
 
-.sidebar-nav li {
-  font-size: 1.25rem;
-  line-height: 26px;
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  top: 150px;
+  width: 200px;
+  padding: 10px;
+  margin-left: -150px;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  margin: none;
+  padding: 0;
+  background-color: #A3D8F4;
+  border: 1px solid transparent;
+  border-bottom-color: #251126;
+  box-shadow: inset 0 0 0.5px 1px rgba(219, 225, 231, 0.1),
+              0 0 0 1px rgba(44, 11, 25, 0.075),
+              0 0.3px 0.4px rgba(44, 11, 25, 0.02),
+              0 0.9px 1.5px rgba(44, 11, 25, 0.045),
+              0 3.5px 6px rgba(44, 11, 25, 0.09) !important;
+}
+
+.sidebar-item:last-child {
+  border-bottom: none;
+}
+
+body.dark-mode .sidebar-nav {
+  background-color: #251126;
+  border-bottom-color: #120912;
+}
+
+.sidebar-item {
+  background-color: #A3D8F4;
+  border: none;
+  text-align: center;
+  transition: background-color 0.3s;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-family: 'Exo', sans-serif;
+  font-weight: 300;
+  text-transform: uppercase;
+  font-size: 1.125rem;
+  line-height: 1.5;
+  text-align:center;
+}
+
+.sidebar-item a {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  height: 100%;
+  line-height: 30px; 
+}
+
+.sidebar-item.active {
+  background-color: #3F5C7D;
+}
+
+body.dark-mode .sidebar-item.active {
+  background-color: #4F4C6F;
 }
 
 /* Profile */
@@ -77,4 +125,28 @@ label {
 
 #price {
   margin-top: 10px; /* Space between the slider and the price */
+}
+
+
+@media only screen and (max-width: 1024px) {
+  .sidebar {
+    position: static;
+    width: 90%;
+    margin: auto;
+  }
+
+  .sidebar-nav {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .sidebar-item {
+    flex-grow: 1;
+    margin: 0;
+    border-right: solid #251126;
+    height: 50px;
+  }
+  body.dark-mode .sidebar-item {
+    border-right: #120912;
+  }
 }
