@@ -10,6 +10,40 @@ input, textarea {
 }
 
 /* Inputs */
+.user-input,
+input[type="password"],
+input[type="text"],
+input[type="date"],
+input[type="email"],
+select,
+textarea {
+  background-color: #c7c9cc;
+  border-radius: 4px;
+  box-shadow: inset 0 0 0.5px 1px rgba(219, 225, 231, 0.1),
+              0 0 0 1px rgba(44, 11, 25, 0.075),
+              0 0.3px 0.4px rgba(44, 11, 25, 0.02),
+              0 0.9px 1.5px rgba(44, 11, 25, 0.045),
+              0 3.5px 6px rgba(44, 11, 25, 0.09) !important;
+}
+
+user-input,
+input[type="password"],
+input[type="text"],
+input[type="date"],
+input[type="email"] {
+  font-size: 1rem;
+  max-width: 30ch;
+  width: 100%;
+  box-sizing: border-box;
+  height: 40px;
+  padding: 8px;
+  margin: 0 auto 10px 0;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  right: 10px;
+}
+
 input[type="file"] {
   border: none;
 } 
@@ -58,52 +92,6 @@ label {
   font-size: 1.1em;
   padding-bottom: .25em;
   margin-right: 1rem;
-}
-
-
-/* Dark mode */
-body.dark-mode label {
-  color: inherit;
-}
-body.light-mode label {
-  color: inherit;
-}
-
-body.dark-mode .box {
-  background-color: #3F5C7D;
-  box-shadow: inset 0 0 5px #DBE1E7; /* White shadow */
-} 
-
-body.dark-mode .user-input,
-body.dark-mode input[type="password"],
-body.dark-mode input[type="text"],
-body.dark-mode input[type="date"],
-body.dark-mode input[type="email"],
-body.dark-mode select,
-body.dark-mode textarea {
-  border-radius: 4px;
-  box-shadow: inset 0 0 0.5px 1px rgba(219, 225, 231, 0.1),
-              0 0 0 1px rgba(44, 11, 25, 0.075),
-              0 0.3px 0.4px rgba(44, 11, 25, 0.02),
-              0 0.9px 1.5px rgba(44, 11, 25, 0.045),
-              0 3.5px 6px rgba(44, 11, 25, 0.09) !important;
-}
-
-body.dark-mode input[type="submit"],
-body.dark-mode input::file-selector-button {
-  box-shadow: inset 0 0 0.5px 1px rgba(219, 225, 231, 0.1),
-  0 0 0 1px rgba(0, 100, 0, 0.075),
-  0 0.3px 0.4px rgba(0, 100, 0, 0.02),
-  0 0.9px 1.5px rgba(0, 100, 0, 0.045),
-  0 3.5px 6px rgba(0, 100, 0, 0.09);
-}
-body.dark-mode input[type="submit"]:hover,
-body.dark-mode input::file-selector-button:hover {
-  box-shadow: inset 0 0 0.5px 1px rgba(219, 225, 231, 0.1),
-  0 0 0 1px rgba(244, 238, 144, 0.075),
-  0 0.3px 0.4px rgba(244, 238, 144, 0.02),
-  0 0.9px 1.5px rgba(244, 238, 144, 0.045),
-  0 3.5px 6px rgba(244, 238, 144, 0.09);
 }
 
 /* Containers */
@@ -367,25 +355,6 @@ body.dark-mode .flash-modal {
   margin-right: auto;
 }
 
-
-user-input,
-input[type="password"],
-input[type="text"],
-input[type="date"],
-input[type="email"] {
-  font-size: 1rem;
-  max-width: 30ch;
-  width: 100%;
-  box-sizing: border-box;
-  height: 40px;
-  padding: 8px;
-  margin: 0 auto 10px 0;
-}
-
-input[type="date"]::-webkit-calendar-picker-indicator {
-  right: 10px;
-}
-
 .switch-auth {
   margin-top: 2em;
   text-align: center;
@@ -409,6 +378,21 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   align-items: center;
   display: flex;
   text-align: flex;
+}
+
+/* Dark mode */
+body.dark-mode .box {
+  background-color: #3F5C7D;
+} 
+
+body.dark-mode .user-input,
+body.dark-mode input[type="password"],
+body.dark-mode input[type="text"],
+body.dark-mode input[type="date"],
+body.dark-mode input[type="email"],
+body.dark-mode select,
+body.dark-mode textarea {
+  background-color: #344250;
 }
 
 /* Responsive changes */
