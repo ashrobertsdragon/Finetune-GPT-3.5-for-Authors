@@ -41,7 +41,7 @@ class Config(object):
         ],
         "frame-src": [
           "'self'",
-          "https://youtube.com",
+          "https://www.youtube.com",
           "https://connect-js.stripe.com",
           "https://js.stripe.com"
         ],
