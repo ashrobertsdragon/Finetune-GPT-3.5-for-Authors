@@ -158,4 +158,12 @@ body.dark-mode .sidebar-item.active {
   body.dark-mode .sidebar-item {
     border-right: #120912;
   }
+
+  #update-password-form,
+#account-management-form,
+#credit-info-inner,
+.binder-table {
+  width: 90%;
+}
+
 }

@@ -132,7 +132,6 @@ body.dark-mode .faq-question {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  max-width: 50%;
   margin: 0 auto 30px;
 }
 .call-to-action p {

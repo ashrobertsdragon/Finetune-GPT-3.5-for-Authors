@@ -242,10 +242,6 @@ div {
   border-radius: 6px;
 }
 
-body.dark-mode .flash-modal {
-  background-color: #2a0f25;
-}
-
 .flashes {
   list-style-type: none;
   padding: 0;
@@ -285,7 +281,7 @@ body.dark-mode .flash-modal {
   font-size: 1.75rem;
   right: 0.5rem;
   top: 50%;
-  transform: translateY(-80%);
+  transform: translateY(-50%);
   color:#1C0B19;
   cursor: pointer;
 }
@@ -381,6 +377,10 @@ body.dark-mode .flash-modal {
 }
 
 /* Dark mode */
+body.dark-mode .flash-modal {
+  background-color: #2a0f25;
+}
+
 body.dark-mode .box {
   background-color: #3F5C7D;
 } 
@@ -393,14 +393,28 @@ body.dark-mode input[type="email"],
 body.dark-mode select,
 body.dark-mode textarea {
   background-color: #344250;
+  color: #DBE1E7;
+}
+
+body.dark-mode #eye {
+  color: #DBE1E7;
 }
 
 /* Responsive changes */
 @media only screen and (max-width: 600px) {
-  
-  .input-label {
-    margin-top: 10px;
+
+  /* form containers */
+  .flex-form {
+    flex-direction: column;
   }
+
+  .input-label {
+    display: flex;
+    flex-grow: 1;
+    text-align: left;
+    padding-right: 0;
+  }
+
 	/* Inputs */
   input[type="password"],
   input[type="text"],
@@ -409,8 +423,11 @@ body.dark-mode textarea {
   input[type="file"],
   select,
   textarea,
-  .user-input {
-    width: 95%;
+  .user-input,
+  .input-box,
+  .password-container {
+    width: 100%;
+    max-width: 100%;
     height: 60px;
     margin-right: 0;
     margin-bottom: 10px;
@@ -435,5 +452,20 @@ body.dark-mode textarea {
       padding: 10px;
       box-sizing: border-box;
     }
+
+    /* Visibility */
+    .password-container {
+      padding-top: 16px;
+      display: flex;
+      align-items: center;
+      flex-grow: 1;
+      position: relative;
+  }
+  
+  .input-box{
+    display: flex;
+    flex-grow: 1;
+    width: 100%;
+  }
 
 }
