@@ -470,6 +470,43 @@ section {
   margin-bottom: 30px;
 }
 
+.free-list-container {
+  border: 1px solid #2c2941;
+  border-radius: 4px;
+  background-color: #A3D8F4;
+  width: 200px;
+  margin: auto;
+  padding: 10px;
+}
+
+body.dark-mode .free-list-container {
+  border-color: #251126;
+  background-color: #3F5C7D;
+}
+
+.free-list {
+  list-style-type: disc;
+}
+
+.nested-list {
+  list-style-type: none;
+}
+
+.sub-item {
+  content: '\2BA1';
+}
+
+.free-item a {
+  text-decoration: none;
+}
+
+.free-item:hover {
+  transform: scale(1.2);
+}
+
+
+
+
   /* Footer */
 footer, .copyright {
   display: block;
