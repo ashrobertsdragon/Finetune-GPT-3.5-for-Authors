@@ -94,7 +94,7 @@ def create_stripe_session(num_credits: int, customer_email: str, attempt: int = 
             line_items=[{"price": price_id, "quantity": 1}],
             mode="payment",
             customer_email=customer_email,
-            return_url=DOMAIN + "/return.html?session_id={CHECKOUT_SESSION_ID}",
+            return_url=DOMAIN + "/return?session_id={CHECKOUT_SESSION_ID}",
             automatic_tax={"enabled": True},
             metadata={"num_credits": num_credits},
         )

@@ -68,4 +68,5 @@ def checkout_view():
 @stripe_app.route("/return", methods=["GET"])
 @login_required
 def return_view():
-    return render_template("stripe/return.html")
+    session_id = request.args.get("session_id")
+    return render_template("stripe/return.html", session_id=session_id)
