@@ -5,7 +5,7 @@ function getSearchParameter(name) {
 }
 
 async function getDomain() {
-    const response = await fetch('/get_domain');
+    const response = await fetch('/get-domain');
     const data = await response.json();
     return data.domain;
 }
@@ -15,7 +15,7 @@ async function initialize() {
     const response = await fetch(`/session-status?session_id=${sessionId}`);
     const session = await response.json();
 
-    const domgain = await getDomain();
+    const domain = await getDomain();
     const checkoutURL = `${domain}/checkout.html`
 
     if (!sessionId) {

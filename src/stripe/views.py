@@ -36,7 +36,7 @@ def session_status():
     try:
         stripe_session = stripe.checkout.Session.retrieve(request.args.get("session_id"))
         if stripe_session.status == "complete":
-            num_credits = stripe_session.metadata.num_credits
+            num_credits = int(stripe_session.metadata.num_credits)
             session["user_details"]["credits_available"] += num_credits
             update_db()
 
@@ -45,9 +45,10 @@ def session_status():
             customer_email=stripe_session.customer_details.email
         )
     except stripe.RateLimitError:
-        pass
-    except Exception:
-        pass
+        return jsonify(error="Rate limit exceeded"), 429
+    except Exception as e:
+        current_app.logger.error('Unexpected error: %s', str(e))
+        return jsonify(error=str(e)), 500
 
 @stripe_app.route("/get-publishable-key", methods=["GET"])
 def get_publishable_key():
