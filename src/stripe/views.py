@@ -42,7 +42,8 @@ def session_status():
 
         return jsonify(
             status=stripe_session.status,
-            customer_email=stripe_session.customer_details.email
+            customer_email=stripe_session.customer_details.email,
+            credits_availailable=session["user_details"]["credits_available"]
         )
     except stripe.RateLimitError:
         return jsonify(error="Rate limit exceeded"), 429
