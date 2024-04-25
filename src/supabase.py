@@ -531,8 +531,7 @@ class SupabaseDB(SupabaseClient):
 
         match_name, match_value = next(iter(match.items()))
         try:
-            response = db_client.table(table_name).update(info) \
-                .eq(match_name, match_value).execute()
+            response = db_client.table(table_name).update(info).eq(match_name, match_value).execute()
             self.log_info(action, response)
             return True
         except Exception as e:
