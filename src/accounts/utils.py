@@ -1,4 +1,4 @@
-from flask import session, flash
+from flask import current_app, session, flash
 import logging
 
 from src.supabase import SupabaseDB
@@ -23,7 +23,7 @@ def initialize_user_db(auth_id: str, email: str) -> None:
         "email": email
     })
 
-def get_binders() -> list:
+def get_binders() -> list[dict]:
     """
     Get a list of binders owned by the current user.
 
@@ -48,8 +48,21 @@ def get_binders() -> list:
             "download_path": binder["download_path"]
         } for binder in binder_data.data]
     else:
-        binder_db = []
+        binder_db = [{}]
     return binder_db
+
+def replace_empty_path(binder_db: list) -> list[dict]:
+    """
+    Replace empty download path witha placeholder string
+    """
+    for binder in binder_db:
+        if not binder["download_path"]:
+            binder["download_path"] = "Please check again later"
+    return binder_db
+
+def is_link(download_path: str) -> bool:
+    "Checks if the download_path variable is a URL"
+    return download_path.startswith("https://")
 
 def get_user_data(auth_id: str) -> dict:
     """
@@ -144,7 +157,8 @@ def update_email(new_email: str, auth) -> None:
             )
             access_token = data.session.access_token
             session["access_token"] = access_token
-        except Exception:
+        except Exception as e:
+            current_app.logger.error('Unexpected error: %s', str(e))
             flash("Email update failed", "Error")
 
 def update_user_details(data: dict):
@@ -162,8 +176,13 @@ def update_user_details(data: dict):
         None
     """
     for key, value in data.items():
-        if not value:
-            continue
-        if key in session["user_details"] \
-        and session["user_details"][key] != value:
-            session["user_details"][key] = value
+        if key in session["user_details"]:
+            if not value:
+                continue
+            if session["user_details"][key] == value:
+                continue
+            else:
+                session["user_details"][key] = value
+        else:
+            e =f"{key} not found in {session["user_details"].keys()}"
+            current_app.logger.error('Unexpected error: %s', str(e))

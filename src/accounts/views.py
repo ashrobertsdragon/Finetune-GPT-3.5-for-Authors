@@ -5,7 +5,7 @@ from src.supabase import SupabaseAuth
 from src.decorators import login_required
 from src.utils import update_db
 
-from .forms import (BuyCreditsForm, ForgotPasswordForm,
+from .forms import (AccountManagementForm, BuyCreditsForm, ForgotPasswordForm,
                     LoginForm, SignupForm, UpdatePasswordForm)
 from .utils import get_binders, initialize_user_db, preload_account_management_form, redirect_after_login, update_email, update_user_details
 
@@ -27,6 +27,7 @@ def signup_view():
                 "Please check your email to verify your account."
                 )
         except Exception as e:
+            current_app.logger.error('Unexpected error: %s', str(e))
             flash(e.message)
     
     return render_template("accounts/signup.html", form=form)
@@ -46,6 +47,7 @@ def login_view():
             access_token = data.session.access_token
             auth_id = data.user.id
         except Exception as e:
+            current_app.logger.error('Unexpected error: %s', str(e))
             flash(str(e))
 
         session["access_token"] = access_token
@@ -89,7 +91,8 @@ def reset_password_view():
                 "password": new_password
             })
             flash("Password successfully updated.", "message")
-        except Exception:
+        except Exception as e:
+            current_app.logger.error('Unexpected error: %s', str(e))
             flash("There was a problem updating your password. "
                   "Please try again.",
                   "error"
@@ -119,7 +122,7 @@ def account_view(section="profile"):
 def profile_view():
     if request.method == "GET":
         return redirect(url_for("accounts.account_view", section="profile"))
-    account_form = preload_account_management_form()
+    account_form = AccountManagementForm()
     password_form = UpdatePasswordForm()
     if account_form.is_submitted():
         if account_form.validate_on_submit():
@@ -139,7 +142,10 @@ def profile_view():
                 flash("There was an error updating your profile.", "error")
         else:
             print(account_form.errors)
-            flash("There was an error updating your profile.", "error")
+            for field, errors in account_form.errors.items():
+                for error in errors:
+                    label = getattr(account_form, field).label.text
+                    flash(f"Error in the {label}: {error}", "error")
 
     if password_form.validate_on_submit():
         new_password = password_form.new_password.data
@@ -150,7 +156,8 @@ def profile_view():
             access_token = response.access_token
             session["access_token"] = access_token
             flash("Password successfully updated.", "message")
-        except Exception:
+        except Exception as e:
+            current_app.logger.error('Unexpected error: %s', str(e))
             flash(
                 "There was a problem updating your password. "
                 "Please try again.",
