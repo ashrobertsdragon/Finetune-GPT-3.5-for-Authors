@@ -359,9 +359,14 @@ body.dark-mode .dropdown-content a:hover {
   padding: 5px 16px;
 }
 
-#toggle p {
+#toggle p#toggleLabel {
   margin: 0;
   padding-right: 10px; 
+}
+
+#toggle p#toggleLabelDark {
+  margin: 0;
+  padding-left: 10px;
 }
 
 .switch {
