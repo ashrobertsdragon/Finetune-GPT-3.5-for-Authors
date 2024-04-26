@@ -281,7 +281,7 @@ div {
   font-size: 1.75rem;
   right: 0.5rem;
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(-80%);
   color:#1C0B19;
   cursor: pointer;
 }
@@ -385,7 +385,9 @@ body.dark-mode .box {
   background-color: #3F5C7D;
 } 
 
+
 body.dark-mode .user-input,
+body.dark-mode input:-internal-autofill-selected,
 body.dark-mode input[type="password"],
 body.dark-mode input[type="text"],
 body.dark-mode input[type="date"],
@@ -398,6 +400,18 @@ body.dark-mode textarea {
 
 body.dark-mode #eye {
   color: #DBE1E7;
+}
+
+body.dark-mode #id_email,
+body.dark-mode #id_password {
+  /* Keep Firefox aligned with Chromium browsers that override these styles */
+  background-color: #e8f0fe; 
+  color: #000;
+}
+
+body.dark-mode .password-container #eye {
+  /* Keep eye dark color when used in password field because of user-agent stylesheet issue */
+  color: #000;
 }
 
 /* Responsive changes */
