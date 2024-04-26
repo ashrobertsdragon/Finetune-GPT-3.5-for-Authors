@@ -60,4 +60,4 @@ function updateModeElements(isDark) {
   updateIcon(isDark);
 }
 
-// Commit 4999700 has working version in case it gets fubar again
+// Commit 06607d5 has working version in case it gets fubar again
