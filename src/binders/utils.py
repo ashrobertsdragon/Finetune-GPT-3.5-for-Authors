@@ -6,7 +6,7 @@ from src.supabase import SupabaseDB
 
 from .credits import update_credits
 
-db = SupabaseDB
+db = SupabaseDB()
 
 
 def save_binder_data(api_payload: dict, user: str) -> None:
