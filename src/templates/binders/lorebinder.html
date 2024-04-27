@@ -11,7 +11,7 @@
   <h1>Create LoreBinder</h1>
   {% with messages = get_flashed_messages() %}
     {% if messages %}
-      <script src="{{ url_for('static', filename='js/closeModal.js') }}"></script>
+      
       <div class="flash-modal">
         <span class="material-symbols-outlined close-icon">
           close
@@ -75,7 +75,7 @@
       {{ form.other_attributes.label(class="input-label") }}
       <div class="tag-bounding-box">
         {{ form.other_attributes(class="hidden-form", id="other-attributes") }}
-        <div class="user-input metadata tag-container" id="other_attributes_tags"></div>
+        <div class="user-input metadata tag-container" id="other-attributes-tags"></div>
       </div>
       {% if form.other_attributes.errors %}
         {% for error in form.other_attributes.errors %}
