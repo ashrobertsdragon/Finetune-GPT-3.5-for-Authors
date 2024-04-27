@@ -227,9 +227,9 @@ div {
   vertical-align: middle;
 }
 
-.flash-modal {
+.flash-modal, 
+.message-modal {
   z-index: 9999;
-  display: block;
   position: fixed;
   top: 50%;
   left: 50%;
@@ -242,6 +242,10 @@ div {
   border-style: solid;
   box-sizing: border-box;
   border-radius: 6px;
+}
+
+#message-container {
+  margin: 2rem;
 }
 
 .flashes {
@@ -422,7 +426,7 @@ body.dark-mode .hidden-form#other-attributes {
   right: 0;
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  align-items:start;
   padding: 8px;
   pointer-events: none; 
 }
@@ -431,13 +435,17 @@ body.dark-mode .hidden-form#other-attributes {
   pointer-events: auto;
 }
 
+.temp-span {
+  padding-left: 5px;
+}
+
 span.tag {
   margin: 2px;
   cursor: pointer;
   font-size: 0.9rem;
   background-color: #e8f0fe;
   color:#1C0B19;
-  padding: 3px;
+  padding: 1px 20px 1px 12px;
   white-space: nowrap;
   border-radius: 16px;
   position: relative;
@@ -447,23 +455,22 @@ span.tag {
 span.remove-tag {
   font-size: smaller;
   cursor: pointer;
-  display: inline-block;
   position: absolute;
-  top: 4px;
-  right: 4px;
-  margin-left: 5x;
+  top: 50%;
+  right: 5px;
+  transform: translateY(-50%);
   color: #370808;
   font-variation-settings:
     'FILL' 0,
     'wght' 200,
     'GRAD' 0,
     'opsz' 20;
-  vertical-align:text-top;
 }
 
 
 /* Dark mode */
-body.dark-mode .flash-modal {
+body.dark-mode .flash-modal,
+body.dark-mode .message-modal {
   background-color: #2a0f25;
 }
 
