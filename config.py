@@ -69,6 +69,10 @@ class Config(object):
         "includeSubDomains": True
     }
 
+    PROSEPAL_ENDPOINTS = {
+        "lorebinder": "fakeendpoint"
+    }
+
 
     def define_upload(self):
         self.UPLOAD_FOLDER = self.UPLOAD_FOLDER
