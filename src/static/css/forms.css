@@ -30,7 +30,8 @@ user-input,
 input[type="password"],
 input[type="text"],
 input[type="date"],
-input[type="email"] {
+input[type="email"],
+textarea {
   font-size: 1rem;
   max-width: 30ch;
   width: 100%;
@@ -120,6 +121,7 @@ div {
   display: flex;
   align-items: center;
 }
+
 .input-label {
   width: 8rem;
 }
@@ -376,6 +378,90 @@ div {
   text-align: flex;
 }
 
+/*  Multi-input Textarea */
+.tag-bounding-box {
+  position: relative;
+  flex-direction: row;
+  align-items: flex-start;
+  flex-wrap: wrap;;
+  max-width: 30ch;
+  width: 100%;
+  height: 80px;
+  margin-top: 10px;
+  padding: 10px 0;
+}
+
+.hidden-form#character-attributes,
+.hidden-form#other-attributes {
+  opacity: 0;
+  max-width: 30ch;
+  width: 100%;
+  height: 80px;
+  z-index: -1;
+  background-color: #BBE5ED;
+  color: #BBE5ED;
+  box-shadow: none;
+  border: none;
+}
+
+body.dark-mode .hidden-form#character-attributes,
+body.dark-mode .hidden-form#other-attributes {
+  background-color: #3F5C7D;
+  color: #3F5C7D;
+}
+
+.tag-container {
+  z-index: 10;
+  font-family: 'Source Sans 3', sans-serif;
+  max-width: 30ch;
+  width: 100%;
+  height: 80px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 8px;
+  pointer-events: none; 
+}
+
+.tag-container .tag {
+  pointer-events: auto;
+}
+
+span.tag {
+  margin: 2px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  background-color: #e8f0fe;
+  color:#1C0B19;
+  padding: 3px;
+  white-space: nowrap;
+  border-radius: 16px;
+  position: relative;
+  box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.5), inset 0px 0px 2px rgba(154, 147, 113, 0.95);
+}
+
+span.remove-tag {
+  font-size: smaller;
+  cursor: pointer;
+  display: inline-block;
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  margin-left: 5x;
+  color: #370808;
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 200,
+    'GRAD' 0,
+    'opsz' 20;
+  vertical-align:text-top;
+}
+
+
 /* Dark mode */
 body.dark-mode .flash-modal {
   background-color: #2a0f25;
@@ -385,9 +471,7 @@ body.dark-mode .box {
   background-color: #3F5C7D;
 } 
 
-
 body.dark-mode .user-input,
-body.dark-mode input:-internal-autofill-selected,
 body.dark-mode input[type="password"],
 body.dark-mode input[type="text"],
 body.dark-mode input[type="date"],

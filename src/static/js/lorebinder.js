@@ -1,40 +1,67 @@
-document.addEventListener("DOMContentLoaded", function() {
-  var isFirstPersonCheckbox = document.getElementById("is_first_person");
-  var narratorFieldContainer = document.getElementById("narrator");
+document.addEventListener("DOMContentLoaded", () => {
+  var isFirstPersonCheckbox = document.getElementById("is-first-person");
+  var narratorFieldContainer = document.getElementById("narrator-container");
 
   // Toggle narrator name field based on checkbox
   function toggleNarratorField() {
-    narratorFieldContainer.style.display = isFirstPersonCheckbox.checked ? "block" : "none";
-  }
+    showNarratorField = isFirstPersonCheckbox.checked;
+    narratorFieldContainer.style.display = showNarratorField ? "flex" : "none";
+
+  };
   isFirstPersonCheckbox.addEventListener("change", toggleNarratorField);
   toggleNarratorField();
 
   // Function to handle multi-value inputs for attributes
-  function handleMultiValueInput(inputFieldId, storageFieldId) {
-    var inputField = document.getElementById(inputFieldId);
-    var storageField = document.getElementById(storageFieldId);
-    var itemList = document.createElement("ul");
-    itemList.classList.add("attributes-list");
-    storageField.parentNode.insertBefore(itemList, storageField.nextSibling);
-    inputField.addEventListener("keypress", function(e) {
-      if (e.key === "Enter") {
-        e.preventDefault(); // Prevent form submission on Enter
-        var itemValue = inputField.value.trim();
-        if (itemValue) {
-          var item = document.createElement("li");
-          item.textContent = itemValue;
-          itemList.appendChild(item);
-          // Update the hidden field to store the list as a JSON array
-          var items = storageField.value ? JSON.parse(storageField.value) : [];
-          items.push(itemValue);
-          storageField.value = JSON.stringify(items);
+  function handleMultiValueInput(inputFieldId, tagDisplayContainerId) {
+    const inputField = document.getElementById(inputFieldId);
+    const tagDisplayContainer = document.getElementById(tagDisplayContainerId);
 
-          inputField.value = ""; // Clear input for next entry
-        }
-      }
+    inputField.addEventListener("keyup", function(e) {
+      if (e.key === "Enter" || e.key === ",") {
+        e.preventDefault();
+        const inputValue = inputField.value;
+        const lastCommaIndex = inputValue.lastIndexOf(",", inputValue.length - 2) + 1;
+        const lastTag = inputValue.slice(lastCommaIndex).trim();
+
+
+        if (lastTag) {
+          const tagElement = createTag(lastTag);
+          tagDisplayContainer.appendChild(tagElement);
+          inputField.value = inputValue.slice(0, lastCommaIndex) + ",";
+        };
+      };
     });
-  }
 
-  handleMultiValueInput("character_attributes_input", "character_attributes");
-  handleMultiValueInput("other_attributes_input", "other_attributes");
+    function createTag(tag) {
+      const tagElement = document.createElement("span");
+      tagElement = tagElement.replace(/,$/, '').trim();
+      tagElement.classList.add("tag");
+      tagElement.textContent = tag;
+
+      const closeButton = document.createElement("span");
+      closeButton.classList.add("remove-tag", "material-symbols-outlined");
+      closeButton.innerHTML = "close";
+      closeButton.addEventListener("click", () => removeTag(tagElement));
+
+      tagElement.appendChild(closeButton);
+      return tagElement;
+    };
+
+    function removeTag(tagElement) {
+      const tagText = tagElement.textContent.replace("close", "").trim();
+
+      const tags = inputField.value.split(",").map(tag => tag.trim());
+      const indexToRemove = tags.indexOf(tagText);
+
+      if (indexToRemove > -1) {
+        tags.splice(indexToRemove, 1);
+        inputField.value = tags.join(",");
+      };
+      
+      tagElement.remove();
+    };
+  };
+
+  handleMultiValueInput("character-attributes", "character-attributes-tags");
+  handleMultiValueInput("other-attributes", "other-attributes-tags");
 });

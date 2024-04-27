@@ -14,10 +14,10 @@ binders_app = Blueprint("binders", __name__)
 @login_required
 @credit_required
 def lorebinder_form_view():
-    user = session["user_details"]["user"]
-    user_folder = session["user_details"]["uuid"]
+    user = session["user_details"]["id"]
+    user_folder = session["user_details"]["auth_id"]
     user_email = session["user_details"]["email"]
-    form = LoreBinderForm
+    form = LoreBinderForm()
     if form.validate_on_submit():
         file = form.file_upload.data
         upload_path = upload_supabase_bucket(user_folder, file, bucket="binders")
@@ -42,4 +42,4 @@ def lorebinder_form_view():
         save_binder_data(api_payload, user)
         update_credits(user)
     
-    render_template("binders/lorebinder.html", form=form)
+    return render_template("binders/lorebinder.html", form=form)
