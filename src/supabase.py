@@ -46,7 +46,10 @@ class SupabaseClient():
             key: str = self._get_env_value("SUPABASE_KEY")
             self.default_client: Client = create_client(self.url, key)
             if self.default_client:
-                self.log_info(action=f"Initialized client {__name__}", response={})
+                self.log_info(
+                    action="Initialized Supabase default client",
+                    response={"Client initialized": "Default"}
+                )
 
     def log_info(self, action: str, response: dict) -> None:
         """
@@ -251,6 +254,7 @@ class SupabaseAuth(SupabaseClient):
             raise
 
 class SupabaseStorage(SupabaseClient):
+
     def upload_file(self, bucket, upload_path, file_content, file_mimetype):
         try:
             self.default_client.storage.from_(bucket).upload(
@@ -274,6 +278,11 @@ class SupabaseDB(SupabaseClient):
         if "service_client" not in self.__dict__:
             service_role: str = super()._get_env_value("SUPABASE_SERVICE_ROLE")
             self.service_client: Client = create_client(self.url, service_role)
+            if self.service_client:
+                self.log_info(
+                    action="Initialized Supabase service client",
+                    response={"Client initialized": "service"}
+                )
     
     def _select_client(self, use_service_role: bool = False) -> Client:
         """
