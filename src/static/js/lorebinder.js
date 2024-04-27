@@ -15,26 +15,48 @@ document.addEventListener("DOMContentLoaded", () => {
   function handleMultiValueInput(inputFieldId, tagDisplayContainerId) {
     const inputField = document.getElementById(inputFieldId);
     const tagDisplayContainer = document.getElementById(tagDisplayContainerId);
+    const messageContainer = document.getElementById("message-container")
+
+    const tempSpan = document.createElement('span');
+    tempSpan.classList.add("temp-span");
+    tagDisplayContainer.appendChild(tempSpan);
 
     inputField.addEventListener("keyup", function(e) {
-      if (e.key === "Enter" || e.key === ",") {
-        e.preventDefault();
-        const inputValue = inputField.value;
-        const lastCommaIndex = inputValue.lastIndexOf(",", inputValue.length - 2) + 1;
-        const lastTag = inputValue.slice(lastCommaIndex).trim();
+      if (e.key === "Enter") {
+        e.key = ",";
+      };
 
+      const inputValue = inputField.value;
+      const lastCommaIndex = inputValue.lastIndexOf(",", inputValue.length - 2) + 1;
+      const currentInput = inputValue.slice(lastCommaIndex).trim();
 
-        if (lastTag) {
-          const tagElement = createTag(lastTag);
-          tagDisplayContainer.appendChild(tagElement);
-          inputField.value = inputValue.slice(0, lastCommaIndex) + ",";
-        };
+      if (validateCharacterInput(currentInput)) {
+        const existingTags = tagDisplayContainer.querySelectorAll(".tag");
+        if (existingTags.length >= 6) {
+          displayMessage("Maximum number of tags reached.", "error");
+        } else if (e.key === "," && currentInput) {
+          const tagElement = createTag(currentInput);
+          tempSpan.textContent = "";
+          tagDisplayContainer.insertBefore(tagElement, tempSpan);
+          if (existingTags.length < 6) {
+            inputField.value = inputValue + " ";
+          } else {
+            inputField.value.slice(0, -1);
+          }
+          messageContainer.textContent = "";
+        } else {
+          tempSpan.textContent = currentInput;
+          messageContainer.textContent = "";
+        }
+      } else {
+        displayMessage("Invalid input. Please enter valid characters.", "error");
+        inputField.value = inputValue.slice(0, -1);
       };
     });
 
     function createTag(tag) {
       const tagElement = document.createElement("span");
-      tagElement = tagElement.replace(/,$/, '').trim();
+      tag = tag.replace(/,$/, '').trim();
       tagElement.classList.add("tag");
       tagElement.textContent = tag;
 
