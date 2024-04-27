@@ -8,16 +8,6 @@ function validateEmailInput(input) {
   return validEmailRegex.test(input);
 }
 
-function displayMessage(message, type) {
-  const messageModal = document.getElementById("modal-container")
-  const messageContainer = document.getElementById("message-container")
-  messageContainer.textContent = message;
-  messageContainer.classList.remove("error", "warning", "success");
-  messageContainer.classList.add(type);
-  messageModal.classList.remove("hidden")
-  messageModal.classList.add("shown")
-}
 
 window.validateCharacterInput = validateCharacterInput;
 window.validateEmailInput = validateEmailInput
-window.displayMessage = displayMessage
