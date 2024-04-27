@@ -1,6 +1,6 @@
 from .supabase import SupabaseStorage
 
-
+ 
 storage = SupabaseStorage()
 
 def upload_supabase_bucket(user_folder, file, *, bucket):
@@ -39,6 +39,6 @@ def upload_supabase_bucket(user_folder, file, *, bucket):
     file_mimetype = file.content_type
     file.seek(0)
 
-    storage(bucket, upload_path, file_content, file_mimetype)
+    storage.upload_file(bucket, upload_path, file_content, file_mimetype)
 
     return upload_path
