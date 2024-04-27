@@ -1,11 +1,10 @@
-from flask import Blueprint, render_template, session
+from flask import Blueprint, jsonify, render_template, session
 
 from src.file_handling import upload_supabase_bucket
 from src.decorators import login_required, credit_required
 
-from .credits import update_credits
 from .forms import LoreBinderForm
-from .utils import call_api, save_binder_data
+from .utils import start_binder, str_to_dedup_list
 
 
 binders_app = Blueprint("binders", __name__)
@@ -25,8 +24,11 @@ def lorebinder_form_view():
         title = form.title.data
         author = form.author.data
         narrator = form.narrator.data
-        character_attributes = form.character_attributes.data
-        other_attributes = form.other_attributes.data
+        character_attributes_str = form.character_attributes.data
+        other_attributes_str = form.other_attributes.data
+
+        character_attributes = str_to_dedup_list(character_attributes_str)
+        other_attributes = str_to_dedup_list(other_attributes_str)
 
         api_payload = {
             "upload_path": upload_path,
@@ -38,8 +40,16 @@ def lorebinder_form_view():
             "email": user_email
         }
 
-        call_api(api_payload)
-        save_binder_data(api_payload, user)
-        update_credits(user)
+        response = start_binder(api_payload, user, endpoint_name="lorebinder")
+
+        if response:
+            message = "Your Lorebinder has been started. "
+            "You should receive an email within the next hour."
+            status = "success"
+        else:
+            message = "There was a problem starting your Lorebinder. "
+            "An administrator has been contacted."
+            status = "warning"
+        return jsonify({"message": message, "status": status})
     
     return render_template("binders/lorebinder.html", form=form)

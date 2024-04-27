@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
-  var isFirstPersonCheckbox = document.getElementById("is-first-person");
-  var narratorFieldContainer = document.getElementById("narrator-container");
+  const messageContainer = document.getElementById("message-container")
+  const isFirstPersonCheckbox = document.getElementById("is-first-person");
+  const narratorFieldContainer = document.getElementById("narrator-container");
 
   // Toggle narrator name field based on checkbox
   function toggleNarratorField() {
@@ -11,11 +12,22 @@ document.addEventListener("DOMContentLoaded", () => {
   isFirstPersonCheckbox.addEventListener("change", toggleNarratorField);
   toggleNarratorField();
 
+  const form = document.querySelector("form");
+  form.addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    fetch("/lorebinder", {
+      method: "POST",
+      body: new FormData(form)
+    })
+    .then(response => response.json())
+    .then(data => handleAPIResponse(data));
+  });
+
   // Function to handle multi-value inputs for attributes
   function handleMultiValueInput(inputFieldId, tagDisplayContainerId) {
     const inputField = document.getElementById(inputFieldId);
     const tagDisplayContainer = document.getElementById(tagDisplayContainerId);
-    const messageContainer = document.getElementById("message-container")
 
     const tempSpan = document.createElement('span');
     tempSpan.classList.add("temp-span");
