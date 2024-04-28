@@ -37,19 +37,22 @@ class SupabaseClient():
                     response={"Client initialized": "Default"}
                 )
 
-    def log_info(self, action: str, response: dict) -> None:
+    def log_info(self, action: str, response, **kwargs) -> None:
         """
         Log a Supabase response with the info logger.
 
         Args:
             action (str): The action being performed.
-            response (dict): The dictionary of table data returned.
+            response (union): The response returned, typically data, a list of
+                dictionaries and count=None.
+            
         
         Example:
             log_info("select", {"email": "example@example.com", "name": "John"})
         
         """
-        self.info_logger(f"{action} returned {response}")
+        all_kwargs = ', '.join(f"{k}={v}" for k, v in kwargs.items())
+        self.info_logger(f"{action} returned {response}{all_kwargs}")
 
     def create_error_message(self, action: str, **kwargs) -> str:
         """
@@ -357,14 +360,17 @@ class SupabaseDB(SupabaseClient):
 
         try:
             self._validate_table(table_name)
-            self._validate_dict(data, "updates")
+            self._validate_dict(data, "data")
         except ValueError as e:
             self.log_error(e, action, data=data, table_name=table_name)
 
         try:
             response = db_client.table(table_name).insert(data).execute()
-            self.log_info(action, response)
-            return True
+            if not response.data:
+                raise ValueError("Response has no data")
+            else:
+                self.log_info(action, response)
+                return True
         except Exception as e:
             self.log_error(e, action, data=data, table_name=table_name)
             return False
@@ -534,15 +540,14 @@ class SupabaseDB(SupabaseClient):
 
         match_name, match_value = next(iter(match.items()))
         try:
-            response = db_client.table(table_name).update(info).eq(match_name, match_value).execute()
-            self.log_info(action, response)
+            res = db_client.table(table_name).update(info).eq(match_name, match_value).execute()
         except Exception as e:
             self.log_error(e, action, updates=info, match=match)
             return False
-        if response.data:
-            self.log_info(action, response)
+        if res.data:
+            self.log_info(action, res)
             return True
         else:
-            e="blank data"
-            self.log_error(e, action, updates=info, match=match)
+            log="Data is the same"
+            self.log_info(action, res, info=info, log=log)
             return False
