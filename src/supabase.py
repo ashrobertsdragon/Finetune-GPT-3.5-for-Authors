@@ -1,15 +1,10 @@
-import logging
-
 from decouple import config
 from gotrue.types import AuthResponse, UserResponse
 from supabase import create_client, Client
 
 from .error_handling import email_admin
-from .logging_config import start_loggers
+from .logging_config import LoggerManager
 
-
-error_logger = logging.getLogger("error_logger")
-info_logger = logging.getLogger("info_logger")
 
 class SupabaseClient():
     _mono_state: dict = {}
@@ -23,19 +18,10 @@ class SupabaseClient():
         else:
             raise TypeError(f"{key} must be string")
 
-    def _get_loggers(self):
-        try:
-            global error_logger, info_logger
-            if 'error_logger' not in globals() or 'info_logger' not in globals():
-                raise LookupError
-        except LookupError:
-            error_logger, info_logger = start_loggers()
-        self.error_logger = error_logger
-        self.info_logger = info_logger
-
     def __init__(self) -> None:
         self.__dict__ = self._mono_state
-        self._get_loggers()
+        self.error_logger = LoggerManager.get_error_logger()
+        self.info_logger = LoggerManager.get_info_logger()
 
         try:
             self.url: str = self._get_env_value("SUPABASE_URL")
@@ -63,7 +49,7 @@ class SupabaseClient():
             log_info("select", {"email": "example@example.com", "name": "John"})
         
         """
-        info_logger.info(f"{action} returned {response}")
+        self.info_logger(f"{action} returned {response}")
 
     def create_error_message(self, action: str, **kwargs) -> str:
         """
@@ -92,6 +78,8 @@ class SupabaseClient():
 
         arguments = {**kwargs}
         for arg_name, arg_value in arguments.items():
+            if arg_name == "file_content":
+                arg_value = "text"
             if arg_value:
                 error_message.append(f" with {arg_name}: {arg_value}")
 
@@ -119,7 +107,7 @@ class SupabaseClient():
 
         error_message += f"\nException: {str(e)}"
 
-        error_logger.error(error_message)
+        self.error_logger(error_message)
         self.send_email_admin(error_message)
 
     def send_email_admin(self, error_message) -> None:
@@ -256,14 +244,20 @@ class SupabaseAuth(SupabaseClient):
 class SupabaseStorage(SupabaseClient):
 
     def upload_file(self, bucket, upload_path, file_content, file_mimetype):
+        action = "upload file"
         try:
-            self.default_client.storage.from_(bucket).upload(
+            response = self.default_client.storage.from_(bucket).upload(
                 path=upload_path,
                 file=file_content,
                 file_options={"content-type": file_mimetype}
             )
+            if response.status_code == 400 and 'Duplicate' in response.text:
+                self.info_logger(f"File {upload_path} already exists")
+                return response
+            else:
+              response.raise_for_status()
+              return response
         except Exception as e:
-            action = "upload file"
             self.log_error(
                 e, action, 
                 upload_path=upload_path,
@@ -321,7 +315,7 @@ class SupabaseDB(SupabaseClient):
         self._validate_string(value, name="table_name")
 
     def insert_row(
-        self, *, table_name: str, updates: dict, use_service_role: bool = False
+        self, *, table_name: str, data: dict, use_service_role: bool = False
     ) -> bool:
         """
         Inserts a row into a table.
@@ -363,16 +357,16 @@ class SupabaseDB(SupabaseClient):
 
         try:
             self._validate_table(table_name)
-            self._validate_dict(updates, "updates")
+            self._validate_dict(data, "updates")
         except ValueError as e:
-            self.log_error(e, action, updates=updates, table_name=table_name)
+            self.log_error(e, action, data=data, table_name=table_name)
 
         try:
-            response = db_client.table(table_name).insert(updates).execute()
+            response = db_client.table(table_name).insert(data).execute()
             self.log_info(action, response)
             return True
         except Exception as e:
-            self.log_error(e, action, updates=updates, table_name=table_name)
+            self.log_error(e, action, data=data, table_name=table_name)
             return False
     
     def select_row(
@@ -542,7 +536,13 @@ class SupabaseDB(SupabaseClient):
         try:
             response = db_client.table(table_name).update(info).eq(match_name, match_value).execute()
             self.log_info(action, response)
-            return True
         except Exception as e:
+            self.log_error(e, action, updates=info, match=match)
+            return False
+        if response.data:
+            self.log_info(action, response)
+            return True
+        else:
+            e="blank data"
             self.log_error(e, action, updates=info, match=match)
             return False

@@ -1,14 +1,15 @@
 import os
-import logging
+
 from flask import Blueprint, request, render_template, jsonify
 
+from src.logging_config import LoggerManager
 from src.utils import random_str
 
 from .forms import EbookConversionForm, FineTuneForm
 from src.free.utils import make_folder, is_encoding
 
 free_app = Blueprint("free", __name__)
-error_logger = logging.getLogger("error_logger")
+error_logger = LoggerManager.get_error_logger()
 
 def training_status():
     pass # dummy function till API is implemented

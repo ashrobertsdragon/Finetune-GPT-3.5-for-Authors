@@ -1,20 +1,21 @@
-import logging
 from typing import Optional
 
 from mailerlite import Client
 from decouple import config
 
-error_logger = logging.getLogger("error_logger")
-info_logger = logging.getLogger("info_logger")
+from src.logging_config import LoggerManager
+
+error_logger = LoggerManager.get_error_logger()
+info_logger = LoggerManager.get_info_logger()
 
 ML_KEY:str = config("MAILERLITE_KEY")
 try:
     client:Client = Client({
         "api_key": ML_KEY
     })
-    info_logger.info("MailerLite client connected")
+    info_logger("MailerLite client connected")
 except Exception as e:
-    error_logger.error(f"MailerLite client failed to connect: {e}")
+    error_logger(f"MailerLite client failed to connect: {e}")
 
 def create_kwargs(
         *,

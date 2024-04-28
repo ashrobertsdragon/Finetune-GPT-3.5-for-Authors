@@ -1,11 +1,11 @@
 from flask import current_app, session, flash
-import logging
 
+from src.logging_config import LoggerManager
 from src.supabase import SupabaseDB
 
 from .forms import AccountManagementForm
 
-error_logger = logging.getLogger("error_logger")
+error_logger = LoggerManager.get_error_logger()
 db = SupabaseDB()
 
 def initialize_user_db(auth_id: str, email: str) -> None:
@@ -18,10 +18,12 @@ def initialize_user_db(auth_id: str, email: str) -> None:
 
     """
     info = session["user_details"]
-    return db.insert_row(table_name="user", info=info, match={
-        "auth_id": auth_id,
-        "email": email
-    })
+    return db.insert_row(
+        table_name="user",
+        info=info, 
+        match={"auth_id": auth_id, "email": email},
+        use_service_role=True
+    )
 
 def get_binders() -> list[dict]:
     """

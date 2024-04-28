@@ -7,7 +7,7 @@ from flask_talisman import Talisman
 from config import DevelopmentConfig, TestingConfig, StagingConfig, ProductionConfig
 
 from .cache import cache
-from .logging_config import start_loggers
+from .logging_config import LoggerManager
 from .utils import load_user, inject_user_context
 
 # Import blueprints
@@ -17,9 +17,6 @@ from src.core.views import core_app
 from src.free.views import free_app
 from src.stripe.views import stripe_app
 from src.mailerlite.views import mailerlite_app
-
-# Initialize logging
-start_loggers()
 
 app = Flask(__name__)
 
@@ -35,6 +32,16 @@ config_name = config("FLASK_ENV", default="development")
 app.config.from_object(env_config[config_name])
 
 app.secret_key=config("FLASK_SECRET_KEY")
+
+error_logger = LoggerManager.get_error_logger()
+info_logger = LoggerManager.get_info_logger()
+
+app.logger.debug = info_logger
+app.logger.info = info_logger
+app.logger.warning = info_logger
+app.logger.error = error_logger
+app.logger.critical = error_logger
+app.logger.exception = error_logger
 
 @app.before_request
 def before_each_request():
