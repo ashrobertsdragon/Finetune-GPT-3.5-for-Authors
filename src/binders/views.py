@@ -13,7 +13,6 @@ binders_app = Blueprint("binders", __name__)
 @login_required
 @credit_required
 def lorebinder_form_view():
-    user = session["user_details"]["id"]
     user_folder = session["user_details"]["auth_id"]
     user_email = session["user_details"]["email"]
     form = LoreBinderForm()
@@ -40,7 +39,7 @@ def lorebinder_form_view():
             "email": user_email
         }
 
-        response = start_binder(api_payload, user, endpoint_name="lorebinder")
+        response = start_binder(api_payload, endpoint_name="lorebinder")
 
         if response:
             message = "Your Lorebinder has been started. "

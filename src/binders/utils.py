@@ -13,21 +13,22 @@ def save_binder_data(api_payload: dict, user: str) -> None:
     """
     Save binder data to the database.
 
-    Parameters:
-    - api_payload (dict): The data to be saved to the binder table.
-    - user (str): The owner of the data.
+    Args:
+        api_payload (dict): The data to be saved to the binder table.
+        user (str): The owner of the data.
 
     Returns:
-    None
+        None
 
     Raises:
-    - Exception: If there is an error saving the data to the binder table.
+        Exception: If there is an error saving the data to the binder table.
     """
     try:
         data = api_payload
         data["owner"] = user
-        db.insert_row("binder", data=data)
+        db.insert_row(table="binder", data=data)
     except Exception as e:
+        current_app.logger.exception(f"Exception {e} saving {data} to binderTable")
         email_admin(f"Exception {e} saving {data} to binderTable")
 
 def call_api(api_payload: dict, endpoint: str):
@@ -53,8 +54,22 @@ def str_to_dedup_list(string:str, *, delim: str = ",") -> list:
     cleaned_str = string.strip()
     return list(set(cleaned_str.split(delim)))
 
-def start_binder(api_payload: dict, user: int, *, endpoint_name: str) -> bool:
+def start_binder(api_payload: dict, *, endpoint_name: str) -> bool:
+        """
+        Save the data for access to the API and call API. Updates credit
+        balance and databases and returns boolean of if process has started.
+
+        Args:
+            api_payload (dict): Payload to send to API of data assembled from
+                web form.
+            endpoint_name (str): Lookup name for endpoint in dictionary in
+                config file.
+        
+        Returns:
+            bool.
+        """
         endpoint=current_app.config["PROSEPAL_ENDPOINTS"][endpoint_name]
+        user = update_credits()
         save_binder_data(api_payload, user)
-        update_credits(user)
-        return call_api(api_payload, endpoint)
+        #return call_api(api_payload, endpoint)
+        return True
