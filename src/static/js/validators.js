@@ -1,6 +1,11 @@
 function validateCharacterInput(input) {
-  const validCharactersRegex = /^[\w\s.,;:'"!?()\-\\\n\r]*$/;
+  const validCharactersRegex = /^[\w\s.,;:'"!?()&\/\-\\\n\r]*$/;
   return validCharactersRegex.test(input);
+}
+
+function validateFormInput(input) {
+  const validFormRegex = /^[A-Za-z0-9!@#%&_=,.<>;:'"`~\{\}\[\]\\\^\$\.\|\?\*\+\(\)\/]*$/;
+  return validFormRegex.test(input);
 }
 
 function validateEmailInput(input) {
