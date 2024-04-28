@@ -9,6 +9,12 @@ async function getDomain() {
   return data.domain;
 }
 
+async function getCreditsAvailable() {
+  const response = await fetch("/get-available-credits");
+  const data = await response.json();
+  return data.credits_available
+}
+
 async function initialize() {
   const sessionId = getSearchParameter("session_id");
   if (!sessionId) {
@@ -21,12 +27,14 @@ async function initialize() {
   const session = await response.json();
 
   if (session.error || session.status === 'open') {
-      const domain = await getDomain();
-      window.location.replace(`${domain}/checkout.html`);
+    const domain = await getDomain();
+    window.location.replace(`${domain}/checkout.html`);
   } else if (session.status === 'complete') {
-      document.getElementById('customer-email').textContent = session.customer_email;
-      document.getElementById('credits-available').textContent = session.credits_available;
-      document.getElementById('success').classList.remove('hidden');
+    const creditsAvailable = await getCreditsAvailable()
+    document.getElementById('customer-email').textContent = session.customer_email;
+    document.getElementById('credits-available').textContent = creditsAvailable; 
+    document.getElementById('success').classList.remove('hidden');
+    console.log("Credits available: ", creditsAvailable);
   }
 }
 

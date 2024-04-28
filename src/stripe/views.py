@@ -43,9 +43,9 @@ def session_status():
         return jsonify(
             status=stripe_session.status,
             customer_email=stripe_session.customer_details.email,
-            credits_availailable=session["user_details"]["credits_available"]
         )
-    except stripe.RateLimitError:
+    except stripe.RateLimitError as e:
+        current_app.logger.error('Unexpected error: %s', str(e))
         return jsonify(error="Rate limit exceeded"), 429
     except Exception as e:
         current_app.logger.error('Unexpected error: %s', str(e))
@@ -55,6 +55,11 @@ def session_status():
 def get_publishable_key():
     STRIPE_PUBLISHABLE_KEY = current_app.config["STRIPE_PUBLISHABLE_KEY"]
     return jsonify({"publishable_key": STRIPE_PUBLISHABLE_KEY})
+
+@stripe_app.route("/get-available-credits", methods=["GET"])
+@login_required
+def get_available_credits():
+    return jsonify(credits_available=session["user_details"]["credits_available"])
 
 @stripe_app.route("/get-domain", methods=["GET"])
 def get_domain():
