@@ -33,10 +33,12 @@ def send_file_to_bucket(user_folder:str, file:FileStorage, *, bucket:str) -> str
     file_mimetype = file.content_type
     file.seek(0)
 
+    deleted = False
+
     files = storage.list_files(bucket)
     if upload_path in files:
-        success = storage.replace_file(bucket, upload_path, file_content, file_mimetype)
-    else:
+        deleted = storage.delete_file(bucket, upload_path)
+    if deleted or upload_path not in files:
         success = storage.upload_file(bucket, upload_path, file_content, file_mimetype)
     
     if not success:
