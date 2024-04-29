@@ -18,6 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
 function displayMessage(message, type) {
   const messageModal = document.getElementById("modal-container")
   const messageContainer = document.getElementById("message-container")
+  messageContainer.innerHTML = "";
   messageContainer.textContent = message;
   messageContainer.classList.remove("error", "warning", "success");
   messageContainer.classList.add(type);
@@ -26,7 +27,6 @@ function displayMessage(message, type) {
 }
 
 function handleAPIResponse(data) {
-  messageContainer.innerHTML = "";
   displayMessage(data.message, data.status);
 }
 
