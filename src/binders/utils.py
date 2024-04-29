@@ -51,8 +51,10 @@ def str_to_dedup_list(string:str, *, delim: str = ",") -> list:
     Returns:
         list
     """
-    cleaned_str = string.strip()
-    return list(set(cleaned_str.split(delim)))
+    cleaned = string.strip(delim + " ")
+    values = cleaned.split(delim)
+    cleaned_values = [val.strip(" ") for val in values]
+    return list(set(cleaned_values))
 
 def start_binder(api_payload: dict, *, endpoint_name: str) -> bool:
         """
