@@ -42,12 +42,10 @@ def lorebinder_form_view():
         response = start_binder(api_payload, endpoint_name="lorebinder")
 
         if response:
-            message = "Your Lorebinder has been started. "
-            "You should receive an email within the next hour."
+            message = "Your Lorebinder has been started. You should receive an email within the next hour."
             status = "success"
         else:
-            message = "There was a problem starting your Lorebinder. "
-            "An administrator has been contacted."
+            message = "There was a problem starting your Lorebinder. An administrator has been contacted."
             status = "warning"
         return jsonify({"message": message, "status": status})
     
