@@ -265,22 +265,16 @@ class SupabaseStorage(SupabaseClient):
             )
             return False
     
-    def replace_file(self, bucket, upload_path, file_content, file_mimetype):
-        action = "replace file"
+    def delete_file(self, bucket, file_path):
+        action = "delete file"
         try:
-            response = self.default_client.storage.from_(bucket).update(
-                path=upload_path,
-                file=file_content,
-                file_options={"content-type": file_mimetype}
-            )
+            response = self.default_client.storage.from_(bucket).remove(file_path)
             print(response)
             return True
         except Exception as e:
             self.log_error(
                 e, action, 
-                upload_path=upload_path,
-                file_content=file_content,
-                file_mimetype=file_mimetype
+                file_path=file_path
             )
             return False
     
