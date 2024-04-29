@@ -21,7 +21,7 @@ def signup_view():
         try:
             res = auth.sign_up(email=email, password=form.password.data)
             auth_id = res.user.id
-            initialize_user_db(auth_id, email)
+            session["user_details"]["auth_id"] = auth_id
             flash(
                 "Signup successful."
                 "Please check your email to verify your account."
@@ -29,7 +29,8 @@ def signup_view():
         except Exception as e:
             current_app.logger.error('Unexpected error: %s', str(e))
             flash(e.message)
-    
+        if not initialize_user_db():
+            current_app.logger.error(f"User row not created for {auth_id}")
     return render_template("accounts/signup.html", form=form)
 
 @accounts_app.route("/login", methods=["GET", "POST"])

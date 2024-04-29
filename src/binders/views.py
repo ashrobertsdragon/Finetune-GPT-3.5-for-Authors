@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, render_template, session
 
-from src.file_handling import upload_supabase_bucket
+from src.file_handling import send_file_to_bucket
 from src.decorators import login_required, credit_required
 
 from .forms import LoreBinderForm
@@ -18,7 +18,7 @@ def lorebinder_form_view():
     form = LoreBinderForm()
     if form.validate_on_submit():
         file = form.file_upload.data
-        upload_path = upload_supabase_bucket(user_folder, file, bucket="binders")
+        upload_path = send_file_to_bucket(user_folder, file, bucket="binders")
 
         title = form.title.data
         author = form.author.data

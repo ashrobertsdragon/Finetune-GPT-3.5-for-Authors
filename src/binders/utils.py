@@ -26,7 +26,7 @@ def save_binder_data(api_payload: dict, user: str) -> None:
     try:
         data = api_payload
         data["owner"] = user
-        db.insert_row(table="binder", data=data)
+        db.insert_row(table_name="binders", data=data)
     except Exception as e:
         current_app.logger.exception(f"Exception {e} saving {data} to binderTable")
         email_admin(f"Exception {e} saving {data} to binderTable")

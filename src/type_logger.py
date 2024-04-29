@@ -75,7 +75,9 @@ class TypeLogger():
         self._setup_logger(name)
 
     
-    def __call__(self, message: str) -> None:
+    def __call__(self, message: str, *args) -> None:
+        if args:
+            message = message % args
         self.log(message)
 
     def _get_logger(self, name: str) -> Logger:
@@ -110,9 +112,11 @@ class TypeLogger():
         self.logger.addHandler(self.handler)
         self.handler.setFormatter(self.formatter)
 
-    def log(self, message) -> None:
+    def log(self, message:str) -> None:
         """
         Log a message using the logger.
+        Note: This method only accepts a single string. To pass args, use
+        the __call__ method.
 
         Args:
             message (str): The message to be logged.
@@ -121,10 +125,7 @@ class TypeLogger():
             None
 
         Example:
-            logger = Logger("my_logger")
+            logger = TypeLogger("info")
             logger.log("This is a log message")
         """
         self.logger.log(self.logger.level, message)
-
-
-

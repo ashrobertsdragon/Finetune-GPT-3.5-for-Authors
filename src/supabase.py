@@ -254,12 +254,8 @@ class SupabaseStorage(SupabaseClient):
                 file=file_content,
                 file_options={"content-type": file_mimetype}
             )
-            if response.status_code == 400 and 'Duplicate' in response.text:
-                self.info_logger(f"File {upload_path} already exists")
-                return response
-            else:
-              response.raise_for_status()
-              return response
+            print(response)
+            return True
         except Exception as e:
             self.log_error(
                 e, action, 
@@ -267,6 +263,49 @@ class SupabaseStorage(SupabaseClient):
                 file_content=file_content,
                 file_mimetype=file_mimetype
             )
+            return False
+    
+    def replace_file(self, bucket, upload_path, file_content, file_mimetype):
+        action = "replace file"
+        try:
+            response = self.default_client.storage.from_(bucket).update(
+                path=upload_path,
+                file=file_content,
+                file_options={"content-type": file_mimetype}
+            )
+            print(response)
+            return True
+        except Exception as e:
+            self.log_error(
+                e, action, 
+                upload_path=upload_path,
+                file_content=file_content,
+                file_mimetype=file_mimetype
+            )
+            return False
+    
+    def download_file(self, bucket:str, download_path:str, destination_path:str) -> bytes:
+        action = "download file"
+        try:
+            with open(destination_path, 'wb+') as f:
+                response = self.default_client.storage.from_(bucket).download(download_path)
+                f.write(response)
+        except Exception as e:
+            self.log_error(
+                e, action,
+                download_path=download_path,
+                destination_path=destination_path
+            )
+    
+    def list_files(self, bucket:str) -> list:
+        action = "list files"
+        try:
+            response = self.default_client.storage.from_(bucket).list()
+            self.log_info(action, response)
+            return response
+        except Exception as e:
+            self.log_error(e, action, bucket=bucket)
+            return []
 
 class SupabaseDB(SupabaseClient):
     def __init__(self) -> None:
@@ -294,6 +333,8 @@ class SupabaseDB(SupabaseClient):
         """
         try:
             if use_service_role:
+                if not isinstance(use_service_role, bool):
+                    raise TypeError("use_service_role must be boolean")
                 return self.service_client
             else:
                 return self.default_client
@@ -306,7 +347,9 @@ class SupabaseDB(SupabaseClient):
         if not value:
             raise ValueError(f"{name} must have value")
         if not isinstance(value, is_type):
-          raise ValueError(f"{name} must be {is_type.__name__}")
+            raise TypeError(f"{name} must be {is_type.__name__}")
+        if isinstance(is_type, None):
+            raise TypeError("is_type must not be None")
     
     def _validate_string(self, value:any, name:str):
         self._validate_type(value, name=name, is_type=str)
@@ -361,9 +404,8 @@ class SupabaseDB(SupabaseClient):
         try:
             self._validate_table(table_name)
             self._validate_dict(data, "data")
-        except ValueError as e:
+        except Exception as e:
             self.log_error(e, action, data=data, table_name=table_name)
-
         try:
             response = db_client.table(table_name).insert(data).execute()
             if not response.data:
@@ -531,11 +573,14 @@ class SupabaseDB(SupabaseClient):
         try:
             self._validate_table(table_name)
             self._validate_dict(match, "match")
-
+            if len(match.keys()) != 1:
+                raise ValueError("Match dictionary must have one key-value pair")
             for key, value in match.items():
+                if not isinstance(key, str):
+                    raise KeyError(f"{key} must be a string")
                 if not isinstance(value, str):
-                    raise ValueError(f"Value for filter '{key}' must be a string")
-        except ValueError as e:
+                    raise KeyError(f"Value for filter '{key}' must be a string")
+        except KeyError as e:
             self.log_error(e, action,match=match, table_name=table_name)
 
         match_name, match_value = next(iter(match.items()))
@@ -551,3 +596,39 @@ class SupabaseDB(SupabaseClient):
             log="Data is the same"
             self.log_info(action, res, info=info, log=log)
             return False
+        
+    def find_row(self, *, table_name: str, match_column: str, within_period: int, columns: list[str] = ["*"]) -> dict:
+        db_client = self._select_client()
+        action = "find row"
+
+        try:
+            self._validate_table(table_name)
+            self._validate_type(match_column, "str")
+            self._validate_type(within_period, "int")
+            self._validate_type(columns, "list")
+
+            response = db_client.table(table_name).select(columns).lte(match_column, within_period).execute()
+        except Exception as e:
+            self.log_error(
+                e, action,
+                table_name=table_name,
+                match_column=match_column,
+                within_period=within_period,
+                columns=columns
+            )
+            return {}
+        
+        if response and response.data:
+            try:
+                self._validate_dict(response.data)
+                return response.data
+            except Exception as e:
+                self.log_error(
+                    e, action,
+                    table_name=table_name,
+                    match_column=match_column,
+                    within_period=within_period,
+                    columns=columns
+                )
+                return {}
+

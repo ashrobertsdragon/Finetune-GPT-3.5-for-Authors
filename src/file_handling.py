@@ -1,9 +1,12 @@
+from werkzeug.datastructures.file_storage import FileStorage
+from .logging_config import LoggerManager
 from .supabase import SupabaseStorage
 
- 
-storage = SupabaseStorage()
 
-def upload_supabase_bucket(user_folder, file, *, bucket):
+storage = SupabaseStorage()
+error_logger = LoggerManager.get_error_logger()
+
+def send_file_to_bucket(user_folder:str, file:FileStorage, *, bucket:str) -> str:
     """
     Uploads a file to a Supabase storage bucket.
 
@@ -18,20 +21,11 @@ def upload_supabase_bucket(user_folder, file, *, bucket):
     Returns:
         upload_path (str): The path the file in the storage bucket.
 
-    Raises:
-        Exception: If an error occurs during the file upload.
-
     Notes:
         - The file will be uploaded with the same name as the original file.
         - The file content type will be determined automatically based on the
         file's MIME type.
-        - If the file upload is successful, a success flash message will be
-        displayed.
-        - If the file upload fails, an error flash message will be displayed.
-        - Any exceptions that occur during the file upload will be logged and
-        an error flash message will be displayed.
     """
-
     file_name = file.filename
     upload_path = f"{user_folder}/{file_name}"
 
@@ -39,6 +33,12 @@ def upload_supabase_bucket(user_folder, file, *, bucket):
     file_mimetype = file.content_type
     file.seek(0)
 
-    storage.upload_file(bucket, upload_path, file_content, file_mimetype)
-
+    files = storage.list_files(bucket)
+    if upload_path in files:
+        success = storage.replace_file(bucket, upload_path, file_content, file_mimetype)
+    else:
+        success = storage.upload_file(bucket, upload_path, file_content, file_mimetype)
+    
+    if not success:
+        error_logger(f"{file_name} not uploaded")
     return upload_path

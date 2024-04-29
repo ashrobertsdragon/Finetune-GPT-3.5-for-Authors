@@ -8,20 +8,17 @@ from .forms import AccountManagementForm
 error_logger = LoggerManager.get_error_logger()
 db = SupabaseDB()
 
-def initialize_user_db(auth_id: str, email: str) -> None:
+def initialize_user_db() -> bool:
     """
     Inserts user details into the 'user' table in the database.
 
-    Args:
-        auth_id (str): The authentication ID of the user.
-        email (str): The email address of the user.
-
+    Returns:
+        boolean of whether row insert was successful.
     """
     info = session["user_details"]
     return db.insert_row(
         table_name="user",
-        info=info, 
-        match={"auth_id": auth_id, "email": email},
+        data=info, 
         use_service_role=True
     )
 
