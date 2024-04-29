@@ -32,13 +32,18 @@ def send_file_to_bucket(user_folder:str, file:FileStorage, *, bucket:str) -> str
     file_content = file.read()
     file_mimetype = file.content_type
     file.seek(0)
-
     deleted = False
 
-    files = storage.list_files(bucket)
-    if upload_path in files:
+    print(bucket)
+    print(user_folder)
+    print(file_name)
+    files = storage.list_files(bucket, user_folder)
+    if any(file_name == file.get("name") for file in files):
+        print("deleting")
         deleted = storage.delete_file(bucket, upload_path)
+        print(f"File deleted: {deleted}")
     if deleted or upload_path not in files:
+        print("uploading")
         success = storage.upload_file(bucket, upload_path, file_content, file_mimetype)
     
     if not success:

@@ -38,6 +38,8 @@ def login_view():
     if "access_token" in session and "user_details" in session:
         auth_id = session["user_details"]["auth_id"]
         redirect_after_login(auth_id)
+    else:
+        auth_id = None
     form = LoginForm()
     if form.validate_on_submit():
         try:
@@ -47,11 +49,11 @@ def login_view():
             )
             access_token = data.session.access_token
             auth_id = data.user.id
+            session["access_token"] = access_token
         except Exception as e:
             current_app.logger.error('Unexpected error: %s', str(e))
             flash(str(e))
 
-        session["access_token"] = access_token
         redirect_str = redirect_after_login(auth_id)
         return redirect(url_for(redirect_str))
     

@@ -1,4 +1,6 @@
-from decouple import config
+from typing import Optional
+
+from decouple import config 
 from gotrue.types import AuthResponse, UserResponse
 from supabase import create_client, Client
 
@@ -166,6 +168,7 @@ class SupabaseAuth(SupabaseClient):
         Example:
             sign_in(email="example@example.com", password="password123")
         """
+        action = "login"
         try:
             data = self.default_client.auth.sign_in_with_password({
                 "email": email,
@@ -173,7 +176,6 @@ class SupabaseAuth(SupabaseClient):
             })
             return data
         except Exception as e:
-            action = "login"
             self.log_error(e, action, email=email)
             raise
 
@@ -291,10 +293,13 @@ class SupabaseStorage(SupabaseClient):
                 destination_path=destination_path
             )
     
-    def list_files(self, bucket:str) -> list:
+    def list_files(self, bucket:str, folder: Optional[str] = None) -> list:
         action = "list files"
         try:
-            response = self.default_client.storage.from_(bucket).list()
+            if folder:
+                response = self.default_client.storage.from_(bucket).list(folder)
+            else:
+                response = self.default_client.storage.from_(bucket).list()
             self.log_info(action, response)
             return response
         except Exception as e:
@@ -344,6 +349,7 @@ class SupabaseDB(SupabaseClient):
             raise TypeError("is_type must not be None")
         if not isinstance(value, is_type):
             raise TypeError(f"{name} must be {is_type.__name__}")
+
     
     def _validate_string(self, value:any, name:str):
         self._validate_type(value, name=name, is_type=str)
