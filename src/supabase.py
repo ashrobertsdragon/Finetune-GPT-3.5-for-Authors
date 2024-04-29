@@ -340,10 +340,10 @@ class SupabaseDB(SupabaseClient):
     def _validate_type(self, value:any, *, name:str, is_type:type):
         if not value:
             raise ValueError(f"{name} must have value")
+        if not is_type:
+            raise TypeError("is_type must not be None")
         if not isinstance(value, is_type):
             raise TypeError(f"{name} must be {is_type.__name__}")
-        if isinstance(is_type, None):
-            raise TypeError("is_type must not be None")
     
     def _validate_string(self, value:any, name:str):
         self._validate_type(value, name=name, is_type=str)
