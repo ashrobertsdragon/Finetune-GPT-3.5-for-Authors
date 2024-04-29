@@ -45,7 +45,7 @@ def get_binders() -> list[dict]:
             "title": binder["title"],
             "author": binder["author"],
             "download_path": binder["download_path"]
-        } for binder in binder_data.data]
+        } for binder in binder_data]
     else:
         binder_db = [{}]
     return binder_db
