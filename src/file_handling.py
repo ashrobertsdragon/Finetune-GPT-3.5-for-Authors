@@ -44,6 +44,19 @@ def send_file_to_bucket(user_folder:str, file:FileStorage, *, bucket:str) -> str
         error_logger(f"{file_name} not uploaded")
     return upload_path
 
-def create_signed_url(download_path:str) -> str:
-    url = storage.create_signed_url(download_path)
+def create_signed_url(bucket:str, download_path:str) -> str:
+    """
+    Creates a signed URL for a file in the specified bucket.
+    
+    Args:
+        bucket (str): The name of the Supabase bucket the file is stored in.
+        download_path(str): The combined folder name (user auth id) and 
+            filename of the file to be downloaded.
+    
+    Returns:
+        url (str): The signed url of the file to be downloaded or an empty
+            string if the method returned an empty string.
+        
+    """
+    url = storage.create_signed_url(bucket, download_path)
     return url if url else ""

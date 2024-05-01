@@ -1,9 +1,9 @@
 {% block content %}
     <h1>View Purchased LoreBinders</h1>
-    {% if binder_db %}
-      {% for binder in binder_db %}
+    {% if binders_db %}
+      {% for binder in binders_db %}
         <div class="row">
-          {{ binder.title }} - {{ binder.author }} - {{ binder.download_path }}
+          {{ binder.title }} - {{ binder.author }} - {{ binder.signed_url }} - {{ binder.created_on }}
         </div>
       {% endfor %}
     {% else %}

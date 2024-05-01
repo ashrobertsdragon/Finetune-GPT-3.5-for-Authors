@@ -46,11 +46,19 @@ def get_binders() -> list[dict]:
     return binder_db
 
 def replace_empty_path(binder_data: list) -> list[dict]:
-    """Replace empty download paths with a placeholder string."""
+    """
+    Replace empty download paths with a placeholder string.
+
+    Args:
+        binder_data (list): A list of dictionaries
+
+    Returns:
+        binders_db (list): A list of modified dictionaries with a key of
+            'signed_url' added.
+    """
     for binder in binder_data:
-        binder.setdefault(
-            "download_path",
-            get_signed_url_or_placeholder(binder.get("download_path", ""))
+        binder["signed_url"] = get_signed_url_or_placeholder(
+            binder.get("download_path", "")
         )
     return binder_data
 
@@ -58,9 +66,19 @@ def get_signed_url_or_placeholder(download_path: str) -> str:
     """
     Get a signed URL for the download path, or return a placeholder if not a
     valid URL.
+
+    Args:
+        download_path (str): The combined path, not including bucket, of the
+            file to be downloaded.
+    
+    Returns:
+        signed_url (str): The signed URL of the download file, or a
+            placeholder text of 'Please check again later' if no an empty
+            string is returned or the download_path was not valid
     """
+    bucket:str = "binders"
     signed_url:str = (
-        create_signed_url(download_path)
+        create_signed_url(bucket, download_path)
         if is_link(download_path)
         else ""
     )
@@ -68,9 +86,10 @@ def get_signed_url_or_placeholder(download_path: str) -> str:
     
 
 def is_link(download_path: str) -> bool:
-    "Checks if the download_path variable is from the Supabase RESTful API URL"
-    SUPABASE_URL:str = config("SUPABASE_URL")
-    return download_path.startswith(SUPABASE_URL)
+    "Checks if the download_path variable is a text file"
+    if not download_path:
+        return False
+    return download_path.endswith(".txt")
 
 def get_user_data(auth_id: str) -> dict:
     """
