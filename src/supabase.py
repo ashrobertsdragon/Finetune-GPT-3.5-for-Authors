@@ -305,6 +305,20 @@ class SupabaseStorage(SupabaseClient):
         except Exception as e:
             self.log_error(e, action, bucket=bucket)
             return []
+    
+    def create_signed_url(self, bucket:str, download_path:str, *, expires_in: Optional[int] = 3600) -> str:
+        action = "create signed url"
+        try:
+            signed_url = self.default_client.storage.from_(bucket).create_signed_url(download_path, expires_in=expires_in)
+            self.log_info(action, "URL created")
+            return signed_url
+        except Exception as e:
+            self.log_error(
+                e, action,
+                download_path=download_path,
+                expires_in=expires_in
+            )
+            return ""
 
 class SupabaseDB(SupabaseClient):
     def __init__(self) -> None:
@@ -466,12 +480,16 @@ class SupabaseDB(SupabaseClient):
         match_name, match_value = next(iter(match.items()))
 
         try:
-            response = db_client.table(table_name) \
-                .select(*columns) \
-                .eq(match_name, match_value) \
-                .execute()
+            response = db_client.table(table_name).select(*columns).eq(match_name, match_value).execute()
             self.log_info(action, response)
-            return response.data if response.data else {}
+
+            if response.data and response.data[0]:
+                if isinstance(response.data[0], dict):
+                    return response.data[0]
+                else:
+                    raise TypeError("Returned data was not a dictionary")
+            else:
+              raise ValueError("Response has no data")
         except Exception as e:
             self.log_error(e, action, columns=columns, match=match)
             return {}
@@ -524,15 +542,18 @@ class SupabaseDB(SupabaseClient):
 
             
         try:
-            response = db_client.table(table_name) \
-                .select(*columns) \
-                .in_(matches) \
-                .execute()
+            response = db_client.table(table_name).select(*columns).in_(matches).execute()
             self.log_info(action, response)
-            return response.data if response.data else [{}]
+            if response.data:
+                if isinstance(response.data, list):
+                    return response.data
+                else:
+                    raise TypeError("Response was not a list")
+            else:
+                raise ValueError("Response had no data")
         except Exception as e:
             self.log_error(e, action, columns=columns, matches=matches)
-            return [{}]
+            return []
 
     def update_row(self, *, table_name: str, info: dict, match: dict) -> bool:
         """

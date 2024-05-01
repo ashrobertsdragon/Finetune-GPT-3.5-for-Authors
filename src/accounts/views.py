@@ -171,7 +171,7 @@ def profile_view():
 @accounts_app.route("/view-binders", methods=["GET"])
 @login_required
 def view_binders_view():
-    return redirect(url_for("accounts.account_view", section="view-binders"))
+    return redirect(url_for("accounts.account_view", section="view-binders")) 
 
 @accounts_app.route("/buy-credits", methods=["GET", "POST"])
 @login_required

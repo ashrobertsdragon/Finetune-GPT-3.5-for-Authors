@@ -43,3 +43,7 @@ def send_file_to_bucket(user_folder:str, file:FileStorage, *, bucket:str) -> str
     if not success:
         error_logger(f"{file_name} not uploaded")
     return upload_path
+
+def create_signed_url(download_path:str) -> str:
+    url = storage.create_signed_url(download_path)
+    return url if url else ""

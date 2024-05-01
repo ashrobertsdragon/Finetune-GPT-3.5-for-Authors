@@ -1,5 +1,6 @@
 from flask import current_app, session, flash
 
+from src.file_handling import create_signed_url
 from src.logging_config import LoggerManager
 from src.supabase import SupabaseDB
 
@@ -35,33 +36,41 @@ def get_binders() -> list[dict]:
     """
     owner = session["user_details"]["id"]
     match_dict = {"owner": owner}
-    binder_data = db.select_row(
+    binder_data = db.select_rows(
         table_name="binders",
         match=match_dict,
-        columns=["title", "author", "download_path"]
+        columns=["title", "author", "download_path", "created_on"]
         )
-    if binder_data:
-        binder_db = [{
-            "title": binder["title"],
-            "author": binder["author"],
-            "download_path": binder["download_path"]
-        } for binder in binder_data]
-    else:
-        binder_db = [{}]
+    binder_db = replace_empty_path(binder_data)
+    
     return binder_db
 
-def replace_empty_path(binder_db: list) -> list[dict]:
+def replace_empty_path(binder_data: list) -> list[dict]:
+    """Replace empty download paths with a placeholder string."""
+    for binder in binder_data:
+        binder.setdefault(
+            "download_path",
+            get_signed_url_or_placeholder(binder.get("download_path", ""))
+        )
+    return binder_data
+
+def get_signed_url_or_placeholder(download_path: str) -> str:
     """
-    Replace empty download path witha placeholder string
+    Get a signed URL for the download path, or return a placeholder if not a
+    valid URL.
     """
-    for binder in binder_db:
-        if not binder["download_path"]:
-            binder["download_path"] = "Please check again later"
-    return binder_db
+    signed_url = (
+        create_signed_url(download_path)
+        if is_link(download_path)
+        else ""
+    )
+    return signed_url if signed_url else "Please check again later"
+    
 
 def is_link(download_path: str) -> bool:
-    "Checks if the download_path variable is a URL"
-    return download_path.startswith("https://")
+    "Checks if the download_path variable is from the Supabase RESTful API URL"
+    SUPABASE_URL = current_app.config["SUPABASE_URL"]
+    return download_path.startswith(SUPABASE_URL)
 
 def get_user_data(auth_id: str) -> dict:
     """
@@ -108,7 +117,7 @@ def redirect_after_login(auth_id: str) -> str:
     if auth_id:
         data = get_user_data(auth_id)
     if data:
-        session["user_details"] = data[0]
+        session["user_details"] = data
         credits_available = session["user_details"].get("credits_available")
         redirect_str = check_credits(credits_available)
     else:
