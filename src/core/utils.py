@@ -1,7 +1,7 @@
 from datetime import date, timedelta
 
 import requests
-from flask import current_app
+from decouple import config
 
 from src.cache import cache
 from src.error_handling import email_admin
@@ -93,14 +93,14 @@ def get_update_message(days_ahead:int) -> list[dict]:
             }
         ]
     """
-    days_ahead:int = current_app.config["check_updates_ahead_days"]
+    days_ahead:int = config("check_updates_ahead_days")
     check_dates:list = [get_future_date(day).isoformat()
                   for day in range(days_ahead + 1)]
     return get_update_data(check_dates) or [{}]
 
 def check_email(email: str) -> bool:
-    key:str = current_app.config["abstract_api_key"]
-    api_domain:str = "https://emailvalidation.abstractapi.com"
+    key:str = config("ABSTRACT_API_KEY")
+    api_domain:str = config("ABSTRACT_API_DOMAIN")
     url:str = f"{api_domain}/v1/?api_key={key}&email={email}"
 
     response:dict = requests.get(url).json()

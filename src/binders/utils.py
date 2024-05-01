@@ -1,4 +1,5 @@
 import requests
+from decouple import config
 from flask import current_app
 
 from src.error_handling import email_admin
@@ -70,7 +71,7 @@ def start_binder(api_payload: dict, *, endpoint_name: str) -> bool:
         Returns:
             bool.
         """
-        endpoint=current_app.config["PROSEPAL_ENDPOINTS"][endpoint_name]
+        endpoint=config("PROSEPAL_ENDPOINTS"[endpoint_name])
         user = update_credits()
         save_binder_data(api_payload, user)
         #return call_api(api_payload, endpoint)

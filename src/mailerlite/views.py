@@ -1,4 +1,5 @@
-from flask import Blueprint, current_app, render_template, redirect
+from decouple import config
+from flask import Blueprint, render_template, redirect
 
 from .utils import add_subscriber
 from .forms import WaitListSignupForm
@@ -11,7 +12,7 @@ def waitlist_form_view():
     form = WaitListSignupForm()
     if form.validate_on_submit():
         email = form.email.data
-        GROUP_ID:int = current_app.config["MAILERLITE_WAITLIST_ID"]
+        GROUP_ID:int = config("MAILERLITE_WAITLIST_ID")
         response = add_subscriber(email, groups=[GROUP_ID])
         if response.data:
             return redirect(render_template("mailerlite/ml-success.html"))

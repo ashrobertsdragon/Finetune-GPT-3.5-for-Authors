@@ -1,5 +1,5 @@
 from flask import current_app, session, flash
-
+from decouple import config
 from src.file_handling import create_signed_url
 from src.logging_config import LoggerManager
 from src.supabase import SupabaseDB
@@ -16,7 +16,7 @@ def initialize_user_db() -> bool:
     Returns:
         boolean of whether row insert was successful.
     """
-    info = session["user_details"]
+    info:dict = session["user_details"]
     return db.insert_row(
         table_name="user",
         data=info, 
@@ -34,14 +34,14 @@ def get_binders() -> list[dict]:
                 author (str): The author of the binder.
                 download_path (str): The download path of the binder.
     """
-    owner = session["user_details"]["id"]
-    match_dict = {"owner": owner}
-    binder_data = db.select_rows(
+    owner:int = session["user_details"]["id"]
+    match_dict:dict = {"owner": owner}
+    binder_data:list = db.select_row(
         table_name="binders",
         match=match_dict,
         columns=["title", "author", "download_path", "created_on"]
         )
-    binder_db = replace_empty_path(binder_data)
+    binder_db:list = replace_empty_path(binder_data)
     
     return binder_db
 
@@ -59,7 +59,7 @@ def get_signed_url_or_placeholder(download_path: str) -> str:
     Get a signed URL for the download path, or return a placeholder if not a
     valid URL.
     """
-    signed_url = (
+    signed_url:str = (
         create_signed_url(download_path)
         if is_link(download_path)
         else ""
@@ -69,7 +69,7 @@ def get_signed_url_or_placeholder(download_path: str) -> str:
 
 def is_link(download_path: str) -> bool:
     "Checks if the download_path variable is from the Supabase RESTful API URL"
-    SUPABASE_URL = current_app.config["SUPABASE_URL"]
+    SUPABASE_URL:str = config("SUPABASE_URL")
     return download_path.startswith(SUPABASE_URL)
 
 def get_user_data(auth_id: str) -> dict:
@@ -83,9 +83,9 @@ def get_user_data(auth_id: str) -> dict:
     Returns:
         dict: A dictionary containing the user data fetched from the database.
     """
-    match_dict = {"auth_id": auth_id}
+    match_dict:dict = {"auth_id": auth_id}
     data = db.select_row(table_name="user", match=match_dict)
-    return data
+    return data[0]
 
 def check_credits(credits_available: int) -> str:
     """
@@ -115,11 +115,11 @@ def redirect_after_login(auth_id: str) -> str:
             redirected to.
     """
     if auth_id:
-        data = get_user_data(auth_id)
+        data:dict = get_user_data(auth_id)
     if data:
         session["user_details"] = data
-        credits_available = session["user_details"].get("credits_available")
-        redirect_str = check_credits(credits_available)
+        credits_available:int = session["user_details"].get("credits_available")
+        redirect_str:str = check_credits(credits_available)
     else:
         flash("Error logging in. Please try again later", "error")
         redirect_str = "accounts.logout_view"
@@ -163,7 +163,7 @@ def update_email(new_email: str, auth) -> None:
             data = auth.update_user(
                 {"email": new_email}
             )
-            access_token = data.session.access_token
+            access_token:str = data.session.access_token
             session["access_token"] = access_token
         except Exception as e:
             current_app.logger.error('Unexpected error: %s', str(e))
