@@ -1,5 +1,4 @@
 from flask import current_app, session, flash
-from decouple import config
 from src.file_handling import create_signed_url
 from src.logging_config import LoggerManager
 from src.supabase import SupabaseDB
