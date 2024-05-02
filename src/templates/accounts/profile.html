@@ -14,11 +14,10 @@
   </div>
 {% endif %}
 {% endwith %}
-    <h1>Profile</h1>
+    <h2>Update Profile</h2>
     <div class="form-grid" id="div-id_account">
       
     <form method="post" class="box" id="account-management-form" action="{{ url_for('accounts.profile_view') }}">
-      <h2>Update Profile</h2>
         {{ account_form.hidden_tag() }}
         <div class="flex-form">
             {{ account_form.email.label(class="input-label") }}

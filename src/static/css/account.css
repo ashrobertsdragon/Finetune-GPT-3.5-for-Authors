@@ -36,16 +36,16 @@ label {
 
 /* Sidebar */
 .sidebar {
-  position: fixed;
+  position: static;
+  margin: auto;
   top: 150px;
-  width: 200px;
+  width: 600px;
   padding: 10px;
-  margin-left: -120px;
 }
 
 .sidebar-nav {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   height: 70px;
   margin: 2px 0;
   padding: 0;
@@ -61,12 +61,15 @@ body.dark-mode .sidebar-nav {
 }
 
 button.sidebar-item {
+  margin: 0 1;
+  justify-content: center;
+  width: 30%;
+  align-items: center;
+  border-right: 1px solid #251126;
   display: flex;
   flex-grow: 1;
   flex-shrink: 0;
-  margin: 1 0;
   padding: 0;
-  width: 100%;
   height: 70px;
   background-color: hsl(210, 53%, 87%);
   border: 1px solid #120912;
@@ -100,6 +103,7 @@ body.dark-mode .sidebar-item {
   color: #dbe1e7;
   border-color: #251126;
   background-color: #4F4C6F;
+  border-right: #120912;
 }
 body.dark-mode .sidebar-item.active {
   background-color: #3F5C7D;
@@ -121,7 +125,7 @@ body.dark-mode .sidebar-item.active {
 /* View binders */
 .binder-table {
   width: 700px;
-  margin: 0 150px;
+  margin: 0 auto;
   padding: 20px 40px;
   box-shadow: 0 0 10px rgba(0, 0, 0.1);
   background-color: #BBE5ED;
@@ -141,7 +145,7 @@ body.dark-mode .binder-table {
   opacity: .8;
   letter-spacing: .1rem;
   display: grid;
-  grid-template-columns: 1fr 1fr 2fr 1fr;
+  grid-template-columns: 2fr 2fr 1fr 2fr;
   grid-gap: 10px;
   padding: 10px;
 }
@@ -154,7 +158,7 @@ body.dark-mode .binder-table {
 
 .binder-row {
   display: grid;
-  grid-template-columns: 1fr 1fr 2fr 1fr;
+  grid-template-columns: 2fr 2fr 1fr 2fr;
   grid-gap: 10px;
   padding: 10px;
   margin-bottom: 0;
@@ -169,7 +173,7 @@ body.dark-mode .binder-table {
   margin: 0;
 }
 
-#download-info {
+#download-info, #date {
   font-size: 1rem;
 }
 
@@ -204,33 +208,14 @@ body.dark-mode .binder-row:nth-child(even) {
 
 @media only screen and (max-width: 1024px) {
   .sidebar {
-    position: static;
     width: 90%;
-    margin: auto;
-  }
-
-  .sidebar-nav {
-    display: flex;
-    flex-direction: row;
-  }
-
-  button.sidebar-item {
-    margin: 0 1;
-    justify-content: center;
-    width: 30%;
-    align-items: center;
-    border-right: 1px solid #251126;
-  }
-
-  body.dark-mode .sidebar-item {
-    border-right: #120912;
   }
 
   #update-password-form,
-#account-management-form,
-#credit-info-inner,
-.binder-table {
-  width: 90%;
-}
+  #account-management-form,
+  #credit-info-inner,
+  .binder-table {
+    width: 90%;
+  }
 
 }
