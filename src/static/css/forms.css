@@ -375,13 +375,6 @@ div {
   padding: 5px;
 }
 
-.binder-table {
-  width: 400px;
-  align-items: center;
-  display: flex;
-  text-align: flex;
-}
-
 /*  Multi-input Textarea */
 .tag-bounding-box {
   position: relative;

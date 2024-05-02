@@ -118,6 +118,73 @@ body.dark-mode .sidebar-item.active {
   padding: 20px;
 }
 
+/* View binders */
+.binder-table {
+  width: 700px;
+  margin: 0 150px;
+  padding: 20px 40px;
+  box-shadow: 0 0 10px rgba(0, 0, 0.1);
+  background-color: #BBE5ED;
+  border-radius: 8px;
+  text-align:center;
+}
+
+body.dark-mode .binder-table {
+  background-color: #3F5C7D;
+}
+
+.binder-table-header {
+  font-family: 'Raleway', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 1rem;
+  opacity: .8;
+  letter-spacing: .1rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr 2fr 1fr;
+  grid-gap: 10px;
+  padding: 10px;
+}
+
+.table-rows {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.binder-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 2fr 1fr;
+  grid-gap: 10px;
+  padding: 10px;
+  margin-bottom: 0;
+  grid-auto-flow: column;
+}
+
+.binder-info {
+  font-family: 'Exo', sans-serif;
+  font-weight: 300;
+  font-size: 1.125rem;
+  text-align: center;
+  margin: 0;
+}
+
+#download-info {
+  font-size: 1rem;
+}
+
+span.binder-info#download-info span#placeholder {
+  font-size: .9rem;
+}
+
+.binder-row:nth-child(even) {
+  background-color: #D6EAF8;
+}
+
+body.dark-mode .binder-row:nth-child(even) {
+  background-color: #2C3E50;
+}
+
 /* Buy credits */
 .slider-container {
   padding: 20px;
