@@ -309,7 +309,17 @@ class SupabaseStorage(SupabaseClient):
     def create_signed_url(self, bucket:str, download_path:str, *, expires_in: Optional[int] = 3600) -> str:
         action = "create signed url"
         try:
-            signed_url = self.default_client.storage.from_(bucket).create_signed_url(download_path, expires_in=expires_in)
+            response = self.default_client.storage.from_(bucket).create_signed_url(download_path, expires_in=expires_in)
+            if isinstance(response, dict):
+                signed_url = response.get("signedURL", "")
+                if not signed_url:
+                    raise ValueError("signed url is not valid")
+                if not isinstance(signed_url, str):
+                    raise TypeError(f"URL should be type 'str'. Received type {type(signed_url)}")
+                if len(signed_url) < 103:
+                    raise ValueError("URL is too short to be valid signed URL")
+            else:
+                raise TypeError(f"response should be type 'dict' received type {type(response)}")
             self.log_info(action, "URL created")
             return signed_url
         except Exception as e:
