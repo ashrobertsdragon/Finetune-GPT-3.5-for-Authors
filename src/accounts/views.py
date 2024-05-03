@@ -1,13 +1,20 @@
-from flask import (Blueprint, current_app, flash, render_template, redirect,
-                  request, session, url_for)
+from flask import (
+    Blueprint, current_app, flash, jsonify, render_template, redirect,
+    request, session, url_for
+    )
 
 from src.supabase import SupabaseAuth
 from src.decorators import login_required
 from src.utils import update_db
 
-from .forms import (AccountManagementForm, BuyCreditsForm, ForgotPasswordForm,
-                    LoginForm, SignupForm, UpdatePasswordForm)
-from .utils import get_binders, initialize_user_db, preload_account_management_form, redirect_after_login, update_email, update_user_details
+from .forms import (
+    AccountManagementForm, BuyCreditsForm, ForgotPasswordForm, LoginForm,
+    SignupForm, UpdatePasswordForm
+    )
+from .utils import (
+    get_binders, initialize_user_db, preload_account_management_form,
+    redirect_after_login, update_email, update_user_details
+    )
 
 accounts_app = Blueprint("accounts", __name__)
 
@@ -109,14 +116,14 @@ def account_view(section="profile"):
     account_form = preload_account_management_form()
     password_form = UpdatePasswordForm()
     buy_credits_form = BuyCreditsForm()
-    binders_db = get_binders()
+    binders = get_binders()
 
     return render_template(
         "accounts/account.html",
         section=section,
         account_form=account_form,
         password_form=password_form,
-        binders_db=binders_db,
+        binders=binders,
         buy_credits_form=buy_credits_form
     )
 
@@ -187,3 +194,19 @@ def buy_credits_view():
             "stripe.checkout_view",
             num_credits=num_credits
         ))
+
+
+@accounts_app.route("/sort-binders", methods=["POST"])
+@login_required
+def sort_binders_view():
+    data = request.get_json()
+    column = data.get("column")
+    sort_descending = data.get("sort_descending", False)
+    binders_list = session.get("binders_list", "")
+
+    binders = sorted(
+        binders_list,
+        key=lambda x:x[column],
+        reverse=sort_descending
+    )
+    return jsonify(binders)

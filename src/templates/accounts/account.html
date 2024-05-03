@@ -7,6 +7,11 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/account.css') }}">
 {% endblock %}
 
+{% block extra_js %}
+  {{ super() }}
+  <script src="{{ url_for('static', filename='js/viewBinder.js')}}"></script>
+{% endblock %}
+
 {% block content %}
   {% if section == 'profile' %}
   <h1 class="account-header">Profile</h1>

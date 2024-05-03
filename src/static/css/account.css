@@ -61,7 +61,7 @@ body.dark-mode .sidebar-nav {
 }
 
 button.sidebar-item {
-  margin: 0 1;
+  margin: 0 1px;
   justify-content: center;
   width: 30%;
   align-items: center;
@@ -124,30 +124,54 @@ body.dark-mode .sidebar-item.active {
 
 /* View binders */
 .binder-table {
-  width: 700px;
-  margin: 0 auto;
-  padding: 20px 40px;
+  width: 600px;
+  margin: 20px auto;
+  padding: 0;
   box-shadow: 0 0 10px rgba(0, 0, 0.1);
-  background-color: #BBE5ED;
-  border-radius: 8px;
   text-align:center;
 }
 
-body.dark-mode .binder-table {
-  background-color: #3F5C7D;
+.binder-table-header {
+  display: grid;
+  grid-template-columns: 2fr 2fr 2fr 2fr;
+  grid-gap: 10px;
+  padding: 10px;
+  background-color: #BBE5ED;
+  border-radius: 8px;
+  border-bottom: 2px solid #2C3E50;
 }
 
-.binder-table-header {
+.binder-label {
   font-family: 'Raleway', sans-serif;
   font-weight: 700;
   text-transform: uppercase;
   font-size: 1rem;
   opacity: .8;
   letter-spacing: .1rem;
-  display: grid;
-  grid-template-columns: 2fr 2fr 1fr 2fr;
-  grid-gap: 10px;
-  padding: 10px;
+  padding-left: 10px;
+  text-align: left;
+}
+
+.binder-label#dl-label {
+  padding-left: 0;
+}
+
+body.dark-mode .binder-table-header {
+  background-color: #3F5C7D;
+  border-bottom-color: #120912;
+}
+
+.mini  {
+  font-size: .8rem;
+  cursor: pointer;
+}
+
+.mini#placeholder {
+  color: #BBE5ED;
+}
+
+body.dark-mode .mini#placeholder {
+  color: #3F5C7D;
 }
 
 .table-rows {
@@ -158,7 +182,7 @@ body.dark-mode .binder-table {
 
 .binder-row {
   display: grid;
-  grid-template-columns: 2fr 2fr 1fr 2fr;
+  grid-template-columns: 2fr 2fr 2fr 2fr;
   grid-gap: 10px;
   padding: 10px;
   margin-bottom: 0;
@@ -173,12 +197,20 @@ body.dark-mode .binder-table {
   margin: 0;
 }
 
-#download-info, #date {
+#download-info, #date-info {
   font-size: 1rem;
 }
 
 span.binder-info#download-info span#placeholder {
   font-size: .9rem;
+}
+
+.binder-row:nth-child(odd) {
+  background-color: #BBE5ED;
+}
+
+body.dark-mode .binder-row:nth-child(odd) {
+  background-color: #3F5C7D;
 }
 
 .binder-row:nth-child(even) {
@@ -188,6 +220,23 @@ span.binder-info#download-info span#placeholder {
 body.dark-mode .binder-row:nth-child(even) {
   background-color: #2C3E50;
 }
+
+.binder-row:first-child {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  border-top: 2px solid #2C3E50;
+}
+
+body.dark-mode .binder-row:first-child {
+  border-top-color: #120912;
+}
+
+.binder-row:last-child {
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+
 
 /* Buy credits */
 .slider-container {
@@ -211,11 +260,47 @@ body.dark-mode .binder-row:nth-child(even) {
     width: 90%;
   }
 
+  .binder-info {
+    padding-left: 10px;
+  }
+
+  #download-info {
+    padding-left: 0;
+  }
+
   #update-password-form,
   #account-management-form,
   #credit-info-inner,
   .binder-table {
     width: 90%;
   }
+}
 
+@media only screen and (max-width: 600px) {
+
+  .binder-label {
+    font-size: 0.75rem;
+    text-align: center;
+  }
+
+  .binder-info,
+  #download-info,
+  #date-info {
+    font-size: .85rem;
+  }
+
+}
+
+@media only screen and (min-width: 601px) and (max-width: 1024px) {
+
+  .binder-label {
+    font-size: 0.9325rem;
+    text-align: center;
+  }
+
+  .binder-info,
+  #download-info,
+  #date-imfo {
+    font-size: 1.05rem;
+  }
 }

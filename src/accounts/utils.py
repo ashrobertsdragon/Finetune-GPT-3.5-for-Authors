@@ -27,11 +27,12 @@ def get_binders() -> list[dict]:
     Get a list of binders owned by the current user.
 
     Returns:
-        list: A list of dictionaries containing binder information. Each 
+        binders_list (list): A list of dictionaries containing binder information. Each 
             dictionary contains the following keys:
                 title (str): The title of the binder.
                 author (str): The author of the binder.
                 download_path (str): The download path of the binder.
+                created_on (str): The date the binder was created.
     """
     owner:int = session["user_details"]["id"]
     match_dict:dict = {"owner": owner}
@@ -40,9 +41,9 @@ def get_binders() -> list[dict]:
         match=match_dict,
         columns=["title", "author", "download_path", "created_on"]
         )
-    binder_db:list = replace_empty_path(binder_data)
-    
-    return binder_db
+    binders_list:list = replace_empty_path(binder_data)
+    session["binders_list"] = binders_list
+    return binders_list
 
 def replace_empty_path(binder_data: list) -> list[dict]:
     """
