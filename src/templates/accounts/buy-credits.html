@@ -1,5 +1,4 @@
 {% block content %}
-<h1 class="account-header">Buy Credits</h1>
 <div class="slider-container">
   <form method="POST" class="form box" id="credit-slider" action="{{ url_for('accounts.buy_credits_view') }}">
     {{ buy_credits_form.hidden_tag() }}
