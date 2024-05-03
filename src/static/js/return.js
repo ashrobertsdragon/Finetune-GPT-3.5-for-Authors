@@ -34,7 +34,6 @@ async function initialize() {
     document.getElementById('customer-email').textContent = session.customer_email;
     document.getElementById('credits-available').textContent = creditsAvailable; 
     document.getElementById('success').classList.remove('hidden');
-    console.log("Credits available: ", creditsAvailable);
   }
 }
 
