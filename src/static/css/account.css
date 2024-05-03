@@ -50,7 +50,6 @@ label {
   margin: 2px 0;
   padding: 0;
   background-color: #25112637;
-  border: 2px inset #25112637;
   border-radius: 4px;
   text-align: center;
 }
@@ -137,7 +136,6 @@ body.dark-mode .sidebar-item.active {
   grid-gap: 10px;
   padding: 10px;
   background-color: #BBE5ED;
-  border-radius: 8px;
   border-bottom: 2px solid #2C3E50;
 }
 
@@ -157,6 +155,7 @@ body.dark-mode .sidebar-item.active {
 }
 
 body.dark-mode .binder-table-header {
+  border-radius: 8px;
   background-color: #3F5C7D;
   border-bottom-color: #120912;
 }
@@ -221,13 +220,10 @@ body.dark-mode .binder-row:nth-child(even) {
   background-color: #2C3E50;
 }
 
-.binder-row:first-child {
+body.dark-mode .binder-row:first-child {
+  border-top: 2px solid #2C3E50;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
-  border-top: 2px solid #2C3E50;
-}
-
-body.dark-mode .binder-row:first-child {
   border-top-color: #120912;
 }
 
@@ -235,8 +231,6 @@ body.dark-mode .binder-row:first-child {
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
 }
-
-
 
 /* Buy credits */
 .slider-container {
