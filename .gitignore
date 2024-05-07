@@ -8,3 +8,12 @@ __pycache__/
 *.log
 flask_session/
 test.py
+
+*.yaml
+master*.json
+staging*.json
+run_dev_server.py
+dependencies-reverse.txt
+dependencies.txt
+*.cfg
+*.log
