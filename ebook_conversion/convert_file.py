@@ -1,12 +1,12 @@
 import logging
 import os
 
-from .docx_conversion import read_docx
-from .epub_conversion import read_epub
-from .pdf_conversion import read_pdf
-from .text_conversion import parse_text_file
-from src.file_handling import read_text_file
-from src.set_folders import FileStorageHandler
+from ebook_conversion.docx_conversion import read_docx
+from ebook_conversion.epub_conversion import read_epub
+from ebook_conversion.pdf_conversion import read_pdf
+from ebook_conversion.text_conversion import parse_text_file
+from file_handling import read_text_file
+from set_folders import FileStorageHandler
 
 folders = FileStorageHandler()
 

@@ -4,12 +4,12 @@ from datetime import timedelta
 
 import openai
 
-from src.file_handling import read_text_file, write_jsonl_file
-from src.send_email import email_admin
-from src.set_folders import FileStorageHandler
-from .chunking import split_into_chunks
-from .openai_client import get_client, set_client
-from .shared_resources import training_status, thread_local_storage
+from file_handling import read_text_file, write_jsonl_file
+from send_email import email_admin
+from set_folders import FileStorageHandler
+from finetune.chunking import split_into_chunks
+from finetune.openai_client import get_client, set_client
+from finetune.shared_resources import training_status, thread_local_storage
 
 
 folders = FileStorageHandler()
