@@ -12,19 +12,20 @@ from file_handling import is_encoding, random_str, make_folder
 from finetune.shared_resources import training_status
 from finetune.training_management import train
 from forms import ContactForm, FineTuneForm, EbookConversionForm
-from set_folders import set_constants
+from set_folders import FileStorageHandler
 from logging_config import start_loggers
 from send_email import send_mail
 
 
 load_dotenv()
-
+folders = FileStorageHandler()
 # Set up Logging
 start_loggers()
 error_logger = logging.getLogger("error_logger")
 
 MAX_FILE_SIZE = 2 * 1024 * 1024    # 2 MB
-UPLOAD_FOLDER, DOWNLOAD_FOLDER = set_constants()
+UPLOAD_FOLDER = folders.upload_folder
+DOWNLOAD_FOLDER = folders.download_folder
 
 app = Flask(__name__)
 

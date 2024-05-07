@@ -4,14 +4,16 @@ from datetime import timedelta
 
 import openai
 
-from file_handling import read_text_file, upload_file_to_gcs, write_jsonl_file
-from finetune.chunking import split_into_chunks
-from finetune.openai_client import get_client, set_client
-from finetune.shared_resources import training_status, thread_local_storage
-from set_folders import get_download_folder
-from send_email import email_admin
+from src.file_handling import read_text_file, write_jsonl_file
+from src.send_email import email_admin
+from src.set_folders import FileStorageHandler
+from .chunking import split_into_chunks
+from .openai_client import get_client, set_client
+from .shared_resources import training_status, thread_local_storage
 
 
+folders = FileStorageHandler()
+download_folder = folders.download_folder
 def generate_url(gcs_file: str) -> str:
     """
     Generate's signed url from Google Cloud Storage for user to download JSONL file.
@@ -22,7 +24,7 @@ def generate_url(gcs_file: str) -> str:
     Returns:
         str: The signed url for the JSONL file.
     """
-    blob = get_download_folder().blob(gcs_file)
+    blob = download_folder.blob(gcs_file)
     return blob.generate_signed_url(expiration=timedelta(hours=2), method='GET')
 
 
@@ -129,7 +131,7 @@ def process_files(folder_name: str, role: str, chunk_type: str, user_folder: str
     write_jsonl_file(fine_tune_messages, fine_tune_path)
     training_status[user_folder] += "<p>Preparing JSONL file for download</p>"
     gcs_file = f"{user_folder}_fine_tune.jsonl"
-    upload_file_to_gcs(fine_tune_path, gcs_file)
+    folders.upload_file_to_gcs(fine_tune_path, gcs_file)
 
     return gcs_file
 
