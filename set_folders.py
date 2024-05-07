@@ -33,7 +33,7 @@ class FileStorageHandler:
         """
         Initializes the Google Cloud Storage client.
         """
-        storage_client = storage.Client(credentials=get_service_account_credentials())
+        storage_client = storage.Client(credentials=self._get_service_account_credentials())
         bucket_name = "finetuner_temp_files"
         bucket = storage_client.bucket(bucket_name)
         return bucket
