@@ -1,12 +1,14 @@
-from typing import Optional
+from typing import Optional, Callable, TypeVar, ParamSpec, get_type_hints, get_origin, get_args
+from functools import wraps
 
 from decouple import config 
 from gotrue.types import AuthResponse, UserResponse
 from supabase import create_client, Client
 
-from .error_handling import email_admin
 from .logging_config import LoggerManager
 
+T = TypeVar('T')
+P = ParamSpec('P')
 
 class SupabaseClient():
     _mono_state: dict = {}
@@ -31,15 +33,11 @@ class SupabaseClient():
             raise LookupError("Supabase API URL not found")
         
         if "default_client" not in self.__dict__:
-            key: str = self._get_env_value("SUPABASE_KEY")
-            self.default_client: Client = create_client(self.url, key)
+            self.default_client: Client = create_client(self.url, self.key)
             if self.default_client:
-                self.log_info(
-                    action="Initialized Supabase default client",
-                    response={"Client initialized": "Default"}
-                )
+                self.log_info(action="Initialized Supabase default client")
 
-    def log_info(self, action: str, response, **kwargs) -> None:
+    def log_info(self, action: str, *args, **kwargs) -> None:
         """
         Log a Supabase response with the info logger.
 
@@ -53,8 +51,9 @@ class SupabaseClient():
             log_info("select", {"email": "example@example.com", "name": "John"})
         
         """
+        all_args = ", ".join(*args)
         all_kwargs = ', '.join(f"{k}={v}" for k, v in kwargs.items())
-        self.info_logger(f"{action} returned {response}{all_kwargs}")
+        self.info_logger(f"{action} returned {all_args}{all_kwargs}")
 
     def create_error_message(self, action: str, **kwargs) -> str:
         """
@@ -110,17 +109,57 @@ class SupabaseClient():
         """
         error_message = self.create_error_message(action, **kwargs)
 
-        error_message += f"\nException: {str(e)}"
+        error_message += "\nException: %s"
 
-        self.error_logger(error_message)
-        self.send_email_admin(error_message)
+        self.error_logger(error_message, str(e))
+    
+    def _validate_type(self, value: Optional[any], *, name: str, is_type: type, allow_none: bool) -> None:
+        if value is None:
+            if allow_none:
+                return
+            else:
+                raise ValueError(f"{name} must have value")
+        if is_type is None:
+            raise ValueError("is_type must not be None")
+        if not isinstance(value, is_type):
+            raise TypeError(f"{name} must be {is_type.__name__}")
 
-    def send_email_admin(self, error_message) -> None:
-        email_admin(error_message)
+    def _validate_dict(self, value: any, name: str) -> None:
+        self._validate_type(value, name=name, is_type=dict)
+        
+    def _validate_list(self, value: any, name: str) -> None:
+        self._validate_type(value, name=name, is_type=list)
+        
+    def _validate_string(self, value: any, name: str) -> None:
+        self._validate_type(value, name=name, is_type=str)
+
+    @staticmethod
+    def _validate_arguments(func: Callable[P, T]) -> Callable[P, T]:
+        type_hints = get_type_hints(func)
+        
+        @wraps(func)
+        def wrapper(self, *args, **kwargs):
+            bound_args = func.__signatures__.bind(self, *args, **kwargs)
+            bound_args.apply_defaults()
+            
+            for param_name, param_value in bound_args.arguments.items():
+                if param_name == 'self':
+                    continue
+                    
+                param_type = type_hints.get(param_name, any)
+                origin_type = get_origin(param_type)
+                check_type = origin_type if origin_type is not Optional else get_args(param_type)[0]
+                none_bool = (origin_type is Optional)   
+                self._validate_type(param_value, name=param_name, is_type=check_type, allow_none=none_bool)
+            return func(self, *args, **kwargs)
+
+        return wrapper
 
 class SupabaseAuth(SupabaseClient):
     def __init__(self) -> None:
         super().__init__()
+        
+    @SupabaseClient._validate_arguments
     def sign_up(self, *, email: str, password: str) -> AuthResponse:
         """
         Signs up a user with the provided email and password.
@@ -144,12 +183,14 @@ class SupabaseAuth(SupabaseClient):
                 "email": email,
                 "password": password,
             })
+            self._validate_dict(response, name="response")
             return response
         except Exception as e:
-            action = "signup"
+            action: str = "signup"
             self.log_error(e, action, email=email)
             raise
 
+    @SupabaseClient._validate_arguments
     def sign_in(self, *, email: str, password: str) -> AuthResponse:
         """
         Signs in a user with the provided email and password.
@@ -168,13 +209,14 @@ class SupabaseAuth(SupabaseClient):
         Example:
             sign_in(email="example@example.com", password="password123")
         """
-        action = "login"
+        action: str = "login"
         try:
-            data = self.default_client.auth.sign_in_with_password({
+            response = self.default_client.auth.sign_in_with_password({
                 "email": email,
                 "password": password
             })
-            return data
+            self._validate_dict(response, name="response")
+            return response
         except Exception as e:
             self.log_error(e, action, email=email)
             raise
@@ -192,10 +234,11 @@ class SupabaseAuth(SupabaseClient):
         try:
             self.default_client.auth.sign_out()
         except Exception as e:
-            action = "logout"
+            action: str = "logout"
             self.log_error(e, action)
             raise
 
+    @SupabaseClient._validate_arguments
     def reset_password(self, *, email: str, domain: str) -> None:
         """
         Resets the password for a user with the provided email.
@@ -216,10 +259,11 @@ class SupabaseAuth(SupabaseClient):
                 options={"redirect_to": f"{domain}/reset-password.html"}
             )
         except Exception as e:
-            action = "reset_password"
+            action: str = "reset_password"
             self.log_error(e, action, email=email)
             raise
 
+    @SupabaseClient._validate_arguments
     def update_user(self, updates: dict) -> UserResponse:
         """
         Updates a user with the provided updates.
@@ -228,10 +272,6 @@ class SupabaseAuth(SupabaseClient):
             updates (dict): A dictionary containing the updates to be made to
                 the user.
 
-        Returns:
-            UserResponse: The response object containing the updated user
-                information.
-
         Raises:
             Exception: If an error occurs during the update process.
 
@@ -239,25 +279,23 @@ class SupabaseAuth(SupabaseClient):
             update_user(updates={"name": "John", "age": 30})
         """
         try:
-            data = self.default_client.auth.update_user(updates)
-            return data
+            return self.default_client.auth.update_user(updates)
         except Exception as e:
-            action = "update user"
+            action: str = "update user"
             self.log_error(e, action, updates=updates)
             raise
 
 class SupabaseStorage(SupabaseClient):
 
-    def upload_file(self, bucket, upload_path, file_content, file_mimetype):
-        action = "upload file"
+    @SupabaseClient._validate_arguments
+    def upload_file(self, bucket: str, upload_path: str, file_content: bytes, file_mimetype: str) -> bool:
+        action: str = "upload file"
         try:
-            response = self.default_client.storage.from_(bucket).upload(
+            self.default_client.storage.from_(bucket).upload(
                 path=upload_path,
                 file=file_content,
                 file_options={"content-type": file_mimetype}
             )
-            print(response)
-            return True
         except Exception as e:
             self.log_error(
                 e, action, 
@@ -266,22 +304,24 @@ class SupabaseStorage(SupabaseClient):
                 file_mimetype=file_mimetype
             )
             return False
+        return True
     
-    def delete_file(self, bucket, file_path):
-        action = "delete file"
+    @SupabaseClient._validate_arguments
+    def delete_file(self, bucket: str, file_path: str) -> bool:
+        action: str = "delete file"
         try:
-            response = self.default_client.storage.from_(bucket).remove(file_path)
-            print(response)
-            return True
+            self.default_client.storage.from_(bucket).remove(file_path)
         except Exception as e:
             self.log_error(
                 e, action, 
                 file_path=file_path
             )
             return False
+        return True
     
-    def download_file(self, bucket:str, download_path:str, destination_path:str) -> bytes:
-        action = "download file"
+    @SupabaseClient._validate_arguments
+    def download_file(self, bucket: str, download_path: str, destination_path: str) -> bytes:
+        action: str = "download file"
         try:
             with open(destination_path, 'wb+') as f:
                 response = self.default_client.storage.from_(bucket).download(download_path)
@@ -293,38 +333,45 @@ class SupabaseStorage(SupabaseClient):
                 destination_path=destination_path
             )
     
-    def list_files(self, bucket:str, folder: Optional[str] = None) -> list:
-        action = "list files"
+    @SupabaseClient._validate_arguments
+    def list_files(self, bucket: str, folder: Optional[str] = None) -> list:
+        action: str = "list files"
         try:
             if folder:
                 response = self.default_client.storage.from_(bucket).list(folder)
             else:
                 response = self.default_client.storage.from_(bucket).list()
-            self.log_info(action, response)
+        except Exception as e:
+            self.log_error(e, action, bucket=bucket)
+            return []
+        try:
+            self._validate_list(response, name="response")
             return response
         except Exception as e:
             self.log_error(e, action, bucket=bucket)
             return []
-    
-    def create_signed_url(self, bucket:str, download_path:str, *, expires_in: Optional[int] = 3600) -> str:
-        action = "create signed url"
+        
+    @SupabaseClient._validate_arguments
+    def create_signed_url(self, bucket: str, download_path: str, *, expires_in: Optional[int] = 3600) -> str:
+        action: str = "create signed url"
+        
         try:
             response = self.default_client.storage.from_(bucket).create_signed_url(download_path, expires_in=expires_in)
-            if isinstance(response, dict):
-                signed_url = response.get("signedURL", "")
-                if not signed_url:
-                    raise ValueError("signed url is not valid")
-                if not isinstance(signed_url, str):
-                    raise TypeError(f"URL should be type 'str'. Received type {type(signed_url)}")
-                if len(signed_url) < 103:
-                    raise ValueError("URL is too short to be valid signed URL")
-            else:
-                raise TypeError(f"response should be type 'dict' received type {type(response)}")
-            self.log_info(action, "URL created")
-            return signed_url
         except Exception as e:
             self.log_error(
                 e, action,
+                download_path=download_path,
+                expires_in=expires_in
+            )
+            return ""
+
+        try:
+            self._validate_string(response, name="response")
+            return response
+        except Exception as e:
+            self.log_error(
+                e, action,
+                bucket=bucket,
                 download_path=download_path,
                 expires_in=expires_in
             )
@@ -338,10 +385,7 @@ class SupabaseDB(SupabaseClient):
             service_role: str = super()._get_env_value("SUPABASE_SERVICE_ROLE")
             self.service_client: Client = create_client(self.url, service_role)
             if self.service_client:
-                self.log_info(
-                    action="Initialized Supabase service client",
-                    response={"Client initialized": "service"}
-                )
+                self.log_info(action="Initialized Supabase service client")
     
     def _select_client(self, use_service_role: bool = False) -> Client:
         """
@@ -362,28 +406,11 @@ class SupabaseDB(SupabaseClient):
             else:
                 return self.default_client
         except Exception as e:
-            action = "accessing client"
+            action: str = "accessing client"
             self.log_error(e, action)
             return None
-    
-    def _validate_type(self, value:any, *, name:str, is_type:type):
-        if not value:
-            raise ValueError(f"{name} must have value")
-        if not is_type:
-            raise TypeError("is_type must not be None")
-        if not isinstance(value, is_type):
-            raise TypeError(f"{name} must be {is_type.__name__}")
 
-    
-    def _validate_string(self, value:any, name:str):
-        self._validate_type(value, name=name, is_type=str)
-    
-    def _validate_dict(self, value:any, name:str):
-        self._validate_type(value, name=name, is_type=dict)
-    
-    def _validate_table(self, value:any):
-        self._validate_string(value, name="table_name")
-
+    @SupabaseClient._validate_arguments
     def insert_row(
         self, *, table_name: str, data: dict, use_service_role: bool = False
     ) -> bool:
@@ -423,24 +450,18 @@ class SupabaseDB(SupabaseClient):
             )
         """
         db_client = self._select_client(use_service_role)
-        action = "insert"
+        action: str = "insert"
 
-        try:
-            self._validate_table(table_name)
-            self._validate_dict(data, "data")
-        except Exception as e:
-            self.log_error(e, action, data=data, table_name=table_name)
         try:
             response = db_client.table(table_name).insert(data).execute()
             if not response.data:
                 raise ValueError("Response has no data")
-            else:
-                self.log_info(action, response)
-                return True
         except Exception as e:
             self.log_error(e, action, data=data, table_name=table_name)
             return False
-    
+        return True
+ 
+    @SupabaseClient._validate_arguments
     def select_row(
         self, *, table_name: str, match: dict, columns: list[str] = ["*"]
     ) -> list[dict]:
@@ -479,20 +500,14 @@ class SupabaseDB(SupabaseClient):
             # Output: {"name": "John Doe", "age": 30, "email": "johndoe@example.com"}
         """
         db_client = self._select_client()
-        action = "select"
-
-        try:
-            self._validate_table(table_name)
-            self._validate_dict(match, "match")
-            
-        except ValueError as e:
-            self.log_error(e, action, match=match, table_name=table_name)
+        action: str = "select"
 
         match_name, match_value = next(iter(match.items()))
 
         try:
+            if len(match) > 1:
+                raise ValueError("Match dictionary should have only one key-value pair")
             response = db_client.table(table_name).select(*columns).eq(match_name, match_value).execute()
-            self.log_info(action, response)
 
             if response.data and response.data:
                 if isinstance(response.data, list):
@@ -505,6 +520,7 @@ class SupabaseDB(SupabaseClient):
             self.log_error(e, action, columns=columns, match=match)
             return {}
 
+    @SupabaseClient._validate_arguments
     def update_row(self, *, table_name: str, info: dict, match: dict) -> bool:
         """
         Updates a row in the table with data when the row matches a column.
@@ -539,11 +555,9 @@ class SupabaseDB(SupabaseClient):
             # Output: True
         """
         db_client = self._select_client()
-        action = "update"
+        action: str = "update"
 
         try:
-            self._validate_table(table_name)
-            self._validate_dict(match, "match")
             if len(match.keys()) != 1:
                 raise ValueError("Match dictionary must have one key-value pair")
             for key, value in match.items():
@@ -561,23 +575,18 @@ class SupabaseDB(SupabaseClient):
             self.log_error(e, action, updates=info, match=match)
             return False
         if res.data:
-            self.log_info(action, res)
             return True
         else:
             log="Data is the same"
             self.log_info(action, res, info=info, log=log)
             return False
-        
+
+    @SupabaseClient._validate_arguments
     def find_row(self, *, table_name: str, match_column: str, within_period: int, columns: list[str] = ["*"]) -> dict:
         db_client = self._select_client()
-        action = "find row"
+        action: str = "find row"
 
         try:
-            self._validate_table(table_name)
-            self._validate_type(match_column, "str")
-            self._validate_type(within_period, "int")
-            self._validate_type(columns, "list")
-
             response = db_client.table(table_name).select(columns).lte(match_column, within_period).execute()
         except Exception as e:
             self.log_error(
@@ -602,4 +611,3 @@ class SupabaseDB(SupabaseClient):
                     columns=columns
                 )
                 return {}
-
