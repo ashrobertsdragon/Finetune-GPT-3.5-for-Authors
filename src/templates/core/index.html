@@ -1,0 +1,177 @@
+{% extends 'normal-base.html' %}
+{% block title %}LoreBinders{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}" />
+{% endblock extra_css %}
+{% block extra_js %}
+  <script src="{{ url_for('static', filename='js/faqArrow.js') }}"></script>
+{% endblock extra_js %}
+
+{% block content %}
+  <main>
+    <section class="section hero">
+      <div class="text-box">
+        <h1>Bring Your Story's Universe to Life with LoreBinders</h1>
+        <h2>Effortlessly Organize Your Story's World</h2>
+        <p>Dive into a seamless experience where your manuscript evolves into a beautifully structured story bible. With LoreBinders, every character, location, and narrative thread is meticulously organized, giving you the freedom to focus on what you love most – storytelling.</p>
+        <a href="#waitlist-form" title="Join waitlist" class="button"><button class="cta">Join the waitlist</button></a>
+      </div>
+      <div class="illustration image-box"><img src="{{ url_for('static', filename='images/hero-image.png') }}" alt="A manuscript opens, pages transforming into organized documents with story elements like characters and maps. Icons from the story float above, set in a cozy nook with a quill and ink pot." title="hero image"></div>
+    </section>
+
+    <!-- Problem Section -->
+    <section class="section problem">
+      <div class="image-box photo"><img src="{{ url_for('static', filename='images/problem-photo.jpg') }}" title="problem section image" alt="A harried man in a blue plaid shirt over a yellow tshirt and covered in post-it notes reaches for a pile of books on a cluttered desk. He is in a room with lime green walls and empty white bookshelves"></div>
+      <div class="text-box">
+        <div class="inner-text">
+        <h1>Navigating the Complexity of Storytelling</h1>
+        <h2>Keeping Track of Every Detail Made Easier</h2>
+        <p>For authors, the beauty of storytelling is often tangled in the complexity of its creation. Juggling characters, locations, and intricate plot threads can be overwhelming, leaving less room for creativity. Traditional methods of organizing these elements can be time-consuming and cumbersome, making it difficult to maintain consistency and flow in your narrative.</p>
+        <p>LoreBinders recognizes these challenges. It offers a streamlined approach to managing your story's universe, ensuring that you never lose track of the crucial details that make your story unique and compelling.</p>
+      </div>
+    </div>
+    </section>
+
+    <!-- Solution Section -->
+    <section class="section solution">
+      <div class="text-box">
+        <h1>Your Manuscript's Perfect Companion</h1>
+        <h2>LoreBinders: Where Creativity Meets Organization</h2>
+        <p>Enter the world of LoreBinders, where each element of your story is given the attention it deserves. Our innovative platform transforms your manuscript into a detailed story bible, encapsulating everything from character dynamics to location details. With LoreBinders, you get a comprehensive view of your narrative world, meticulously organized and easily accessible.</p>
+        <p>Imagine having a personalized guide to your story's universe, where every character trait, location nuance, and plot point is beautifully laid out. LoreBinders empowers you to weave complex narratives with ease, ensuring consistency and depth in your storytelling. This is not just about keeping track; it's about enhancing your creative process.</p>
+      </div>
+      <div class="photo image-box"><img src="{{ url_for('static', filename='images/solution-photo.jpg') }}" alt="A visual transition from a chaotic manuscript on the left to an organized, colorful story bible on the right, symbolizing the structuring process by LoreBinders." title="solution section image"></div>
+    </section>
+
+
+    <!-- Anticipation and Credibility Section -->
+    <section class="section anticipation">
+      <div class="photo image-box"><img src="{{ url_for('static', filename='images/anticipation-photo.jpg') }}" alt="A blonde woman with glasses, wearing jeans and a tan blazer, sitting at a desk with two monitors and a laptop in a well lit room with gerber daisies in the window. She is drinking a cup of coffee." title="Anticipation image"></div>
+      <div class="text-box">
+        <div class="inner-text">
+        <h1>Embrace a New Chapter in Story Organization</h1>
+        <p>LoreBinders, born from the vision of an indie author turned coder, is set to transform the way narratives are structured. It's a personal journey to solve a common pain point for authors, now ready to be shared with the writing community.</p>
+        <ul class="anticipation-list">
+          <li>Personalized Tool for Authors: Developed by an author for authors, LoreBinders is finely tuned to the nuances of narrative creation. It's a genuine solution to the real challenges you face in organizing complex stories.</li>
+          <li>Solo Journey to Innovation: Crafted single-handedly with dedication and a unique blend of writing insight and coding skill, LoreBinders stands as a testament to innovative problem-solving and passion for storytelling.</li>
+        </ul>
+      </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <h1>Harness the Power of LoreBinders for Your Story</h1>
+        <div class="feature">
+          <h2>Customizable Story Bibles</h2>
+          <p>Crafted to Your Narrative's Needs: Personalize your story bible to align with your unique narrative. Select the elements you need, from character backgrounds to intricate location details, for a tailored organizational tool.</p>
+        </div>
+        <div class="feature">
+          <h2>Streamlined Manuscript Analysis</h2>
+          <p>Efficiently Extract Key Story Elements: Upload your manuscript and let LoreBinders identify and categorize important narrative components. Our system simplifies the complex task of dissecting and organizing your story’s crucial elements.</p>
+        </div>
+        <div class="feature">
+          <h2>Convenient Delivery</h2>
+          <p>Your Story Bible, Ready When You Need It: Get a detailed, organized PDF of your LoreBinder, providing a comprehensive and accessible reference for your storytelling process.</p>
+        </div>
+    </section>
+
+    <!-- Pricing and Packages Section -->
+    <section class="pricing">
+      <div class="pricing-text">
+      <h1>Flexible LoreBinder Pricing Plans</h1>
+      <div class="pricing-plans">
+        <h2>Single LoreBinder</h2>
+        <div class="single-text">
+          <p id="single1">Price: $10.</p>
+          <p id="single2">Ideal for focusing on one project at a time. Receive a detailed story bible for your current manuscript.</p>
+        </div>
+        <h2>Bundle Savings</h2>
+        <div class="bundle">
+        <p id="bundle1">The more you buy, the more you save. When purchased together, each additional LoreBinder is $1 less than the previous one (up to a maximum of 10).</p>
+        <p id="bundle2">LoreBinders never expire—save your unused LoreBinders for future projects, whether they're in a week, a month, a year, or more. Ideal for authors managing multiple projects or series.</p>
+        </div>
+      </div>
+      </div>
+      <div class="photo" id="binder"><img src="{{ url_for('static', filename='images/pricing-photo.png') }}" title="LoreBinders image" alt="A stack of colored binders" id="binderImage"></div>
+    </section>
+    <div class="illustration" id="chart">
+      <img src="{{ url_for('static', filename='images/pricing-table-horizontal.jpg') }}" class="horizontal-chart" title="pricing chart" alt="A pricing table for LoreBinder showing the cost savings at different quantities. Below are three rows and ten columns. The first row, labeled 'Quantity', has the numbers 1 through 10. The second row, labeled 'Price', lists prices from $10 to $55 in increments correlating to the quantity above. The third row, labeled 'Savings', shows the amount saved at each quantity, starting from '-' for 1 item, to '$45' savings for 10 items. The prices and savings increase progressively as the quantity increases.">
+      <img src="{{ url_for('static', filename='images/pricing-table-vertical.jpg') }}" class="vertical-chart" title="pricing chart" alt="A pricing table for LoreBinder showing the cost savings at different quantities. Below are three rows and ten columns. The first row, labeled 'Quantity', has the numbers 1 through 10. The second row, labeled 'Price', lists prices from $10 to $55 in increments correlating to the quantity above. The third row, labeled 'Savings', shows the amount saved at each quantity, starting from '-' for 1 item, to '$45' savings for 10 items. The prices and savings increase progressively as the quantity increases.">
+    </div>
+    
+
+    <!-- Call to Action Section -->
+    <section class="call-to-action">
+      <h1>Ready to Revolutionize Your Writing Process?</h1>
+      <p>Join the growing community of storytellers who are embracing the future of narrative organization. With LoreBinders, you're not just organizing a story; you're crafting a world. Start your journey towards more structured, imaginative storytelling today.</p>
+      <a href="#waitlist-form" title="Join waitlist" class="button"><button class="cta">Join the waitlist</button></a>
+    </section>
+
+    <!-- FAQ Section -->
+    <a id="faq"></a><section class="faq">
+      <h1>Frequently Asked Questions</h1>
+      <div class="faq-item">
+        <h2 class="faq-question"><span class="material-symbols-outlined">expand_more</span>What exactly does LoreBinders do?</h2>
+        <div class="faq-answer">
+      <p class="faq-text">LoreBinders transforms your manuscript into a detailed and organized story bible. It helps you keep track of characters, locations, and narrative elements, making your writing process more structured and efficient.</p>
+      </div>
+      <div class="faq-item">
+        <h2 class="faq-question"><span class="material-symbols-outlined">expand_more</span>How do I use LoreBinders?</h2>
+        <div class="faq-answer">
+      <p class="faq-text">Simply upload your manuscript in one of the supported file formats (epub, docx, PDF, or text), specify the details you want to include in your story bible, and submit. You'll receive a comprehensive PDF of your LoreBinder within a reasonable time frame.</p>
+      </div>
+      <div class="faq-item">
+        <h2 class="faq-question"><span class="material-symbols-outlined">expand_more</span>How does LoreBinders organize my manuscript?</h2>
+        <div class="faq-answer">
+      <p class="faq-text">LoreBinders categorizes and structures the key elements of your story—such as characters and locations—based on the details you provide, creating an organized story bible.</p>
+      </div>
+      <div class="faq-item">
+        <h2 class="faq-question"><span class="material-symbols-outlined">expand_more</span>Will AI be trained on my story?</h2>
+        <div class="faq-answer">
+      <p class="faq-text">No, your story remains yours. We use AI to analyze and organize your manuscript, but your content is not used for training the AI or shared in any way.</p>
+      </div>
+      <div class="faq-item">
+        <h2 class="faq-question"><span class="material-symbols-outlined">expand_more</span>What about the privacy and security of my manuscript?</h2>
+        <div class="faq-answer">
+      <p class="faq-text">Your manuscript's security and confidentiality are paramount. We ensure that your data is encrypted and securely stored, accessible only to you.</p>
+      </div>
+      <div class="faq-item">
+        <h2 class="faq-question"><span class="material-symbols-outlined">expand_more</span>Can I customize what goes into my LoreBinder?</h2>
+        <div class="faq-answer">
+      <p class="faq-text">Definitely! You can choose the specific elements and details you want to include in your story bible, tailoring it to suit your project's needs.</p>
+      </div>
+      <div class="faq-item">
+        <h2 class="faq-question"><span class="material-symbols-outlined">expand_more</span>Is there a limit to the size of the manuscript I can upload?</h2>
+        <div class="faq-answer">
+      <p class="faq-text">For optimal processing, we have size guidelines. Files must be no larger than 2MB. Note: PDFs where the pages are scanned images not converted to text are not supported at this time.</p>
+      </div>
+      <div class="faq-item">
+        <h2 class="faq-question"><span class="material-symbols-outlined">expand_more</span>What if I have multiple projects?</h2>
+        <div class="faq-answer">
+      <p class="faq-text">Our bundle offers are ideal for authors with multiple projects. Purchase LoreBinders at a discounted rate, and use them whenever you're ready—they never expire.</p>
+      </div>
+    </section>
+    
+    <section class="section waitlist">
+      <iframe src="{{ url_for('mailerlite.waitlist_form_view' )}}" frameborder="0"></iframe>
+    </section>
+  </main>
+{% endblock content %}
+
+{% block footer %}
+  <nav class="footer-nav">
+    <a href="{{ url_for('core.contact_us_view')}}" title="Contact us" target="_blank" rel="noopener">Contact</a>
+    <a href="{{ url_for('core.terms_page') }}" title="Terms of Service" target="_blank" rel="noopener">Terms of Service</a>
+    <a href="{{ url_for('core.privacy_page') }}" title="privacy page" target="_blank" rel="noopener">Privacy Policy</a>
+    <a href="#faq">FAQ</a>
+  </nav>
+  <div class="social-media-links">
+    <a href="https://www.facebook.com/prosepalai" title="ProsePal Facebook page" target="_blank" rel="noopener">Facebook</a>
+    <a href="https://github.com/ashrobertsdragon" title="ProsePal GitHub repos" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://www.linkedin.com/company/prosepal" title="ProsePal on LinkedIn" target="_blank" rel="noopener">LinkedIn</a>
+    <a href="https://www.youtube.com/channel/UCYvNGIsdBfFGxQoq5HLblkg" title="ProsePal Youtube channel" target="_blank" rel="noopener">YouTube</a>
+  </div>
+{% endblock footer %}

@@ -1,0 +1,570 @@
+/* General styling */
+button, label, 
+select input[type="submit"],
+input[type="checkbox"] {
+  font-family: 'Exo', sans-buttonserif;
+}
+
+input, textarea {
+  font-family: 'Source Sans 3', sans-serif;
+  font-weight: 300;
+}
+
+/* Inputs */
+.user-input,
+input[type="password"],
+input[type="text"],
+input[type="date"],
+input[type="email"],
+select,
+textarea {
+  background-color: #c7c9cc;
+  border-radius: 4px;
+  box-shadow: inset 0 0 0.5px 1px rgba(219, 225, 231, 0.1),
+              0 0 0 1px rgba(44, 11, 25, 0.075),
+              0 0.3px 0.4px rgba(44, 11, 25, 0.02),
+              0 0.9px 1.5px rgba(44, 11, 25, 0.045),
+              0 3.5px 6px rgba(44, 11, 25, 0.09) !important;
+}
+
+user-input,
+input[type="password"],
+input[type="text"],
+input[type="date"],
+input[type="email"],
+textarea {
+  font-size: 1rem;
+  max-width: 30ch;
+  width: 100%;
+  box-sizing: border-box;
+  height: 40px;
+  padding: 8px;
+  margin: 0 auto 10px 0;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  right: 10px;
+}
+
+input[type="file"] {
+  border: none;
+} 
+
+input[type="submit"] {
+  text-transform: uppercase;
+  letter-spacing: .15rem;
+  display: block;
+  text-align: center;
+  width: auto;
+  background-color: hsl(120, 100%, 20%);
+  color: #DBE1E7;
+  padding: 14px 20px;
+  margin: 2em auto .5em;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: 0 0 3px #1C0B19;
+}
+
+input[type="submit"]:hover {
+  background-color: #089108;
+}
+
+input::file-selector-button {
+  background-color: hsl(210, 20%, 88%);
+  padding: 14px 20px;
+  margin: 8px auto;
+  margin-right: .25em;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: inset 0 0 0.5px 1px rgba(219, 225, 231, 0.1),
+  0 0 0 1px rgba(0, 100, 0, 0.075),
+  0 0.3px 0.4px rgba(0, 100, 0, 0.02),
+  0 0.9px 1.5px rgba(0, 100, 0, 0.045),
+  0 3.5px 6px rgba(0, 100, 0, 0.09);
+}
+
+input::file-selector-button:hover {
+  background-color: hsl(210, 20%, 95%)
+}
+
+/* Labels */
+label {
+  font-size: 1.1em;
+  padding-bottom: .25em;
+  margin-right: 1rem;
+}
+
+/* Containers */
+div {
+  padding-bottom: .5em;
+}
+
+.form {
+  padding-bottom: .5em;
+}
+
+.box {
+  margin: 0 auto;
+  padding: 20px 40px;
+  box-shadow: 0 0 10px rgba(0, 0, 0.1);
+  background-color: #BBE5ED;
+  border-radius: 8px;
+}
+
+#box {
+  text-align: center;
+}
+
+/* Text input fields */
+.flex-form {
+  display: flex;
+  align-items: center;
+}
+
+.input-label {
+  width: 8rem;
+}
+
+
+/* Checkboxes */
+#checkboxes {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-top: .5em;
+}
+
+.terms-agreement-label {
+  width: 100px;
+  white-space: nowrap;
+}
+
+#rights, #terms {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0;
+  padding-bottom: 0;
+  flex-wrap: nowrap;
+}
+#rights label,
+#terms label {
+  margin-left: 10px;
+}
+
+/* Help-text */
+.help-text {
+  display: none;
+}
+
+.form-grid input:hover + .help-text {
+  display: block;
+}
+
+/* Finetuner */
+.opening-info {
+  padding-bottom: 2em;
+}
+
+#file_upload {
+  text-align: center;
+}
+
+#role {
+  width: 95%;
+  height: auto;
+  resize: both;
+  margin-bottom: 2em;
+}
+
+.info-list a {
+  font-style: italic;
+}
+
+.finetune-label {
+  width: 10rem;
+}
+
+#convert-link {
+  text-align: center;
+}
+
+/* Modals */
+.error-modal {
+  display: none; /* Hide the modal by default */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 400px;
+  padding: 20px;
+  background-color: #c7c9cc;
+  color: #600d0d;
+  border-color: #600d0d;
+  border-width: 2px;
+  border-style: solid;
+  box-sizing: border-box;
+  border-radius: 6px;
+}
+
+.error-modal-title {
+  color: #600d0d;
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  opacity: 0.8;
+  line-height: 1.2;
+}
+
+.err-circle {
+  font-weight: 300;
+  padding-right: 10px;
+  transform: translateY(.2rem);
+}
+
+.error {
+  color: #ff0000;
+  font-size: .9em;
+  vertical-align: middle;
+}
+
+.flash-modal, 
+.message-modal {
+  z-index: 9999;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 400px;
+  padding: 20px;
+  background-color: #c7c9cc;
+  border-color: #370808;
+  border-width: 2px;
+  border-style: solid;
+  box-sizing: border-box;
+  border-radius: 6px;
+}
+
+#message-container {
+  margin: 2rem;
+}
+
+.flashes {
+  list-style-type: none;
+  padding: 0;
+  padding-top: 1rem;
+  margin: 0;
+  margin-top: 5px;
+  font-size: 1.1rem;
+}
+
+.flashes li {
+  padding-bottom: 10px;
+}
+
+.close-icon {
+  position: absolute;
+  cursor: pointer;
+  top: 10px;
+  right: 10px;
+  margin: 0;
+  padding: 0;
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 200,
+    'GRAD' 0,
+    'opsz' 20;
+}
+
+/* Visibility toggle icon */
+.password-container {
+  display: inline-block;
+  align-items: center;
+  position: relative;
+}
+
+#eye {
+  position: absolute;
+  font-size: 1.75rem;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-80%);
+  color:#1C0B19;
+  cursor: pointer;
+}
+
+/* Contact form */
+.contact-form {
+  margin: 20px auto;
+  max-width: 600px;
+  padding: 20px;
+  background-color: #BBE5ED;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0.1);
+}
+
+.contact-form label {
+  font-size: 1.1em;
+  display: flex;
+  padding-bottom: 0.25em;
+}
+
+.contact-form input[type="text"],
+.contact-form textarea {
+  font-size: 0.9em;
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  box-shadow: 0 0 3px rgb(63, 92, 125);
+}
+
+.contact-form input[type="submit"] {
+  text-transform: uppercase;
+  display: block;
+  text-align: center;
+  width: auto;
+  background-color: hsl(120, 100%, 20%);
+  color: #DBE1E7;
+  padding: 14px 20px;
+  margin: 8px auto;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: 0 0 3px #1C0B19;
+}
+
+.contact-form input[type="submit"]:hover {
+  background-color: hsl(120, 90%, 30%);
+}
+
+.contact-form textarea {
+  height: 5em; /* Adjust the height as needed */
+} 
+
+/* Signup / Login */
+.form h1 {
+  text-align: center;
+}
+.form h3 {
+  font-family: 'Share Tech', sans-serif;
+  font-weight: 300;
+  font-style: italic;
+  font-size: .75rem;
+  text-align: left;
+  letter-spacing: .05em;
+}
+#required-div {
+  text-align: left;
+  margin-right: auto;
+}
+
+.switch-auth {
+  margin-top: 2em;
+  text-align: center;
+}
+
+/* Forgot password */
+.forgot-email-container {
+  width: 80%;
+  display: flex; 
+  flex-direction: column; 
+}
+
+.forgot-email-label, .forgot-email-input {
+  flex: 1 1 50%;
+  margin: 5px;
+  padding: 5px;
+}
+
+/*  Multi-input Textarea */
+.tag-bounding-box {
+  position: relative;
+  flex-direction: row;
+  align-items: flex-start;
+  flex-wrap: wrap;;
+  max-width: 30ch;
+  width: 100%;
+  height: 80px;
+  margin-top: 10px;
+  padding: 10px 0;
+}
+
+.hidden-form#character-attributes,
+.hidden-form#other-attributes {
+  opacity: 0;
+  max-width: 30ch;
+  width: 100%;
+  height: 80px;
+  z-index: -1;
+  background-color: #BBE5ED;
+  color: #BBE5ED;
+  box-shadow: none;
+  border: none;
+}
+
+body.dark-mode .hidden-form#character-attributes,
+body.dark-mode .hidden-form#other-attributes {
+  background-color: #3F5C7D;
+  color: #3F5C7D;
+}
+
+.tag-container {
+  z-index: 10;
+  font-family: 'Source Sans 3', sans-serif;
+  max-width: 30ch;
+  width: 100%;
+  height: 80px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items:start;
+  padding: 8px;
+  pointer-events: none; 
+}
+
+.tag-container .tag {
+  pointer-events: auto;
+}
+
+.temp-span {
+  padding-left: 5px;
+}
+
+span.tag {
+  margin: 2px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  background-color: #e8f0fe;
+  color:#1C0B19;
+  padding: 1px 20px 1px 12px;
+  white-space: nowrap;
+  border-radius: 16px;
+  position: relative;
+  box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.5), inset 0px 0px 2px rgba(154, 147, 113, 0.95);
+}
+
+span.remove-tag {
+  font-size: smaller;
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  right: 5px;
+  transform: translateY(-50%);
+  color: #370808;
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 200,
+    'GRAD' 0,
+    'opsz' 20;
+}
+
+
+/* Dark mode */
+body.dark-mode .flash-modal,
+body.dark-mode .message-modal {
+  background-color: #2a0f25;
+}
+
+body.dark-mode .box {
+  background-color: #3F5C7D;
+} 
+
+body.dark-mode .user-input,
+body.dark-mode input[type="password"],
+body.dark-mode input[type="text"],
+body.dark-mode input[type="date"],
+body.dark-mode input[type="email"],
+body.dark-mode select,
+body.dark-mode textarea {
+  background-color: #344250;
+  color: #DBE1E7;
+}
+
+body.dark-mode #eye {
+  color: #DBE1E7;
+}
+
+body.dark-mode #id_email,
+body.dark-mode #id_password {
+  /* Keep Firefox aligned with Chromium browsers that override these styles */
+  background-color: #e8f0fe; 
+  color: #000;
+}
+
+body.dark-mode .password-container #eye {
+  /* Keep eye dark color when used in password field because of user-agent stylesheet issue */
+  color: #000;
+}
+
+/* Responsive changes */
+@media only screen and (max-width: 600px) {
+
+  /* form containers */
+  .flex-form {
+    flex-direction: column;
+  }
+
+  .input-label {
+    display: flex;
+    flex-grow: 1;
+    text-align: left;
+    padding-right: 0;
+  }
+
+	/* Inputs */
+  input[type="password"],
+  input[type="text"],
+  input[type="date"],
+  input[type="email"],
+  input[type="file"],
+  select,
+  textarea,
+  .user-input,
+  .input-box,
+  .password-container {
+    width: 100%;
+    max-width: 100%;
+    height: 60px;
+    margin-right: 0;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+  }
+
+  input::file-selector-button {
+    height: 48px;
+    margin-right: 10px;
+  }
+
+  input[type="checkbox"] {
+    height: 48px;
+    width: 48px;
+  }
+
+    /* Buttons */
+    input[type="submit"],
+    button {
+      min-height: 48px;
+      width: 100%;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+
+    /* Visibility */
+    .password-container {
+      padding-top: 16px;
+      display: flex;
+      align-items: center;
+      flex-grow: 1;
+      position: relative;
+  }
+  
+  .input-box{
+    display: flex;
+    flex-grow: 1;
+    width: 100%;
+  }
+
+}

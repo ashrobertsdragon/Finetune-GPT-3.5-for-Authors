@@ -1,0 +1,72 @@
+{% extends "password-base.html" %}
+
+{% block title %}Signup{% endblock %}
+
+{% block content %}
+    <div class="form box">
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        
+  <div class="flash-modal">
+          <span class="material-symbols-outlined close-icon">
+            close
+            </span>
+          <ul class="flashes">
+          {% for message in messages %}
+          <li>{{ message }}</li>
+          {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+    {% endwith %}
+        <form class="user-form" method="POST" action="{{ url_for('accounts.signup_view') }}">
+            {{ form.hidden_tag() }}
+            <h1>Become a Pal to your Prose</h1>
+            <div id="required-div">
+                <h3 class="required-text">All fields are required.</h3>
+            </div>
+            <div class="input-boxes">
+              <!-- Email Field -->
+              <div class="flex-form" id="div-id_email">
+                  {{ form.email.label(class="input-label") }}
+                  {{ form.email(size=30, class="input-box", id="id_email") }}
+                  {% if form.email.description %}
+                      <small class="help-text">{{ form.email.description }}</small>
+                  {% endif %}
+                  {% if form.email.errors %}
+                      {% for error in form.email.errors %}
+                          <div class="error">{{ error }}</div>
+                      {% endfor %}
+                  {% endif %}
+              </div>
+              <!-- Password Field -->
+              <div class="flex-form" id="div-id_password">
+                  {{ form.password.label(class="input-label") }}
+                  <div class="password-container">
+                      {{ form.password(size=30, class="input-box", id="id_password") }}
+                      <span class="material-symbols-outlined" id="eye">visibility</span>
+                  </div>
+                  {% if form.password.description %}
+                      <small class="help-text">{{ form.password.description }}</small>
+                  {% endif %}
+                  {% if form.password.errors %}
+                      {% for error in form.password.errors %}
+                          <div class="error">{{ error }}</div>
+                      {% endfor %}
+                  {% endif %}
+              </div>
+            </div>
+            <div id="checkboxes">
+                <div class="check-grid" id="terms">
+                    {{ form.terms_agreement(id=form.terms_agreement.id, class=form.terms_agreement.css_class) }}
+                    {{ form.terms_agreement.label(class="user-input-label") }}
+                </div>
+            </div>
+            {{ form.submit(class="btn btn-primary")}}
+        </form>
+        <div class="switch-auth">
+            Already have an account? <a href="{{ url_for('accounts.login_view') }}" id="login-link">Login</a>
+        </div>
+    </div>
+{% endblock %}
+

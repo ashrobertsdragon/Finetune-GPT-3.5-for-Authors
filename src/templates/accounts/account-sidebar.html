@@ -1,0 +1,13 @@
+  <div class="sidebar"> 
+    <div class="sidebar-nav">
+      <button class="sidebar-item {% if section == 'profile' %}active{% endif %}">
+        <a href="{{ url_for('accounts.account_view', section='profile') }}" title="Profile">Profile</a>
+      </button>
+      <button class="sidebar-item {% if section == 'view-binders' %}active{% endif %}">
+        <a href="{{ url_for('accounts.account_view', section='view-binders') }}" title="View Past Binders">View Binders</a>
+      </button>
+      <button class="sidebar-item {% if section == 'buy-credits' %}active{% endif %}">
+        <a href="{{ url_for('accounts.account_view', section='buy-credits') }}" title="Buy credits">Buy Credits</a>
+      </button>
+    </div>
+  </div>

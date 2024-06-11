@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block extra_css %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
+{% endblock %}
+{% block extra_js %}
+  
+{% endblock %}
+{% block content_container %}
+  <div class="form-container">
+    <script src="{{ url_for('static', filename='js/modal.js') }}"></script>
+    <div class="message-modal hidden" id="modal-container">
+      <span class="material-symbols-outlined close-icon">close</span>
+      <div id="message-container"></div>
+    </div>
+    {% block content %}
+      <!-- Child template content goes here -->
+      {% endblock %}
+  </div>
+  {% endblock %}

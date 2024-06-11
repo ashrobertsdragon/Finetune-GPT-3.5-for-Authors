@@ -1,0 +1,99 @@
+{% block content %}
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+  
+  <div class="flash-modal">
+    <span class="material-symbols-outlined close-icon">
+      close
+      </span>
+    <ul class="flashes">
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  </div>
+{% endif %}
+{% endwith %}
+    <h2>Update Profile</h2>
+    <div class="form-grid" id="div-id_account">
+      
+    <form method="post" class="box" id="account-management-form" action="{{ url_for('accounts.profile_view') }}">
+        {{ account_form.hidden_tag() }}
+        <div class="flex-form">
+            {{ account_form.email.label(class="input-label") }}
+            {{ account_form.email(size=20) }}
+            {% if account_form.email.errors %}
+              <ul class="error">
+                {% for error in account_form.email.errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+        </div>
+        <div class="flex-form">
+            {{ account_form.first_name.label(class="input-label") }}
+            {{ account_form.first_name(size=20) }}
+            {% if account_form.first_name.errors %}
+              <ul class="error">
+                {% for error in account_form.first_name.errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+        </div>
+        <div class="flex-form">
+            {{ account_form.last_name.label(class="input-label") }}
+            {{ account_form.last_name(size=20) }}
+            {% if account_form.last_name.errors %}
+              <ul class="error">
+                {% for error in account_form.last_name.errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+        </div>
+        <div class="flex-form">
+            {{ account_form.b_day.label(class="input-label") }}
+            {{ account_form.b_day(size=20) }}
+            {% if account_form.b_day.errors %}
+              <ul class="error">
+                {% for error in account_form.b_day.errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+        </div>
+        {{ account_form.submit_account(class="btn btn-primary")}}
+    </form>
+    </div>
+    <div class="form-grid" id="credit-info">
+      <div class="box" id="credit-info-inner">
+        <h2>Credit Balance: {{ user.credits_available }}</h2>
+        <h2>Credits Used: {{ user.credits_used }}</h2>
+      </div>
+    </div>
+    <!-- Password Field -->
+    <div class="form-grid" id="div-id_password">
+        
+        <form method="POST" class="box" id="update-password-form" action="{{ url_for('accounts.profile_view') }}">
+          <h2>Update Password</h2>
+          {{ password_form.hidden_tag() }}        
+          <div class="flex-form" id="div-id_password">
+          {{ password_form.new_password.label(class="input-label") }}
+          <div class="password-container">
+              {{ password_form.new_password(size=30, class="input-box", id="id_password") }}
+              <span class="material-symbols-outlined" id="eye">visibility</span>
+          </div>
+          {% if password_form.new_password.description %}
+              <small class="help-text">{{ password_form.new_password.description }}</small>
+          {% endif %}
+          {% if password_form.new_password.errors %}
+              {% for error in password_form.new_password.errors %}
+                  <div class="error">{{ error }}</div>
+              {% endfor %}
+          {% endif %}
+          </div>
+          {{ password_form.submit_password(class="btn btn-primary")}}
+        </form>
+    </div>
+{% endblock content %}

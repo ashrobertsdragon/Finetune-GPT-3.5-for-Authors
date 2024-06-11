@@ -1,0 +1,41 @@
+{% extends 'forms-base.html' %}
+
+{% block title %}Contact Us{% endblock %}
+{% block extra_js %}
+  <script src="{% static, 'js/invalid-input.js'}"></script>
+{% endblock extra_js}
+{% block content %}
+  <h1>Contact Us</h1>
+  <p>Please fill out the form below and we will get back to you as soon as possible.</p>
+
+  {% if form.errors %}
+  <div class="alert alert-danger" role="alert" aria-live="polite">
+    Please correct the errors below.
+  </div>
+  {% endif %}
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      
+  <div class="flash-modal">
+        <span class="material-symbols-outlined close-icon">
+          close
+          </span>
+        <ul class="flashes">
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  {% endwith %}
+  <form class="contact-form form box" method="post" action="{{ url_for('core.contact_us_view') }}">
+    {{ form.hidden_tag() }}
+    {{ form.name.label(class="input-label") }}
+    {{ form.name(class="input-box") }}
+    {{ form.email.label(class="input-label") }}
+    {{ form.email(class="input-box") }}
+    {{ form.message.label(class="input-label") }}
+    {{ form.message }}
+    {{ form.submit(class="btn btn-primary")}}
+  </form>
+{% endblock content %}

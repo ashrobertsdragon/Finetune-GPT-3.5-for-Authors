@@ -1,0 +1,44 @@
+{% extends 'password-base.html' %}
+
+{% block title %}Account Management{% endblock %}
+
+{% block extra_css %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/account.css') }}">
+{% endblock %}
+
+{% block extra_js %}
+  {{ super() }}
+  <script src="{{ url_for('static', filename='js/viewBinder.js')}}"></script>
+{% endblock %}
+
+{% block content %}
+  {% if section == 'profile' %}
+  <h1 class="account-header">Profile</h1>
+  {% include 'accounts/account-sidebar.html' %}
+  <div data-section="profile" id="profile">
+    {% include 'accounts/profile.html' %}
+  </div>
+{% endif %}
+
+{% if section == 'view-binders' %}
+<h1 class="account-header">View Purchased LoreBinders</h1>
+  <div data-section="view-binders" id="binder-view">
+    {% include 'accounts/account-sidebar.html' %}
+    {% include 'accounts/view-binders.html' %}
+  </div>
+{% endif %}
+
+{% if section == 'buy-credits' %}
+<h1 class="account-header">Buy Credits</h1>
+  <div data-section="buy-credits" id="credit-slider">
+    {% include 'accounts/account-sidebar.html' %}
+    {% include 'accounts/buy-credits.html' %}
+  </div>
+{% endif %}
+
+{% endblock %}
+
+{% block end_js %}
+  <script src="{{ url_for('static', filename='js/purchase-slider.js')}}"></script>
+{% endblock %}

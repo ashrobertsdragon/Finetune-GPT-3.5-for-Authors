@@ -1,0 +1,40 @@
+{% block content %}
+    {% if binders %}
+    <div class="binder-table">
+      <div class="binder-table-header">
+        <span class="binder-label" id="title">
+          Title<span class="material-symbols-outlined mini" id="title-sort">sort</span>
+        </span>
+        <span class="binder-label" id="author">
+          Author<span class="material-symbols-outlined mini" id="author-sort">sort</span>
+        </span>
+        <span class="binder-label" id="created_on">
+          Created<span class="material-symbols-outlined mini" id="created_on-sort">swap_vert</span>
+        </span>
+        <span class="binder-label" id="dl-label">
+          Download
+        </span>
+      </div>
+      <ul class="table-rows">
+        {% for binder in binders %}
+          <li class="binder-row">
+            <span class="binder-info" id="title-info">{{ binder.title }}</span>
+            <span class="binder-info" id="author-info">{{ binder.author }}</span>
+            <span class="binder-info" id="date-info">{{ binder.created_on }}</span>
+            <span class="binder-info" id="download-info">
+              {% if binder.signed_url != "Please check again later" %}
+                <a href="{{ binder.signed_url }}"" target="_blank"><span class="material-symbols-outlined">download</span></a>
+              {% else %}
+                <span class="material-symbols-outlined">pending</span>
+              {% endif %}
+            </span>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% else %}
+    <div class="box binder-table">
+    <p>You have no purchased any LoreBinders yet. <a href="{{ url_for('binders.lorebinder_form_view') }}" title="Start LoreBinder">Get started on your first one now</a></p>
+      </div>
+  {% endif %}
+{% endblock %}

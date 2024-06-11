@@ -1,0 +1,66 @@
+{% extends "password-base.html" %}
+
+{% block title %}Login{% endblock %}
+
+
+{% block content %}
+    <div class="form box">
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        
+  <div class="flash-modal">
+          <span class="material-symbols-outlined close-icon">
+            close
+            </span>
+          <ul class="flashes">
+          {% for message in messages %}
+          <li>{{ message }}</li>
+          {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+    {% endwith %}
+        <form id="login-form" class="form" method="post" action="{{ url_for('accounts.login_view') }}">
+            {{ form.hidden_tag() }}
+            <h1 class="content-title">Login</h1>
+            <div class="input-boxes">
+                <!-- Email Field -->
+                <div class="flex-form" id="div-id_email">
+                    {{ form.email.label(class="input-label") }}
+                    {{ form.email(size=30, class="input-box", id="id_email") }}
+                    {% if form.email.description %}
+                        <small class="help-text">{{ form.email.description }}</small>
+                    {% endif %}
+                    {% if form.email.errors %}
+                        {% for error in form.email.errors %}
+                            <div class="error">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <!-- Password Field -->
+                <div class="flex-form" id="div-id_password">
+                    {{ form.password.label(class="input-label") }}
+                    <div class="password-container">
+                        {{ form.password(size=30, class="input-box", id="id_password") }}
+                        <span class="material-symbols-outlined" id="eye">visibility</span>
+                    </div>
+                    {% if form.password.description %}
+                        <small class="help-text">{{ form.password.description }}</small>
+                    {% endif %}
+                    {% if form.password.errors %}
+                        {% for error in form.password.errors %}
+                            <div class="error">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+            {{ form.submit(class="btn btn-primary")}}
+        </form>
+        <div class="forgot-password">
+          <p><a href="{{ url_for('accounts.forgot_password_view')}}" title="Forgot password">Forgot password?</a></p>
+        </div>
+        <div class="switch-auth">
+            Don't have an account? <a href="{{ url_for('accounts.signup_view') }}" id="signup-link" class="auth-switch-link">Sign Up</a>
+        </div>
+    </div>
+{% endblock content %}
