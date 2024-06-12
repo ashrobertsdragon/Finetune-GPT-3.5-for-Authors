@@ -1,14 +1,15 @@
 .venv/
-.env
 .git/
-upload_folder/
-stripe-ids.json
-*.pyc
+.vscode/
+
+.*_cache/
 __pycache__/
-*.log
 flask_session/
-test.py
 
+*.pyc
+*.log
 
+.env
+stripe-ids.json
 master*.json
 staging*.json
