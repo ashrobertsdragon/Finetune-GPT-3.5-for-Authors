@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NFEC3743TH"></script>
+  <script src="{{ url_for('static', filename='js/google-analytics.js') }}"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}LoreBinders{% endblock %}</title>
+  <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='images/apple-touch-icon.png') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Exo:ital,wght@0,100..900;1,100..900&family=Raleway:ital,wght@0,100..900;1,100..900&family=Share+Tech&family=Share+Tech+Mono&family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block extra_css %}
+  <!-- Placeholder for page-specific CSS -->
+    {% endblock extra_css %}
+  <script src="{{ url_for('static', filename='js/responsive.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/validators.js') }}"></script>
+  {% block extra_js %}
+  <!-- Placeholder for page-specific JavaScript -->
+    {% endblock extra_js %}
+</head>
+<body class="light-mode">
+
+  <div id="header-container"></div>
+  {% include 'core/updates.html' %}
+  {% block content_container %}
+  <!-- Placeholder for the main content of each page -->
+    {% endblock content_container %}
+
+  <footer>
+    {% block footer %}
+    <!-- Placeholder for footer content of each page -->
+      {% endblock footer %}
+  </footer>
+  {% block end_js %}
+  <!-- Placeholder for javascript at end of page -->
+    {% endblock end_js %}
+</body>
+</html>

@@ -1,0 +1,97 @@
+{% extends 'forms-base.html' %}
+
+{% block title %}Start LoreBinder{% endblock %}
+
+{% block extra_js %}
+  <script src="{{ url_for('static', filename='js/invalid-input.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/lorebinder.js') }}"></script>
+{% endblock extra_js %}
+
+{% block content %}
+  <h1>Create LoreBinder</h1>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+
+      <div class="flash-modal">
+        <span class="material-symbols-outlined close-icon">
+          close
+        </span>
+        <ul class="flashes">
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  {% endwith %}
+  <div class="form box">
+  <form method="POST" class="form" enctype="multipart/form-data" action="{{ url_for('binders.lorebinder_form_view') }}">
+    {{ form.hidden_tag() }}
+    <div class="flex-form">
+      {{ form.author.label(class="input-label") }}
+      {{ form.author(class="user-input metadata") }}
+      {% if form.author.errors %}
+        {% for error in form.author.errors %}
+            <div class="error">{{ error }}</div>
+        {% endfor %}
+      {% endif %}
+    </div>
+    <div class="flex-form">
+      {{ form.title.label(class="input-label") }}
+      {{ form.title(class="user-input metadata") }}
+      {% if form.title.errors %}
+        {% for error in form.title.errors %}
+            <div class="error">{{ error }}</div>
+        {% endfor %}
+      {% endif %}
+    </div>
+    <div class="flex-form form-check">
+      {{ form.is_first_person.label }}
+      {{ form.is_first_person(id="is-first-person") }}
+    </div>
+    <div class="flex-form" id="narrator-container">
+      {{ form.narrator.label(class="input-label") }}
+      {{ form.narrator(class="user-input metadata") }}
+      {% if form.narrator.errors %}
+        {% for error in form.narrator.errors %}
+            <div class="error">{{ error }}</div>
+        {% endfor %}
+      {% endif %}
+    </div>
+    <h6>Add up to six attributes you wish the AI to search for. Use the comma or the enter key to add the next one</h6>
+    <div class="flex-form">
+      {{ form.character_attributes.label(class="input-label") }}
+      <div class="tag-bounding-box">
+        {{ form.character_attributes(class="hidden-form", id="character-attributes") }}
+        <div class="user-input metadata tag-container" id="character-attributes-tags"></div>
+      </div>
+        {% if form.character_attributes.errors %}
+        {% for error in form.character_attributes.errors %}
+            <div class="error">{{ error }}</div>
+        {% endfor %}
+      {% endif %}
+    </div>
+    <div class="flex-form">
+      {{ form.other_attributes.label(class="input-label") }}
+      <div class="tag-bounding-box">
+        {{ form.other_attributes(class="hidden-form", id="other-attributes") }}
+        <div class="user-input metadata tag-container" id="other-attributes-tags"></div>
+      </div>
+      {% if form.other_attributes.errors %}
+        {% for error in form.other_attributes.errors %}
+            <div class="error">{{ error }}</div>
+        {% endfor %}
+      {% endif %}
+    </div>
+    <div class="flex-form">
+      {{ form.file_upload.label(class="input-label") }} {{ form.file_upload(accept=".docx,.epub,.pdf,.txt") }}
+      {% if form.file_upload.errors %}
+        {% for error in form.file_upload.errors %}
+            <div class="error">{{ error }}</div>
+        {% endfor %}
+      {% endif %}
+    </div>
+    {{ form.submit(class="btn btn-primary")}}
+  </form>
+  </div>
+{% endblock content %}

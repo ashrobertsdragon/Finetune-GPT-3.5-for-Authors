@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ProsePal"
+version = "2.0.0"
+description = "ProsePal website"
+authors = [{name = "Ashlynn Antrobus", email = "ashlynn@prosepal.io"}]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: End Users/Desktop",
+    "License :: Other/Proprietary License",
+    "Environment :: Web Environment",
+    "Framework :: Flask",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.12",
+]
+requires-python = ">= 3.8"
+dependencies = [
+    "decouple>=0.7",
+    "flask>=3.0.3",
+    "flask-session>=0.8",
+    "flask-talisman>=1.1",
+    "flask-cache>=0.13.1",
+    "flask-wtf>=1.2.1",
+    "supabase>=2.5.1",
+    "requests>=2.32.3",
+    "mailerlite>=.01.6",
+    "stripe>=9.10"
+]
+
+
+[project.urls]
+"Homepage" = "https://prosepal.io"
+
+
+[tool.ruff]
+line-length = 79
+exclude = [".git", "__pycache__", ".venv", "*cache", "work", "*.json"]
+
+[tool.isort]
+line_length = 79
+
+[tool.mypy]
+disable_error_code = "import-untyped"
+mypy_path = "stubs"
