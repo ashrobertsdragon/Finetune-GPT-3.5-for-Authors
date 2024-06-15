@@ -21,12 +21,12 @@ classifiers = [
 ]
 requires-python = ">= 3.8"
 dependencies = [
-    "decouple>=0.7",
     "flask>=3.0.3",
     "flask-session>=0.8",
     "flask-talisman>=1.1",
     "flask-cache>=0.13.1",
     "flask-wtf>=1.2.1",
+    "python-decouple>=3.8",
     "supabase>=2.5.1",
     "requests>=2.32.3",
     "mailerlite>=.01.6",
@@ -43,6 +43,12 @@ line-length = 79
 exclude = [".git", "__pycache__", ".venv", "*cache", "work", "*.json"]
 
 [tool.isort]
+sections = ["FUTURE","STDLIB","FIRSTPARTY","THIRDPARTY","LOCALFOLDER"]
+multi_line_output = 3
+use_parentheses = true
+force_sort_within_sections = true
+lexigraphical = true
+group_by_package = true
 line_length = 79
 
 [tool.mypy]

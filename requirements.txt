@@ -6,7 +6,6 @@ certifi==2024.6.2
 charset-normalizer==3.3.2
 click==8.1.7
 colorama==0.4.6
-decouple==0.0.7
 deprecation==2.1.0
 Flask==3.0.3
 Flask-Cache==0.13.1
@@ -28,6 +27,7 @@ postgrest==0.16.8
 pydantic==2.7.3
 pydantic_core==2.18.4
 python-dateutil==2.9.0.post0
+python_decouple==3.8
 realtime==1.0.5
 requests==2.32.3
 six==1.16.0
