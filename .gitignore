@@ -1,6 +1,7 @@
 .venv/
 .git/
 .vscode/
+*.egg-info/
 
 .*_cache/
 __pycache__/
