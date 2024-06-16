@@ -29,7 +29,7 @@ dependencies = [
     "python-decouple>=3.8",
     "supabase>=2.5.1",
     "requests>=2.32.3",
-    "mailerlite>=.01.6",
+    "mailerlite>=0.1.6",
     "stripe>=9.10"
 ]
 
