@@ -65,6 +65,6 @@ soupsieve==2.5
 tiktoken==0.5.2
 tqdm==4.66.3
 typing_extensions==4.9.0
-urllib3==2.1.0
+urllib3==2.2.2
 Werkzeug>=3.0.1
 WTForms==3.1.2
