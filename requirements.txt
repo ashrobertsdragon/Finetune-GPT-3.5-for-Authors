@@ -8,7 +8,7 @@ click==8.1.7
 colorama==0.4.6
 deprecation==2.1.0
 Flask==3.0.3
-Flask-Cache==0.13.1
+Flask-Caching==2.3.0
 Flask-Session==0.8.0
 flask-talisman==1.1.0
 Flask-WTF==1.2.1
