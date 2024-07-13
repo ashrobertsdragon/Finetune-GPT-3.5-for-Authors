@@ -7,14 +7,13 @@ from typing import (
     TypeVar,
     get_args,
     get_origin,
-    get_type_hints,
+    get_type_hints
 )
 
 from decouple import config
 from gotrue.types import AuthResponse, UserResponse
+from loguru import logger
 from supabase import Client, create_client
-
-from .logging_config import LoggerManager
 
 T = TypeVar("T")
 P = ParamSpec("P")
@@ -24,23 +23,22 @@ class SupabaseClient:
     _mono_state: dict = {}
 
     def _get_env_value(self, key: str) -> str:
-        if isinstance(key, str):
-            try:
-                return config(key)
-            except Exception:
-                raise LookupError(f"Supabase API {key} not found")
-        else:
+        if not isinstance(key, str):
             raise TypeError(f"{key} must be string")
+        try:
+            return config(key)
+        except Exception as e:
+            print(e)
+            raise LookupError(f"Supabase API {key} not found") from e
 
     def __init__(self) -> None:
         self.__dict__ = self._mono_state
-        self.error_logger = LoggerManager.get_error_logger()
-        self.info_logger = LoggerManager.get_info_logger()
+        self.key = self._get_env_value("SUPABASE_KEY")
 
         try:
             self.url: str = self._get_env_value("SUPABASE_URL")
-        except Exception:
-            raise LookupError("Supabase API URL not found")
+        except (LookupError, TypeError) as e:
+            raise LookupError("Supabase API URL not found") from e
 
         if "default_client" not in self.__dict__:
             self.default_client: Client = create_client(self.url, self.key)
@@ -57,9 +55,9 @@ class SupabaseClient:
                 dictionaries and count=None.
 
         """
-        all_args = ", ".join(*args)
+        all_args = ", ".join(args)
         all_kwargs = ", ".join(f"{k}={v}" for k, v in kwargs.items())
-        self.info_logger(f"{action} returned {all_args}{all_kwargs}")
+        logger.info(f"{action} returned {all_args}{all_kwargs}")
 
     def create_error_message(self, action: str, **kwargs) -> str:
         """
@@ -117,7 +115,7 @@ class SupabaseClient:
 
         error_message += "\nException: %s"
 
-        self.error_logger(error_message, str(e))
+        logger.error(error_message, str(e))
 
     def _validate_type(
         self,
@@ -202,12 +200,10 @@ class SupabaseAuth(SupabaseClient):
             sign_up(email="example@example.com", password="password123")
         """
         try:
-            response = self.default_client.auth.sign_up(
-                {
-                    "email": email,
-                    "password": password,
-                }
-            )
+            response = self.default_client.auth.sign_up({
+                "email": email,
+                "password": password,
+            })
             self._validate_dict(response, name="response")
             return response
         except Exception as e:
@@ -236,9 +232,10 @@ class SupabaseAuth(SupabaseClient):
         """
         action: str = "login"
         try:
-            response = self.default_client.auth.sign_in_with_password(
-                {"email": email, "password": password}
-            )
+            response = self.default_client.auth.sign_in_with_password({
+                "email": email,
+                "password": password,
+            })
             self._validate_dict(response, name="response")
             return response
         except Exception as e:
@@ -441,12 +438,11 @@ class SupabaseDB(SupabaseClient):
             Client: The selected Supabase client.
         """
         try:
-            if use_service_role:
-                if not isinstance(use_service_role, bool):
-                    raise TypeError("use_service_role must be boolean")
-                return self.service_client
-            else:
+            if not use_service_role:
                 return self.default_client
+            if not isinstance(use_service_role, bool):
+                raise TypeError("use_service_role must be boolean")
+            return self.service_client
         except Exception as e:
             action: str = "accessing client"
             self.log_error(e, action)
@@ -505,8 +501,8 @@ class SupabaseDB(SupabaseClient):
 
     @SupabaseClient._validate_arguments
     def select_row(
-        self, *, table_name: str, match: dict, columns: Optional[List[str]]
-    ) -> List[dict]:
+        self, *, table_name: str, match: dict, columns: Optional[list[str]]
+    ) -> list[dict]:
         """
         Retrieves a row or columns from a table based on a matching condition.
 
@@ -558,7 +554,7 @@ class SupabaseDB(SupabaseClient):
                 .execute()
             )
 
-            if response.data and response.data:
+            if response and response.data:
                 if isinstance(response.data, list):
                     return response.data
                 else:
@@ -634,10 +630,9 @@ class SupabaseDB(SupabaseClient):
             return False
         if res.data:
             return True
-        else:
-            log = "Data is the same"
-            self.log_info(action, res, info=info, log=log)
-            return False
+        log = "Data is the same"
+        self.log_info(action, res, info=info, log=log)
+        return False
 
     @SupabaseClient._validate_arguments
     def find_row(
@@ -646,7 +641,7 @@ class SupabaseDB(SupabaseClient):
         table_name: str,
         match_column: str,
         within_period: int,
-        columns: Optional[List[str]],
+        columns: Optional[list[str]],
     ) -> dict:
         db_client = self._select_client()
         action: str = "find row"

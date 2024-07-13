@@ -2,13 +2,11 @@ import secrets
 import string
 
 from flask import g, session
+from loguru import logger
 
-from .logging_config import LoggerManager
 from .supabase import SupabaseDB
 
 db = SupabaseDB()
-error_logger = LoggerManager.get_error_logger()
-info_logger = LoggerManager.get_info_logger()
 
 
 def load_user():
@@ -38,7 +36,7 @@ def update_db() -> bool:
     try:
         auth_id = session["user_details"]["auth_id"]
     except Exception:
-        error_logger(f"auth_id not found in {session["user_details"]}")
+        logger.error(f"auth_id not found in {session["user_details"]}")
     try:
         info = session["user_details"]
         if not isinstance(info, dict):
@@ -46,6 +44,6 @@ def update_db() -> bool:
                 f"{info} must be a dictionary. Received type {type(info)}"
             )
     except TypeError as e:
-        error_logger(str(e))
+        logger.error(str(e))
     match = {"auth_id": auth_id}
     return db.update_row(table_name="user", info=info, match=match)

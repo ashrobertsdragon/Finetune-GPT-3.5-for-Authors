@@ -1,12 +1,9 @@
 from flask import current_app, flash, session
-
 from prosepal.file_handling import create_signed_url
-from prosepal.logging_config import LoggerManager
 from prosepal.supabase import SupabaseDB
 
 from .forms import AccountManagementForm
 
-error_logger = LoggerManager.get_error_logger()
 db = SupabaseDB()
 
 
@@ -83,14 +80,12 @@ def get_signed_url_or_placeholder(download_path: str) -> str:
         if is_link(download_path)
         else ""
     )
-    return signed_url if signed_url else "Please check again later"
+    return signed_url or "Please check again later"
 
 
 def is_link(download_path: str) -> bool:
     "Checks if the download_path variable is a text file"
-    if not download_path:
-        return False
-    return download_path.endswith(".txt")
+    return False or download_path.endswith(".txt")
 
 
 def get_user_data(auth_id: str) -> dict:
@@ -144,12 +139,10 @@ def redirect_after_login(auth_id: str) -> str:
         credits_available: int = session["user_details"].get(
             "credits_available"
         )
-        redirect_str: str = check_credits(credits_available)
+        return check_credits(credits_available)
     else:
         flash("Error logging in. Please try again later", "error")
-        redirect_str = "accounts.logout_view"
-
-    return redirect_str
+        return "accounts.logout_view"
 
 
 def preload_account_management_form():

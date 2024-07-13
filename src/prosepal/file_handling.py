@@ -1,10 +1,9 @@
+from loguru import logger
 from werkzeug.datastructures.file_storage import FileStorage
 
-from .logging_config import LoggerManager
 from .supabase import SupabaseStorage
 
 storage = SupabaseStorage()
-error_logger = LoggerManager.get_error_logger()
 
 
 def send_file_to_bucket(
@@ -46,7 +45,7 @@ def send_file_to_bucket(
         )
 
     if not success:
-        error_logger(f"{file_name} not uploaded")
+        logger.error(f"{file_name} not uploaded")
     return upload_path
 
 
@@ -65,4 +64,4 @@ def create_signed_url(bucket: str, download_path: str) -> str:
 
     """
     url = storage.create_signed_url(bucket, download_path)
-    return url if url else ""
+    return url or ""

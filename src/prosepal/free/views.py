@@ -1,15 +1,12 @@
 import os
 
-from flask import Blueprint, jsonify, render_template, request
-
+from flask import Blueprint, current_app, jsonify, render_template, request
 from prosepal.free.utils import is_encoding, make_folder
-from prosepal.logging_config import LoggerManager
 from prosepal.utils import random_str
 
 from .forms import EbookConversionForm, FineTuneForm
 
 free_app = Blueprint("free", __name__)
-error_logger = LoggerManager.get_error_logger()
 
 
 def training_status():
@@ -42,7 +39,7 @@ def convert_ebook():
             if uploaded_file.mimetype == "text/plain" and not is_encoding(
                 file_path, "utf-8"
             ):
-                error_logger.error(f"{file_path} is not UTF-8")
+                current_app.logger.error(f"{file_path} is not UTF-8")
                 error_msg = (
                     "Not correct kind of text file. " "Please resave as UTF-8"
                 )
@@ -76,7 +73,7 @@ def finetune():
 
         # Validate user key
         if not (user_key.startswith("sk-") and 50 < len(user_key) < 60):
-            error_logger.error("invalid key")
+            current_app.logger.error("invalid key")
             return jsonify({"error": "Invalid user key"}), 400
 
         folder_name, user_folder = make_folder()
@@ -99,19 +96,21 @@ def finetune():
                 max_size = 1024 * 1024  # 1 MB
                 if file_size < min_size or file_size > max_size:
                     os.remove(file_path)
-                    error_logger.error(f"{file_path} has an invalid size")
+                    current_app.logger.error(
+                        f"{file_path} has an invalid size"
+                    )
                     return jsonify({"error": "Invalid file size"}), 400
 
                 if not is_encoding(file_path, "utf-8"):
                     os.remove(file_path)
-                    error_logger.error(f"{file_path} is not UTF-8")
+                    current_app.logger.error(f"{file_path} is not UTF-8")
                     error_msg = (
                         "Not correct kind of text file. "
                         "Please resave as UTF-8"
                     )
                     return jsonify({"error": error_msg}), 400
             else:
-                error_logger.error("File is not text file")
+                current_app.logger.error("File is not text file")
 
         def call_api(folder_name, role, user_key, chunk_type, user_folder):
             pass  # placeholder

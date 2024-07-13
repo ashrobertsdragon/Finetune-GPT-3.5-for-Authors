@@ -1,19 +1,15 @@
 from typing import Optional
 
 from decouple import config
+from loguru import logger
 from mailerlite import Client
-
-from prosepal.logging_config import LoggerManager
-
-error_logger = LoggerManager.get_error_logger()
-info_logger = LoggerManager.get_info_logger()
 
 ML_KEY: str = config("MAILERLITE_KEY")
 try:
     client: Client = Client({"api_key": ML_KEY})
-    info_logger("MailerLite client connected")
+    logger.info("MailerLite client connected")
 except Exception as e:
-    error_logger(f"MailerLite client failed to connect: {e}")
+    logger.error(f"MailerLite client failed to connect: {e}")
 
 
 def create_kwargs(
@@ -50,7 +46,7 @@ def create_kwargs(
             else:
                 raise TypeError(f"Invalid type in groups: {groups}")
     except TypeError as e:
-        error_logger.error(str(e))
+        logger.error(str(e))
 
     return kwargs
 
@@ -88,12 +84,12 @@ def add_subscriber(
 
     try:
         response = client.subscribers.create(email, **kwargs)
-        info_logger.info(f"{email} added to Mailerlite")
+        logger.info(f"{email} added to Mailerlite")
         return response.json()
     except TypeError as e:
-        error_logger.error(f"{e}: {email} could not be added")
+        logger.error(f"{e}: {email} could not be added")
     except Exception as e:
-        error_logger.error(e)
+        logger.error(e)
 
 
 def create_fields_dict(**kwargs) -> dict:

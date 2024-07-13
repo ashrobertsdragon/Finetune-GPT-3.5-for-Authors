@@ -3,13 +3,13 @@ from config import (
     DevelopmentConfig,
     ProductionConfig,
     StagingConfig,
-    TestingConfig,
+    TestingConfig
 )
 from decouple import config
 from flask import Flask
 from flask_session import Session
 from flask_talisman import Talisman
-
+from loguru import logger
 # Import blueprints
 from prosepal.accounts.views import accounts_app
 from prosepal.binders.views import binders_app
@@ -19,7 +19,6 @@ from prosepal.mailerlite.views import mailerlite_app
 from prosepal.stripe.views import stripe_app
 
 from .cache import cache
-from .logging_config import LoggerManager
 from .utils import inject_user_context, load_user
 
 app = Flask(__name__)
@@ -37,15 +36,13 @@ app.config.from_object(env_config[config_name])
 
 app.secret_key = config("FLASK_SECRET_KEY")
 
-error_logger = LoggerManager.get_error_logger()
-info_logger = LoggerManager.get_info_logger()
 
-app.logger.debug = info_logger
-app.logger.info = info_logger
-app.logger.warning = info_logger
-app.logger.error = error_logger
-app.logger.critical = error_logger
-app.logger.exception = error_logger
+app.logger.debug = logger.debug
+app.logger.info = logger.info
+app.logger.warning = logger.warning
+app.logger.error = logger.error
+app.logger.critical = logger.critical
+app.logger.exception = logger.exception
 
 
 @app.before_request
