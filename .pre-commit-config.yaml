@@ -55,10 +55,10 @@ repos:
     hooks:
       - id: ruff
         exclude: ^tests|^stubs|cache|work|json|temp
-        args: [ --fix, --force-exclude, --target-version=39]
+        args: [ --fix, --force-exclude, --target-version=py39]
       - id: ruff-format
         exclude: ^tests|^stubs|cache|work|json|temp
-        args: [--target-version=39, --line-length=79]
+        args: [--target-version=py39, --line-length=79]
 
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.15.2
