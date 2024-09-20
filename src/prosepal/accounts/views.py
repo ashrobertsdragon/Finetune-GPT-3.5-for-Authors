@@ -9,7 +9,6 @@ from flask import (
     session,
     url_for,
 )
-
 from prosepal.decorators import login_required
 from prosepal.supabase import SupabaseAuth
 from prosepal.utils import update_db
@@ -74,7 +73,7 @@ def login_view():
             auth_id = data.user.id
             session["access_token"] = access_token
         except Exception as e:
-            current_app.logger.error("Unexpected error: %s", str(e))
+            current_app.logger.error(f"Unexpected error: {e}")
             flash(str(e))
 
         redirect_str = redirect_after_login(auth_id)
@@ -165,8 +164,7 @@ def profile_view():
             update_email(email, auth)
             update_user_details(user_data)
 
-            response = update_db()
-            if response:
+            if response := update_db():
                 flash("Your profile has been updated.", "message")
             else:
                 flash("There was an error updating your profile.", "error")
