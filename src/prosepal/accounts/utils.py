@@ -132,8 +132,8 @@ def redirect_after_login(auth_id: str) -> str:
         redirect_str: (str): The name of the view the user should be
             redirected to.
     """
-    if auth_id:
-        data: dict = get_user_data(auth_id)
+
+    data: dict = get_user_data(auth_id) if auth_id else {}
     if data:
         session["user_details"] = data
         credits_available: int = session["user_details"].get(
