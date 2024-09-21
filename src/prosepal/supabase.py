@@ -28,7 +28,7 @@ class SupabaseLogin(BaseModel):
 
 
 def validate_response(
-    response: Any, expected_type: type, name: str, allow_none: bool = False
+    response: Any, expected_type: type, allow_none: bool = False
 ) -> None:
     """
     Validate that a response is of the expected type.
@@ -45,11 +45,11 @@ def validate_response(
     """
     if response is None:
         if not allow_none:
-            raise ValueError(f"{name} must have a value")
+            raise ValueError("response must have a value")
         return
 
     if not isinstance(response, expected_type):
-        raise TypeError(f"{name} must be of type {expected_type.__name__}")
+        raise TypeError(f"response must be of type {expected_type.__name__}")
 
 
 class SupabaseClient:
@@ -60,10 +60,10 @@ class SupabaseClient:
     ):
         self.login = supabase_login
         self.log = log_function
-        self.default_client = self._initialize_client(
+        self.default_client: Client = self._initialize_client(
             self.login.url, self.login.key
         )
-        self.service_client = self._initialize_client(
+        self.service_client: Client = self._initialize_client(
             url=self.login.url, key=self.login.service_role
         )
 
@@ -77,13 +77,13 @@ class SupabaseClient:
                 exception=e,
             )
 
-    def _select_client(self, use_service_role: bool = False) -> Client:
+    def select_client(self, use_service_role: bool = False) -> Client:
         return self.service_client if use_service_role else self.default_client
 
 
 class SupabaseAuth:
     def __init__(self, client: SupabaseClient, log_function: LogFunctionType):
-        self.client: Client = client.client_class._select_client()
+        self.client: Client = client.client_class.select_client()
         self.log = log_function
 
     def sign_up(self, *, email: str, password: str) -> AuthResponse:
@@ -213,10 +213,41 @@ class SupabaseAuth:
 
 class SupabaseStorage:
     def __init__(
-        self, client: SupabaseClient, log_function: LogFunctionType
+        self,
+        client: SupabaseClient,
+        log_function: LogFunctionType,
+        validator: Callable[[Any, type, bool], None],
     ) -> None:
-        self.client: Client = client._select_client()
+        self.client: Client = client.select_client()
         self.log = log_function
+        self.validator = validator
+
+    def _use_storage_connection(
+        self, bucket: str, action: str, **kwargs
+    ) -> Any:
+        with self.client.storage.from_(bucket) as storage_client:
+            return getattr(storage_client, action)(**kwargs)
+
+    def _validate_response(
+        self,
+        response: Any,
+        expected_type: type,
+        action: str,
+        bucket: str,
+        **kwargs,
+    ):
+        try:
+            self.validator(response, expected_type)
+            return True
+        except (ValueError, TypeError) as e:
+            self.log(
+                level="error",
+                action=action,
+                bucket=bucket,
+                exception=e,
+                **kwargs,
+            )
+            return False
 
     def upload_file(
         self,
@@ -226,12 +257,14 @@ class SupabaseStorage:
         file_mimetype: str,
     ) -> bool:
         try:
-            self.client.storage.from_(bucket).upload(
+            self._use_storage_connection(
+                bucket,
+                "upload",
                 path=upload_path,
                 file=file_content,
                 file_options={"content-type": file_mimetype},
             )
-        except Exception as e:
+        except StorageException as e:
             self.log(
                 level="error",
                 action="upload file",
@@ -245,7 +278,7 @@ class SupabaseStorage:
 
     def delete_file(self, bucket: str, file_path: str) -> bool:
         try:
-            self.client.storage.from_(bucket).remove(file_path)
+            self._use_storage_connection(bucket, "remove", paths=[file_path])
         except StorageException as e:
             self.log(
                 level="error",
@@ -258,11 +291,11 @@ class SupabaseStorage:
 
     def download_file(
         self, bucket: str, download_path: str, destination_path: str
-    ) -> bytes:
+    ) -> None:
         try:
             with open(destination_path, "wb+") as f:
-                response = self.client.storage.from_(bucket).download(
-                    download_path
+                response = self._use_storage_connection(
+                    bucket, "download", path=download_path
                 )
                 f.write(response)
         except StorageException as e:
@@ -274,23 +307,23 @@ class SupabaseStorage:
                 exception=e,
             )
 
-    def list_files(self, bucket: str, folder: Optional[str] = None) -> list:
+    def list_files(
+        self, bucket: str, folder: Optional[str] = None
+    ) -> list[dict[str, str]]:
         action: str = "list files"
         try:
             if folder:
-                response = self.client.storage.from_(bucket).list(folder)
+                response = self._use_storage_connection(
+                    bucket, "list", path=folder
+                )
             else:
-                response = self.client.storage.from_(bucket).list()
+                response = self._use_storage_connection(bucket, "list")
         except StorageException as e:
             self.log(level="error", action=action, bucket=bucket, exception=e)
             return []
-        try:
-            validate_response(
-                response, expected_type=list[str], name="response"
-            )
+        if self._validate_response(response, list, action, bucket):
             return response
-        except Exception as e:
-            self.log(level="error", action=action, bucket=bucket, exception=e)
+        else:
             return []
 
     def create_signed_url(
@@ -302,8 +335,11 @@ class SupabaseStorage:
     ) -> str:
         action = "create signed url"
         try:
-            response = self.client.storage.from_(bucket).create_signed_url(
-                download_path, expires_in=expires_in
+            response = self._use_storage_connection(
+                bucket,
+                "create_signed_url",
+                path=download_path,
+                expires_in=expires_in,
             )
         except StorageException as e:
             self.log(
@@ -315,18 +351,17 @@ class SupabaseStorage:
             )
             return ""
 
-        try:
-            validate_response(response, expected_type=str, name="response")
-            return response
-        except Exception as e:
-            self.log(
-                level="error",
-                action=action,
-                bucket=bucket,
-                download_path=download_path,
-                expires_in=expires_in,
-                exception=e,
-            )
+        url = response["signedURL"]
+        if self._validate_response(
+            url,
+            str,
+            action,
+            bucket,
+            download_path=download_path,
+            expires_in=expires_in,
+        ):
+            return url
+        else:
             return ""
 
 
