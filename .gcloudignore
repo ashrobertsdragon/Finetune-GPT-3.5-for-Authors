@@ -12,8 +12,17 @@
 # below:
 .git
 .gitignore
+.venv
+.vscode
+settings.json
+.pre-commit-config.yaml
+.env
+run_dev_server.py
+bullshit.py
+requirements-dev.txt
 
 # Python pycache:
 __pycache__/
 # Ignored by the build system
 /setup.cfg
+*egg-info/
