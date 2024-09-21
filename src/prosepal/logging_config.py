@@ -61,23 +61,21 @@ def construct_message(
     return "".join(messages)
 
 
-def supabase_logger(
-    level: str, action: str, is_error: bool = False, *args, **kwargs
-) -> None:
+def supabase_logger(level: str, action: str, *args, **kwargs) -> None:
     """
     Log actions from Supabase
 
     Args:
         level (str): The log level.
         action (str): The action being logged.
-        is_level (bool): Whether the action resulted in an exception. Defaults
-            to False.
         *args (Any): Any additional arguments passed to the logger.
         **kwargs (Any): Any additional keywords arguments passed to the logger.
     """
     arg_str = format_args(args)
     kwarg_str = format_kwargs(kwargs)
     exception = kwargs.get("exception", None)
+
+    is_error: bool = level in {"error", "exception"}
 
     log_message = construct_message(
         action, arg_str, kwarg_str, is_error, exception
