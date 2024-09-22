@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Any, Callable, Optional, TypeAlias
 
 from decouple import config
@@ -222,10 +223,19 @@ class SupabaseStorage:
         self.client: Client = client.select_client()
         self.log = log_function
         self.validator = validator
+        self.empty_value: list[dict] = [{}]
 
     def _use_storage_connection(
         self, bucket: str, action: str, **kwargs
     ) -> Any:
+        """
+        Use context manager for connection to Supabase storage.
+
+        Args:
+            bucket (str): The name of the storage bucket.
+            action (str): The action being performed in the bucket).
+            **kwargs: Other commands being passed to the API.
+        """
         with self.client.storage.from_(bucket) as storage:
             return getattr(storage, action)(**kwargs)
 
@@ -237,7 +247,21 @@ class SupabaseStorage:
         action: str,
         bucket: str,
         **kwargs,
-    ):
+    ) -> bool:
+        """
+        Validate the storage response from Supabase.
+
+        Args:
+            response (Any): The response object from the API call.
+            expected_type (type): The type the response is expected to be.
+            action (str): The storage action being performed.
+            bucket (str): The storage bucket the action was performed in.
+            **kwargs: Other keyword arguments to be logged if validation
+                fails.
+
+        Returns:
+            bool: True if validation passes, False otherwise.
+        """
         try:
             self.validator(response, expected_type)
             return True
@@ -258,6 +282,20 @@ class SupabaseStorage:
         file_content: bytes,
         file_mimetype: str,
     ) -> bool:
+        """
+        Upload a file to a Supabase storage bucket.
+
+        Args:
+            bucket (str): The bucket the file will be uploaded to.
+            upload_path (str): The folder and filename for the file to be
+                uploaded to.
+            file_content (bytes): The file, read as an IO byte-stream, to be
+                uploaded.
+            file_mimetype (str): The file's mimetype.
+
+        Returns:
+            bool: True if upload was successful, False otherwise.
+        """
         try:
             self._use_storage_connection(
                 bucket,
@@ -280,6 +318,17 @@ class SupabaseStorage:
         return True
 
     def delete_file(self, bucket: str, file_path: str) -> bool:
+        """
+        Delete a file from a Supabase storage bucket
+
+        Args:
+            bucket (str): The storage bucket the file will be deleted from.
+            file_path (str): The path inside the bucket for the file to be
+                deleted.
+
+        Returns:
+            bool: True if file deletion was successful, False otherwise.
+        """
         try:
             self._use_storage_connection(bucket, "remove", paths=[file_path])
         except StorageException as e:
@@ -294,15 +343,29 @@ class SupabaseStorage:
         return True
 
     def download_file(
-        self, bucket: str, download_path: str, destination_path: str
-    ) -> None:
+        self, bucket: str, download_path: str, destination_path: Path
+    ) -> bool:
+        """
+        Download a file from a Supabase storage bucket.
+
+        Args:
+            bucket (str): The storage bucket the file will be found in.
+            download_path (str): The path inside the bucket for the file to be
+                downloaded.
+            destination_path (Path): The local path to download the file to,
+                as a pathlib object.
+
+        Returns:
+            bool: True if file was downloaded, False otherwise.
+        """
         try:
             with open(destination_path, "wb+") as f:
                 response = self._use_storage_connection(
                     bucket, "download", path=download_path
                 )
                 f.write(response)
-        except StorageException as e:
+            return True
+        except (StorageException, OSError) as e:
             self.log(
                 level="error",
                 action="download file",
@@ -311,10 +374,25 @@ class SupabaseStorage:
                 destination_path=destination_path,
                 exception=e,
             )
+            return False
 
     def list_files(
         self, bucket: str, folder: Optional[str] = None
     ) -> list[dict[str, str]]:
+        """
+        List the files in a Supabase storage bucket or folder.
+
+        Args:
+            bucket (str): The storage bucket to retrieve the list of files
+                from.
+            folder (str): The name of the folder within the storage bucket to
+                retrieve the list of files from. Optional, defaults to None.
+
+        Returns:
+            list[dict[str, str]]: A list of dictionaries containing
+                information about files in the bucket or folder or empty list
+                if there is an error.
+        """
         action: str = "list files"
         try:
             if folder:
@@ -325,11 +403,11 @@ class SupabaseStorage:
                 response = self._use_storage_connection(bucket, "list")
         except StorageException as e:
             self.log(level="error", action=action, bucket=bucket, exception=e)
-            return []
+            return self.empty_value
         if self._validate_response(response, list, action, bucket):
             return response
         else:
-            return []
+            return self.empty_value
 
     def create_signed_url(
         self,
@@ -338,6 +416,19 @@ class SupabaseStorage:
         *,
         expires_in: Optional[int] = 3600,
     ) -> str:
+        """
+        Create a signed download URL to a file in a Supabase storage bucket.
+
+        Args:
+            bucket (str): The storage bucket the download file is in.
+            download_path (str): The path to the file in the bucket.
+            expires_in (in): Optional. Number of seconds the signed url is
+                valid for. Defaults to 3600 (one hour).
+
+        Returns:
+            str: The signed url for file download or empty string if there is
+                an error.
+        """
         action = "create signed url"
         try:
             response = self._use_storage_connection(
@@ -375,7 +466,7 @@ class SupabaseDB:
     def __init__(
         self,
         client: SupabaseClient,
-        log_function: Callable[[str, str, bool, Any, Any], None],
+        log_function: LogFunction,
         validator: Callable[[Any, type, bool], None],
     ) -> None:
         self.client = client
