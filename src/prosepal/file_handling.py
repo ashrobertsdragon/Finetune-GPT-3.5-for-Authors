@@ -1,9 +1,12 @@
+from flask import app
 from loguru import logger
 from werkzeug.datastructures.file_storage import FileStorage
 
+from .logging_config import supabase_logger
 from .supabase import SupabaseStorage
 
-storage = SupabaseStorage()
+client = app.config["supabase_client"]
+storage = SupabaseStorage(client, supabase_logger)
 
 
 def send_file_to_bucket(
@@ -28,19 +31,19 @@ def send_file_to_bucket(
         - The file content type will be determined automatically based on the
         file's MIME type.
     """
-    file_name = file.filename
-    upload_path = f"{user_folder}/{file_name}"
+    file_name: str = file.filename
+    upload_path: str = f"{user_folder}/{file_name}"
 
-    file_content = file.read()
-    file_mimetype = file.content_type
+    file_content: bytes = file.read()
+    file_mimetype: str = file.content_type
     file.seek(0)
     deleted = False
 
-    files = storage.list_files(bucket, user_folder)
+    files: list[dict[str, str]] = storage.list_files(bucket, user_folder)
     if any(file_name == file.get("name") for file in files):
-        deleted = storage.delete_file(bucket, upload_path)
+        deleted: bool = storage.delete_file(bucket, upload_path)
     if deleted or upload_path not in files:
-        success = storage.upload_file(
+        success: bool = storage.upload_file(
             bucket, upload_path, file_content, file_mimetype
         )
 
@@ -63,5 +66,5 @@ def create_signed_url(bucket: str, download_path: str) -> str:
             string if the method returned an empty string.
 
     """
-    url = storage.create_signed_url(bucket, download_path)
+    url: str = storage.create_signed_url(bucket, download_path)
     return url or ""

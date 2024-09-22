@@ -1,15 +1,18 @@
+from typing import Callable
+
 # Config classes for environment variables
 from config import (
     DevelopmentConfig,
     ProductionConfig,
     StagingConfig,
-    TestingConfig
+    TestingConfig,
 )
 from decouple import config
 from flask import Flask
 from flask_session import Session
 from flask_talisman import Talisman
 from loguru import logger
+
 # Import blueprints
 from prosepal.accounts.views import accounts_app
 from prosepal.binders.views import binders_app
@@ -18,7 +21,9 @@ from prosepal.free.views import free_app
 from prosepal.mailerlite.views import mailerlite_app
 from prosepal.stripe.views import stripe_app
 
+from . import logging_config
 from .cache import cache
+from .supabase import SupabaseClient, SupabaseLogin
 from .utils import inject_user_context, load_user
 
 app = Flask(__name__)
@@ -31,11 +36,18 @@ env_config = {
 }
 
 # Load environment variable for flask environment configuration class
-config_name = config("FLASK_ENV", default="development")
+config_name: str = config("FLASK_ENV", default="development")
 app.config.from_object(env_config[config_name])
 
 app.secret_key = config("FLASK_SECRET_KEY")
 
+logging_type: str = app.config.get("LOGGING_TYPE")
+logger_function: Callable | None = getattr(logging_config, logging_type, None)
+if logger_function is None:
+    raise ValueError(
+        f"Logger function '{logging_type}' not found in logging_config.py"
+    )
+logger_function()
 
 app.logger.debug = logger.debug
 app.logger.info = logger.info
@@ -43,6 +55,10 @@ app.logger.warning = logger.warning
 app.logger.error = logger.error
 app.logger.critical = logger.critical
 app.logger.exception = logger.exception
+
+supabase_logger = logging_config.supabase_logger
+supabase_login = SupabaseLogin().from_config()
+app.config["supabase_client"] = SupabaseClient(supabase_login, supabase_logger)
 
 
 @app.before_request

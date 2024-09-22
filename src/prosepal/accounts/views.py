@@ -10,6 +10,7 @@ from flask import (
     url_for,
 )
 from prosepal.decorators import login_required
+from prosepal.logging_config import supabase_logger
 from prosepal.supabase import SupabaseAuth
 from prosepal.utils import update_db
 
@@ -31,8 +32,8 @@ from .utils import (
 )
 
 accounts_app = Blueprint("accounts", __name__)
-
-auth = SupabaseAuth()
+supabase_client = current_app.config["supabase_client"]
+auth = SupabaseAuth(supabase_client, supabase_logger)
 
 
 @accounts_app.route("/signup", methods=["GET", "POST"])

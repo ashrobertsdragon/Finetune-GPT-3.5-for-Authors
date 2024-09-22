@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from decouple import config
 
@@ -9,7 +10,7 @@ class Config:
     CSRF_ENABLED = True
     WTF_CSRF_ENABLED = True
 
-    FLASK_SECRET_KEY = config("SECRET_KEY", default="guess-me")
+    FLASK_SECRET_KEY: str = config("SECRET_KEY", default="guess-me")
 
     SESSION_TYPE = "filesystem"
     SESSION_COOKIE_HTTPONLY = True
@@ -24,7 +25,7 @@ class Config:
     TALISMAN_SESSION_COOKIE_SECURE = True
     TALISMAN_SESSION_COOKIE_SAMESITE = "Lax"
     TALISMAN_FRAME_OPTIONS_ALLOW_FROM = "https://www.google.com"
-    TALISMAN_CSP = {
+    TALISMAN_CSP: dict = {
         "default-src": ["'self'"],
         "connect-src": [
             "'self'",
@@ -60,9 +61,9 @@ class Config:
         ],
     }
 
-    TALISMAN_HSTS = {"max-age": 31536000, "includeSubDomains": True}
+    TALISMAN_HSTS: dict = {"max-age": 31536000, "includeSubDomains": True}
 
-    PROSEPAL_ENDPOINTS = {"lorebinder": "fakeendpoint"}
+    PROSEPAL_ENDPOINTS: dict = {"lorebinder": "fake_endpoint"}
 
     def define_upload(self):
         self.UPLOAD_FOLDER = self.UPLOAD_FOLDER
@@ -74,13 +75,14 @@ class DevelopmentConfig(Config):
     DEBUG = True
     WTF_CSRF_ENABLED = False
 
-    UPLOAD_FOLDER = os.path.join("src", "upload_folder")
+    UPLOAD_FOLDER = Path("src", "upload")
 
-    DOMAIN = config("DEV_DOMAIN")
-    STRIPE_KEY = config("STRIPE_TEST_KEY", default="guess-me")
-    STRIPE_PUBLISHABLE_KEY = config(
+    DOMAIN: str = config("DEV_DOMAIN")
+    STRIPE_KEY: str = config("STRIPE_TEST_KEY", default="guess-me")
+    STRIPE_PUBLISHABLE_KEY: str = config(
         "STRIPE_TEST_PUBLISHABLE_KEY", default="guess-me"
     )
+    LOGGER_TYPE: str = "stdout_logger"
 
 
 class TestingConfig(DevelopmentConfig):
@@ -90,13 +92,14 @@ class TestingConfig(DevelopmentConfig):
 class ProductionConfig(Config):
     DEBUG = False
 
-    UPLOAD_FOLDER = os.path.join("/tmp", "upload")
+    UPLOAD_FOLDER = Path("/tmp", "upload")
 
     DOMAIN = config("LIVE_DOMAIN")
     STRIPE_KEY = config("STRIPE_LIVE_KEY", default="guess-me")
     STRIPE_PUBLISHABLE_KEY = config(
         "STRIPE_LIVE_PUBLISHABLE_KEY", default="guess-me"
     )
+    LOGGER_TYPE: str = "gcloud_logger"
 
 
 class StagingConfig(DevelopmentConfig):

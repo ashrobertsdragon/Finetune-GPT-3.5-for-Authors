@@ -1,12 +1,14 @@
 import secrets
 import string
 
-from flask import g, session
+from flask import app, g, session
 from loguru import logger
 
+from .logging_config import supabase_logger
 from .supabase import SupabaseDB
 
-db = SupabaseDB()
+client = app.config["supabase_client"]
+db = SupabaseDB(client, supabase_logger)
 
 
 def load_user():
@@ -30,20 +32,20 @@ def random_str():
 def update_db() -> bool:
     """
     Update the user's row of the user table with the most current session
-    user_details dictionionary. Returns a boolean of whether update was
+    user_details dictionary. Returns a boolean of whether update was
     successful.
     """
     try:
-        auth_id = session["user_details"]["auth_id"]
+        auth_id: str = session["user_details"]["auth_id"]
     except Exception:
         logger.error(f"auth_id not found in {session["user_details"]}")
     try:
-        info = session["user_details"]
+        info: dict = session["user_details"]
         if not isinstance(info, dict):
             raise TypeError(
                 f"{info} must be a dictionary. Received type {type(info)}"
             )
     except TypeError as e:
         logger.error(str(e))
-    match = {"auth_id": auth_id}
+    match: dict[str, str] = {"auth_id": auth_id}
     return db.update_row(table_name="user", info=info, match=match)
