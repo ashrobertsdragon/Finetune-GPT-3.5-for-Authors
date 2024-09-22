@@ -1,16 +1,14 @@
-from typing import Any, Callable, Optional, ParamSpec, TypeVar
+from typing import Any, Callable, Optional, TypeAlias
 
 from decouple import config
 from gotrue.types import AuthResponse, UserResponse
-from loguru import logger
+from postgrest import APIResponse, SyncRequestBuilder
 from pydantic import BaseModel
-from supabase import Client, StorageException, create_client
+from supabase import Client, PostgrestAPIError, StorageException, create_client
 from supabase._sync.client import SupabaseException
 
-T = TypeVar("T")
-P = ParamSpec("P")
-
-LogFunctionType = Callable[[str, str, bool, Any, Any], None]
+LogFunction: TypeAlias = Callable[[str, str, bool, Any, Any], None]
+Table: TypeAlias = SyncRequestBuilder
 
 
 class SupabaseLogin(BaseModel):
@@ -28,7 +26,10 @@ class SupabaseLogin(BaseModel):
 
 
 def validate_response(
-    response: Any, expected_type: type, allow_none: bool = False
+    value: Any,
+    expected_type: type,
+    allow_none: bool = False,
+    name: str = "Response",
 ) -> None:
     """
     Validate that a response is of the expected type.
@@ -43,20 +44,20 @@ def validate_response(
         ValueError: If the value is None and allow_none is False.
         TypeError: If the value is not of the expected type.
     """
-    if response is None:
+    if value is None:
         if not allow_none:
-            raise ValueError("response must have a value")
+            raise ValueError(f"{name} must have a value")
         return
 
-    if not isinstance(response, expected_type):
-        raise TypeError(f"response must be of type {expected_type.__name__}")
+    if not isinstance(value, expected_type):
+        raise TypeError(f"{name} must be of type {expected_type.__name__}")
 
 
 class SupabaseClient:
     def __init__(
         self,
         supabase_login: SupabaseLogin,
-        log_function: LogFunctionType,
+        log_function: LogFunction,
     ):
         self.login = supabase_login
         self.log = log_function
@@ -82,7 +83,7 @@ class SupabaseClient:
 
 
 class SupabaseAuth:
-    def __init__(self, client: SupabaseClient, log_function: LogFunctionType):
+    def __init__(self, client: SupabaseClient, log_function: LogFunction):
         self.client: Client = client.client_class.select_client()
         self.log = log_function
 
@@ -215,7 +216,7 @@ class SupabaseStorage:
     def __init__(
         self,
         client: SupabaseClient,
-        log_function: LogFunctionType,
+        log_function: LogFunction,
         validator: Callable[[Any, type, bool], None],
     ) -> None:
         self.client: Client = client.select_client()
@@ -225,12 +226,13 @@ class SupabaseStorage:
     def _use_storage_connection(
         self, bucket: str, action: str, **kwargs
     ) -> Any:
-        with self.client.storage.from_(bucket) as storage_client:
-            return getattr(storage_client, action)(**kwargs)
+        with self.client.storage.from_(bucket) as storage:
+            return getattr(storage, action)(**kwargs)
 
     def _validate_response(
         self,
         response: Any,
+        *,
         expected_type: type,
         action: str,
         bucket: str,
@@ -268,6 +270,7 @@ class SupabaseStorage:
             self.log(
                 level="error",
                 action="upload file",
+                bucket=bucket,
                 upload_path=upload_path,
                 file_content=file_content,
                 file_mimetype=file_mimetype,
@@ -283,6 +286,7 @@ class SupabaseStorage:
             self.log(
                 level="error",
                 action="delete file",
+                bucket=bucket,
                 file_path=file_path,
                 exception=e,
             )
@@ -302,6 +306,7 @@ class SupabaseStorage:
             self.log(
                 level="error",
                 action="download file",
+                bucket=bucket,
                 download_path=download_path,
                 destination_path=destination_path,
                 exception=e,
@@ -345,6 +350,7 @@ class SupabaseStorage:
             self.log(
                 level="error",
                 action=action,
+                bucket=bucket,
                 download_path=download_path,
                 expires_in=expires_in,
                 exception=e,
@@ -366,6 +372,118 @@ class SupabaseStorage:
 
 
 class SupabaseDB:
+    def __init__(
+        self,
+        client: SupabaseClient,
+        log_function: Callable[[str, str, bool, Any, Any], None],
+        validator: Callable[[Any, type, bool], None],
+    ) -> None:
+        self.client = client
+        self.log = log_function
+        self.validator = validator
+        self.empty_value: list[dict] = [{}]
+
+    def _get_client(self, use_service_role: bool) -> Client:
+        "Return the correct client based on the `use_service_role` boolean"
+        return self.client.select_client(use_service_role)
+
+    def _execute_query(
+        self, db_client: Client, table_name: str, query: Callable
+    ) -> APIResponse:
+        """
+        Execute the database query on the table with the correct client.
+
+        Args:
+            db_client (Client): The Supabase client with the correct
+                permissions for the query.
+            table_name (str): The name of the table to be queried.
+            query (Callable): The lambda function of the Supabase SDK query.
+                Example: `lambda table: table.insert(row_dictionary)`
+
+        Returns:
+            APIResponse: The json response object with a data list and count
+                integer.
+        """
+        with db_client.from_(table_name) as table:
+            return query(table).execute()
+
+    def _validate_response(
+        self,
+        data: Any,
+        *,
+        action: str,
+        table_name: str,
+        **kwargs,
+    ) -> bool:
+        """
+        Validate the data response from the Supabase SDK against the expected
+        type and log an error if it doesn't match.
+
+        Args:
+            data (Any): The data object from the JSON response.
+            action (str): The query action being performed.
+            table_name (str): The table the query was performed on.
+            **kwargs: Any other keyword arguments to be logged.
+
+        Returns:
+            bool: True if the data object is a list of dictionaries and False
+                if not.
+        """
+        try:
+            self.validator(data, list)
+            for item in list:
+                self.validator(item, dict)
+            return True
+        except (ValueError, TypeError) as e:
+            self.log(
+                level="error",
+                action=action,
+                table_name=table_name,
+                exception=e,
+                **kwargs,
+            )
+            return False
+
+    def _get_filter(
+        self, match: dict, action: str, table_name: str
+    ) -> tuple[str, str]:
+        """
+        Parse the dictionary storing the query filter
+
+        Args:
+            match (dict): The dictionary containing the query filter.
+            action (str): The query action being performed.
+            table_name (str): The table the query is being performed on.
+
+        Returns:
+            tuple[str, str]: The match_name and match_value of the query
+                filter.
+        """
+        try:
+            if len(match.keys()) > 1:
+                raise ValueError(
+                    "Match dictionary must have one key-value pair"
+                )
+            for key, value in match.items():
+                self.validator(key, str)
+                try:
+                    self.validator(value, str)
+                except TypeError as error:
+                    raise TypeError(
+                        f"Value for filter '{key}' must be a string"
+                    ) from error
+        except (ValueError, TypeError) as e:
+            self.log(
+                level="error",
+                exception=e,
+                action=action,
+                match=match,
+                table_name=table_name,
+            )
+
+        match_name, match_value = next(iter(match.items()))
+        return match_name, match_value
+
     def insert_row(
         self, *, table_name: str, data: dict, use_service_role: bool = False
     ) -> bool:
@@ -385,37 +503,55 @@ class SupabaseDB:
 
         Returns:
             bool: True if the update was successful, False otherwise.
-
-        Raises:
-            ValueError: If the updates argument is not a dictionary, or
-                table_name is not a string.
-            Exception: If there is an error while inserting the row, an
-                exception will be raised and logged.
-
-        Example:
-            supabase_db = SupabaseDB()
-            supabase_db.insert_row(
-                table_name="users",
-                data={
-                    "name": "John Doe",
-                    "age": 30,
-                    "email": "johndoe@example.com"
-                },
-                use_service_role=True
-            )
         """
-        db_client = self._select_client(use_service_role)
 
+        db_client: Client = self._get_client(use_service_role)
         try:
-            response = db_client.table(table_name).insert(data).execute()
+            response = self._execute_query(
+                db_client=db_client,
+                table_name=table_name,
+                query=lambda table: table.insert(data),
+            )
             if not response.data:
                 raise ValueError("Response has no data")
-        except Exception as e:
-            self.log_error(
-                e, action="insert", data=data, table_name=table_name
+        except (PostgrestAPIError, ValueError) as e:
+            self.log(
+                level="error",
+                action="insert",
+                data=data,
+                table_name=table_name,
+                exception=e,
             )
             return False
         return True
+
+    def delete_row(self, *, table_name: str, match: dict) -> bool:
+        """
+        Deletes a row from a table based on a matching condition.
+        Args:
+            table_name (str): The name of the table to delete the row from.
+            match (dict): A dictionary representing the matching condition for
+                the row to delete. The keys should be the column name and the
+                value should be the corresponding value to match.
+
+        Returns:
+            bool: True if the row deletion was successful, False otherwise.
+        """
+        action: str = "delete"
+        db_client: Client = self._get_client(use_service_role=False)
+        try:
+            match_name, match_value = self._get_filter(
+                match, action, table_name
+            )
+            self._execute_query(
+                db_client=db_client,
+                table_name=table_name,
+                query=lambda table: table.delete.eq(match_name, match_value),
+            )
+            return True
+        except (PostgrestAPIError, ValueError, TypeError) as e:
+            self.log_error(e, action, match=match)
+            return False
 
     def select_row(
         self,
@@ -441,54 +577,45 @@ class SupabaseDB:
             List[dict]: A list of dictionaries representing the retrieved row
                 or rows. If no row is found matching the condition, an empty
                 dictionary is returned.
-
-        Raises:
-            ValueError: If the match argument is not a dictionary, or
-                table_name is not a string.
-            Exception: If there is an error while retrieving the row, an
-                exception will be raised and logged.
-
-        Example:
-            supabase_db = SupabaseDB()
-            result = supabase_db.select_row(
-                table_name="users",
-                match={"name": "John Doe"},
-                columns=["name", "age", "email"]
-            )
-            print(result)
         """
-        db_client = self._select_client(use_service_role=True)
-
-        match_name, match_value = next(iter(match.items()))
+        action = "select"
         column_str = "*" if columns is None else ", ".join(columns)
+
+        db_client: Client = self._get_client(use_service_role=True)
         try:
-            if len(match) > 1:
-                raise ValueError(
-                    "Match dictionary should have only one key-value pair"
-                )
-            response = (
-                db_client.table(table_name)
-                .select(column_str)
-                .eq(match_name, match_value)
-                .execute()
+            match_name, match_value = self._get_filter(
+                match, action, table_name
             )
-            logger.debug(response)
+            response = self._execute_query(
+                db_client=db_client,
+                table_name=table_name,
+                query=lambda table: table.select(column_str).eq(
+                    match_name, match_value
+                ),
+            )
             if not response or not response.data:
                 raise ValueError("Response has no data")
-
-            if isinstance(response.data, list):
-                return response.data
-            else:
-                raise TypeError("Returned data was not a list")
-        except Exception as e:
-            self.log_error(
-                e,
-                action="select",
+        except (PostgrestAPIError, ValueError) as e:
+            self.log(
+                level="error",
+                exception=e,
+                action=action,
                 table_name=table_name,
                 column_str=column_str,
                 match=match,
             )
-            return {}
+            return self.empty_value
+        if self._validate_response(
+            response.data,
+            expected_type=list,
+            action=action,
+            table_name=table_name,
+            colum_str=column_str,
+            match=match,
+        ):
+            return response.data
+        else:
+            return self.empty_value
 
     def update_row(self, *, table_name: str, info: dict, match: dict) -> bool:
         """
@@ -506,56 +633,34 @@ class SupabaseDB:
 
         Returns:
             bool: True if the update was successful, False otherwise.
-
-        Raises:
-            ValueError: If the match argument is not a dictionary, or
-                table_name is not a string.
-            Exception: If there is an error while updating the row, an
-                exception will be raised and logged.
-
-        Example:
-            supabase_db = SupabaseDB()
-            result = supabase_db.update_row(
-                table_name="users",
-                info={"age": 31},
-                match={"name": "John Doe"}
-            )
-            print(result)
-            # Output: True
         """
-        db_client = self._select_client()
         action: str = "update"
-
+        db_client: Client = self._get_client(use_service_role=False)
         try:
-            if len(match.keys()) != 1:
-                raise ValueError(
-                    "Match dictionary must have one key-value pair"
-                )
-            for key, value in match.items():
-                if not isinstance(key, str):
-                    raise KeyError(f"{key} must be a string")
-                if not isinstance(value, str):
-                    raise KeyError(
-                        f"Value for filter '{key}' must be a string"
-                    )
-        except KeyError as e:
-            self.log_error(e, action, match=match, table_name=table_name)
-
-        match_name, match_value = next(iter(match.items()))
-        try:
-            res = (
-                db_client.table(table_name)
-                .update(info)
-                .eq(match_name, match_value)
-                .execute()
+            match_name, match_value = self._get_filter(
+                match, action, table_name
             )
-        except Exception as e:
+            response = self._execute_query(
+                db_client=db_client,
+                table_name=table_name,
+                query=lambda table: table.update(info).eq(
+                    match_name, match_value
+                ),
+            )
+        except (PostgrestAPIError, ValueError, TypeError) as e:
             self.log_error(e, action, updates=info, match=match)
             return False
-        if res.data:
+        if response.data:
             return True
         log = "Data is the same"
-        self.log_info(action, res, info=info, log=log)
+        self.log(
+            level="info",
+            action=action,
+            response=response.data,
+            info=info,
+            match=match,
+            log=log,
+        )
         return False
 
     def find_row(
@@ -565,40 +670,43 @@ class SupabaseDB:
         match_column: str,
         within_period: int,
         columns: Optional[list[str]],
-    ) -> dict:
-        db_client = self._select_client()
+    ) -> list[dict]:
         action: str = "find row"
         if columns is None:
             columns = ["*"]
+
+        db_client: Client = self._get_client(use_service_role=False)
         try:
-            response = (
-                db_client.table(table_name)
-                .select(columns)
-                .lte(match_column, within_period)
-                .execute()
+            response = self._execute_query(
+                db_client=db_client,
+                table_name=table_name,
+                query=lambda table: table.select(columns).lte(
+                    match_column, within_period
+                ),
             )
-        except Exception as e:
-            self.log_error(
-                e,
-                action,
+        except PostgrestAPIError as e:
+            self.log(
+                level="error",
+                exception=e,
+                action=action,
                 table_name=table_name,
                 match_column=match_column,
                 within_period=within_period,
                 columns=columns,
             )
-            return {}
+            return self.empty_value
 
-        if response and response.data:
-            try:
-                self._validate_dict(response.data)
-                return response.data
-            except Exception as e:
-                self.log_error(
-                    e,
-                    action,
-                    table_name=table_name,
-                    match_column=match_column,
-                    within_period=within_period,
-                    columns=columns,
-                )
-                return {}
+        if (
+            response
+            and response.data  # noqa: W503
+            and self._validate_response(  # noqa: W503
+                response.data,
+                expected_type=list,
+                action=action,
+                table_name=table_name,
+                match_column=match_column,
+                within_period=within_period,
+                columns=columns,
+            )
+        ):
+            return self.empty_value
