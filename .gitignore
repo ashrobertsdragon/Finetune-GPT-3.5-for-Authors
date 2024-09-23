@@ -9,6 +9,7 @@ flask_session/
 
 *.pyc
 *.log
+.flake8
 
 .env
 stripe-ids.json

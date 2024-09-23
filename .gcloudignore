@@ -17,6 +17,7 @@
 settings.json
 .pre-commit-config.yaml
 .env
+.flake8
 run_dev_server.py
 bullshit.py
 requirements-dev.txt
