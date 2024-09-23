@@ -50,18 +50,6 @@ ignore = ["E203"]
 [tool.ruff.lint.isort]
 section-order = ["future", "standard-library", "third-party", "local-folder", "first-party"]
 
-
-[tool.isort]
-py_version=39
-src_paths = ["src/lorebinders"]
-sections = ["FUTURE","STDLIB","THIRDPARTY","LOCALFOLDER", "FIRSTPARTY"]
-skip_gitignore = false
-multi_line_output = 3
-use_parentheses = true
-lexicographical = true
-group_by_package = true
-line_length = 79
-
 [tool.mypy]
 disable_error_code = "import-untyped"
 mypy_path = "stubs"
