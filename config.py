@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 from decouple import config
@@ -65,9 +64,9 @@ class Config:
 
     PROSEPAL_ENDPOINTS: dict = {"lorebinder": "fake_endpoint"}
 
-    def define_upload(self):
-        self.UPLOAD_FOLDER = self.UPLOAD_FOLDER
-        os.makedirs(self.UPLOAD_FOLDER, exist_ok=True)
+    def define_upload(self, UPLOAD_FOLDER: Path):
+        self.UPLOAD_FOLDER = UPLOAD_FOLDER
+        self.UPLOAD_FOLDER.mkdir(exist_ok=True)
 
 
 class DevelopmentConfig(Config):
