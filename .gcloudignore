@@ -18,6 +18,7 @@ settings.json
 .pre-commit-config.yaml
 .env
 .flake8
+prosepal-site.code-workspace
 run_dev_server.py
 bullshit.py
 requirements-dev.txt

@@ -10,7 +10,7 @@ flask_session/
 *.pyc
 *.log
 .flake8
-
+prosepal-site.code-workspace
 .env
 stripe-ids.json
 master*.json
