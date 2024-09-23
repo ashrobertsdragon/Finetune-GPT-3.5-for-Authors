@@ -41,7 +41,7 @@ env_config = {
 config_name: str = config("FLASK_ENV", default="development")
 app.config.from_object(env_config[config_name])
 
-logging_type: str = app.config.get("LOGGING_TYPE")
+logging_type: str = app.config["LOGGER_TYPE"]
 logger_function: Callable | None = getattr(logging_config, logging_type, None)
 if logger_function is None:
     raise ValueError(
@@ -57,7 +57,7 @@ app.logger.critical = logger.critical
 app.logger.exception = logger.exception
 
 supabase_logger = logging_config.supabase_logger
-supabase_login = SupabaseLogin().from_config()
+supabase_login = SupabaseLogin.from_config()
 app.config["SUPABASE_CLIENT"] = SupabaseClient(supabase_login, supabase_logger)
 
 
