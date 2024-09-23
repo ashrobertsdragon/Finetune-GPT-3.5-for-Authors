@@ -4,9 +4,17 @@ from werkzeug.datastructures.file_storage import FileStorage
 
 from .logging_config import supabase_logger
 from .supabase import SupabaseStorage
+from .supabase_validator import validate
 
-client = app.config["supabase_client"]
-storage = SupabaseStorage(client, supabase_logger)
+storage = None
+
+
+def get_storage() -> SupabaseStorage:
+    global storage
+    if storage is None:
+        client = app.config["SUPABASE_CLIENT"]
+        storage = SupabaseStorage(client, supabase_logger, validate)
+    return storage
 
 
 def send_file_to_bucket(
@@ -31,6 +39,8 @@ def send_file_to_bucket(
         - The file content type will be determined automatically based on the
         file's MIME type.
     """
+
+    storage = get_storage()
     file_name: str = file.filename
     upload_path: str = f"{user_folder}/{file_name}"
 
@@ -66,5 +76,6 @@ def create_signed_url(bucket: str, download_path: str) -> str:
             string if the method returned an empty string.
 
     """
+    storage = get_storage()
     url: str = storage.create_signed_url(bucket, download_path)
     return url or ""

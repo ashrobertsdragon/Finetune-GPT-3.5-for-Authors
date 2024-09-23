@@ -6,9 +6,9 @@ from loguru import logger
 
 from .logging_config import supabase_logger
 from .supabase import SupabaseDB
+from .supabase_validator import validate
 
-client = app.config["supabase_client"]
-db = SupabaseDB(client, supabase_logger)
+db = None
 
 
 def load_user():
@@ -29,15 +29,24 @@ def random_str():
     )
 
 
+def get_supabasedb() -> SupabaseDB:
+    global db
+    if db is None:
+        client = app.config["SUPABASE_CLIENT"]
+        db = SupabaseDB(client, supabase_logger, validate)
+    return db
+
+
 def update_db() -> bool:
     """
     Update the user's row of the user table with the most current session
     user_details dictionary. Returns a boolean of whether update was
     successful.
     """
+    db = get_supabasedb()
     try:
         auth_id: str = session["user_details"]["auth_id"]
-    except Exception:
+    except LookupError:
         logger.error(f"auth_id not found in {session["user_details"]}")
     try:
         info: dict = session["user_details"]

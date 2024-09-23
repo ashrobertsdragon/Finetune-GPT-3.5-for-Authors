@@ -1,10 +1,21 @@
 from flask import current_app, flash, session
-from prosepal.file_handling import create_signed_url
-from prosepal.supabase import SupabaseDB
 
 from .forms import AccountManagementForm
 
-db = SupabaseDB()
+from prosepal.file_handling import create_signed_url
+from prosepal.logging_config import supabase_logger
+from prosepal.supabase import SupabaseDB
+from prosepal.supabase_validator import validate
+
+db = None
+
+
+def get_supabasedb() -> SupabaseDB:
+    global db
+    if db is None:
+        client = current_app.config["SUPABASE_CLIENT"]
+        db = SupabaseDB(client, supabase_logger, validate)
+    return db
 
 
 def initialize_user_db() -> bool:
@@ -14,6 +25,7 @@ def initialize_user_db() -> bool:
     Returns:
         boolean of whether row insert was successful.
     """
+    db = get_supabasedb()
     info: dict = session["user_details"]
     return db.insert_row(table_name="user", data=info, use_service_role=True)
 
@@ -30,6 +42,7 @@ def get_binders() -> list[dict]:
                 download_path (str): The download path of the binder.
                 created_on (str): The date the binder was created.
     """
+    db = get_supabasedb()
     owner: int = session["user_details"]["id"]
     match_dict: dict = {"owner": owner}
     binder_data: list = db.select_row(
@@ -99,6 +112,7 @@ def get_user_data(auth_id: str) -> dict:
     Returns:
         dict: A dictionary containing the user data fetched from the database.
     """
+    db = get_supabasedb()
     match_dict: dict = {"auth_id": auth_id}
     data = db.select_row(table_name="user", match=match_dict)
     return data[0]

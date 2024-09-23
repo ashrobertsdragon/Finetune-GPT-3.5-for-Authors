@@ -9,10 +9,6 @@ from flask import (
     session,
     url_for,
 )
-from prosepal.decorators import login_required
-from prosepal.logging_config import supabase_logger
-from prosepal.supabase import SupabaseAuth
-from prosepal.utils import update_db
 
 from .forms import (
     AccountManagementForm,
@@ -31,13 +27,28 @@ from .utils import (
     update_user_details,
 )
 
+from prosepal.decorators import login_required
+from prosepal.logging_config import supabase_logger
+from prosepal.supabase import SupabaseAuth
+from prosepal.supabase_validator import validate
+from prosepal.utils import update_db
+
 accounts_app = Blueprint("accounts", __name__)
-supabase_client = current_app.config["supabase_client"]
-auth = SupabaseAuth(supabase_client, supabase_logger)
+
+auth = None
+
+
+def get_auth_client() -> SupabaseAuth:
+    global auth
+    if auth is None:
+        supabase_client = current_app.config["SUPABASE_CLIENT"]
+        auth = SupabaseAuth(supabase_client, supabase_logger, validate)
+    return auth
 
 
 @accounts_app.route("/signup", methods=["GET", "POST"])
 def signup_view():
+    auth = get_auth_client()
     form = SignupForm()
     if form.validate_on_submit():
         email = form.email.data
@@ -59,6 +70,7 @@ def signup_view():
 
 @accounts_app.route("/login", methods=["GET", "POST"])
 def login_view():
+    auth = get_auth_client()
     if "access_token" in session and "user_details" in session:
         auth_id = session["user_details"]["auth_id"]
         redirect_after_login(auth_id)
@@ -86,6 +98,7 @@ def login_view():
 @accounts_app.route("/logout", methods=["GET"])
 @login_required
 def logout_view():
+    auth = get_auth_client()
     session.pop("user_details", None)
     session.pop("access_token", None)
     session.pop("_flashes", None)
@@ -95,6 +108,7 @@ def logout_view():
 
 @accounts_app.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password_view():
+    auth = get_auth_client()
     DOMAIN = current_app.config["DOMAIN"]
     form = ForgotPasswordForm()
     if form.validate_on_submit():
@@ -109,6 +123,7 @@ def forgot_password_view():
 
 @accounts_app.route("/reset-password", methods=["GET", "POST"])
 def reset_password_view():
+    auth = get_auth_client()
     access_token = request.args.get("access_token", "")
     if not access_token:
         return redirect(url_for("login_view"))
@@ -154,6 +169,7 @@ def profile_view():
         return redirect(url_for("accounts.account_view", section="profile"))
     account_form = AccountManagementForm()
     password_form = UpdatePasswordForm()
+    auth = get_auth_client()
     if account_form.is_submitted():
         if account_form.validate_on_submit():
             email = account_form.email.data

@@ -1,7 +1,6 @@
 import json
-import os
 import time
-from typing import Optional
+from pathlib import Path
 
 import stripe
 from flask import current_app, flash
@@ -24,23 +23,22 @@ def get_id(num_credits: int) -> str:
     Returns:
     - The SKU value associated with the given num_credits key.
     """
-    file_path = os.path.join("src", "stripe", "stripe-ids.json")
-    with open(file_path) as file:
+    file_path = Path("src", "stripe", "stripe-ids.json")
+    with file_path.open("r") as file:
         data = json.load(file)
 
-    price_id = data.get("stripeIDs", {}).get(str(num_credits))
-    return price_id
+    return data.get("stripeIDs", {}).get(str(num_credits))
 
 
 def handle_error(
     error: Exception, override_default: bool = False
-) -> Optional[str]:
+) -> str | None:
     """
     Handle different types of errors that may occur during the payment process.
 
     Parameters:
     - error: The error object.
-    - override_default: Whether to display the default erorr message or
+    - override_default: Whether to display the default error message or
       user_message string from error object (default: False).
 
     Returns:
@@ -79,7 +77,7 @@ def retry_delay(attempt: int) -> int:
 
 def create_stripe_session(
     num_credits: int, customer_email: str, attempt: int = 0
-) -> Optional[stripe.checkout.Session]:
+) -> stripe.checkout.Session | None:
     """
     Create a Stripe session for a payment.
 
@@ -103,7 +101,7 @@ def create_stripe_session(
     DOMAIN = current_app.config["DOMAIN"]
     price_id = get_id(num_credits)
     try:
-        stripe_session = stripe.checkout.Session.create(
+        return stripe.checkout.Session.create(
             ui_mode="embedded",
             line_items=[{"price": price_id, "quantity": 1}],
             mode="payment",
@@ -112,7 +110,6 @@ def create_stripe_session(
             automatic_tax={"enabled": True},
             metadata={"num_credits": num_credits},
         )
-        return stripe_session
     except stripe.CardError as e:
         return handle_error(e, override_default=True)
     except (stripe.RateLimitError, stripe.APIConnectionError) as e:

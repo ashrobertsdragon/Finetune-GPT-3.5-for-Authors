@@ -2,12 +2,23 @@ from datetime import date, timedelta
 
 import requests
 from decouple import config
+from flask import current_app
 
 from prosepal.cache import cache
 from prosepal.error_handling import email_admin
+from prosepal.logging_config import supabase_logger
 from prosepal.supabase import SupabaseDB
+from prosepal.supabase_validator import validate
 
-db = SupabaseDB()
+db = None
+
+
+def get_supabasedb() -> SupabaseDB:
+    global db
+    if db is None:
+        client = current_app.config["SUPABASE_CLIENT"]
+        db = SupabaseDB(client, supabase_logger, validate)
+    return db
 
 
 def get_future_date(days_ahead: int) -> date:
@@ -60,6 +71,7 @@ def get_update_data(check_dates: list[str]) -> list[dict]:
         }
     ]
     """
+    db = get_supabasedb()
     matches: dict = {"date": check_dates}
     response: list = db.select_rows(
         table_name="updates",
@@ -117,9 +129,7 @@ def check_email(email: str) -> bool:
         return False
     if not response.get("is_valid_format", {}).get("value"):
         return False
-    if not response.get("is_smtp_valid", {}).get("value"):
-        return False
-    return True
+    return bool(response.get("is_smtp_valid", {}).get("value"))
 
 
 def send_message(name: str, user_email: str, message: str) -> None:

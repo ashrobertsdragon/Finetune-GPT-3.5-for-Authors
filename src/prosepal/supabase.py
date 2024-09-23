@@ -1,5 +1,6 @@
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable, Optional, TypeAlias
+from typing import Any, TypeAlias
 
 from decouple import config
 from gotrue.types import AuthResponse, UserResponse
@@ -24,34 +25,6 @@ class SupabaseLogin(BaseModel):
             key=config("SUPABASE_KEY"),
             service_role=config("SUPABASE_SERVICE_ROLE"),
         )
-
-
-def validate_response(
-    value: Any,
-    expected_type: type,
-    allow_none: bool = False,
-    name: str = "Response",
-) -> None:
-    """
-    Validate that a response is of the expected type.
-
-    Args:
-        value: The value to validate.
-        expected_type: The expected type of the value.
-        name: The name of the value (for error messages).
-        allow_none: Whether None is an allowed value.
-
-    Raises:
-        ValueError: If the value is None and allow_none is False.
-        TypeError: If the value is not of the expected type.
-    """
-    if value is None:
-        if not allow_none:
-            raise ValueError(f"{name} must have a value")
-        return
-
-    if not isinstance(value, expected_type):
-        raise TypeError(f"{name} must be of type {expected_type.__name__}")
 
 
 class SupabaseClient:
@@ -84,9 +57,15 @@ class SupabaseClient:
 
 
 class SupabaseAuth:
-    def __init__(self, client: SupabaseClient, log_function: LogFunction):
+    def __init__(
+        self,
+        client: SupabaseClient,
+        log_function: LogFunction,
+        validator: Callable[[Any, type, bool], None],
+    ):
         self.client: Client = client.client_class.select_client()
         self.log = log_function
+        self.validate_response = validator
 
     def sign_up(self, *, email: str, password: str) -> AuthResponse:
         """
@@ -113,9 +92,7 @@ class SupabaseAuth:
                     "password": password,
                 }
             )
-            validate_response(
-                response, expected_type="Tuple", allow_none="response"
-            )
+            self.validate_response(response, expected_type="Tuple")
             return response
         except Exception as e:
             self.log(level="error", action="signup", email=email, exception=e)
@@ -359,7 +336,7 @@ class SupabaseStorage:
             bool: True if file was downloaded, False otherwise.
         """
         try:
-            with open(destination_path, "wb+") as f:
+            with destination_path.open("wb+") as f:
                 response = self._use_storage_connection(
                     bucket, "download", path=download_path
                 )
@@ -377,7 +354,7 @@ class SupabaseStorage:
             return False
 
     def list_files(
-        self, bucket: str, folder: Optional[str] = None
+        self, bucket: str, folder: str | None = None
     ) -> list[dict[str, str]]:
         """
         List the files in a Supabase storage bucket or folder.
@@ -414,7 +391,7 @@ class SupabaseStorage:
         bucket: str,
         download_path: str,
         *,
-        expires_in: Optional[int] = 3600,
+        expires_in: int | None = 3600,
     ) -> str:
         """
         Create a signed download URL to a file in a Supabase storage bucket.
@@ -649,7 +626,7 @@ class SupabaseDB:
         *,
         table_name: str,
         match: dict,
-        columns: Optional[list[str]] = None,
+        columns: list[str] | None = None,
     ) -> list[dict]:
         """
         Retrieves a row or columns from a table based on a matching condition.
@@ -760,7 +737,7 @@ class SupabaseDB:
         table_name: str,
         match_column: str,
         within_period: int,
-        columns: Optional[list[str]],
+        columns: list[str] | None,
     ) -> list[dict]:
         action: str = "find row"
         if columns is None:

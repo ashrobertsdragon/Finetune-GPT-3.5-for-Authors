@@ -2,12 +2,22 @@ import requests
 from decouple import config
 from flask import current_app
 
-from prosepal.error_handling import email_admin
-from prosepal.supabase import SupabaseDB
-
 from .credits import update_credits
 
-db = SupabaseDB()
+from prosepal.error_handling import email_admin
+from prosepal.logging_config import supabase_logger
+from prosepal.supabase import SupabaseDB
+from prosepal.supabase_validator import validate
+
+db = None
+
+
+def get_supabasedb() -> SupabaseDB:
+    global db
+    if db is None:
+        client = current_app.config["SUPABASE_CLIENT"]
+        db = SupabaseDB(client, supabase_logger, validate)
+    return db
 
 
 def save_binder_data(api_payload: dict, user: str) -> None:
@@ -24,6 +34,7 @@ def save_binder_data(api_payload: dict, user: str) -> None:
     Raises:
         Exception: If there is an error saving the data to the binder table.
     """
+    db = get_supabasedb()
     try:
         data = api_payload
         data["owner"] = user
@@ -44,13 +55,13 @@ def call_api(api_payload: dict, endpoint: str):
 
 def str_to_dedup_list(string: str, *, delim: str = ",") -> list:
     """
-    Strips whitespace and extra delimeters from a string and converts to a set
+    Strips whitespace and extra delimiters from a string and converts to a set
     for deduplication before converting to a string.
 
     Args:
         string (str): The string to be converted.
-        delim (str)): The delimeter used in the string to be converted. Must be
-            be used as a keword argument. Comma is used if parameter is not
+        delim (str)): The delimiter used in the string to be converted. Must be
+            be used as a keyword argument. Comma is used if parameter is not
             given.
 
     Returns:
