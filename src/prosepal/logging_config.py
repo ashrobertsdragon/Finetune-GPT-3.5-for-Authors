@@ -3,7 +3,7 @@ import sys
 from loguru import logger
 
 
-def stout_logger() -> None:
+def stdout_logger() -> None:
     "Set up loguru logger with stdout"
     logger.add(
         sys.stdout,
