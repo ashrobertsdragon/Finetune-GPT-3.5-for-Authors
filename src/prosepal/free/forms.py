@@ -10,6 +10,19 @@ from wtforms import (
 )
 from wtforms.validators import DataRequired, Length, Regexp
 
+from .utils import ChunkType
+
+
+class JSONLConversionForm(FlaskForm):
+    file = FileField(
+        "Upload CSV File(s)",
+        validators=[
+            DataRequired(),
+            FileAllowed(["csv"], "CSV files only"),
+        ],
+    )
+    submit = SubmitField("Convert to JSONL")
+
 
 class EbookConversionForm(FlaskForm):
     ebook = FileField(
@@ -58,10 +71,10 @@ class FineTuneForm(FlaskForm):
         "Fine tuning method",
         choices=[
             ("placeholder", "Choose one"),
-            ("sliding_window_small", "Sliding Window (chapter-level)"),
-            ("sliding_window_large", "Sliding Window (book-level)"),
-            ("dialogue_prose", "Dialogue/Prose"),
-            ("generate_beats", "Generate Beats (extra cost)"),
+            (ChunkType.SLIDING_WINDOW_SMALL, "Sliding Window (chapter-level)"),
+            (ChunkType.SLIDING_WINDOW_SMALL, "Sliding Window (book-level)"),
+            (ChunkType.DIALOG_PROSE, "Dialogue/Prose"),
+            (ChunkType.GENERATE_BEATS, "Generate Beats (extra cost)"),
         ],
         validators=[DataRequired()],
     )
