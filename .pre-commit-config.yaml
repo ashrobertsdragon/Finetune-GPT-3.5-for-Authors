@@ -38,7 +38,7 @@ repos:
     rev: 7.0.0
     hooks:
       - id: flake8
-        args: [--extend-ignore=203, --extend-ignore=503]
+        args: [--extend-ignore=E203, --extend-ignore=W503]
         exclude: ^ebook2text/ebooklib/|^tests|^stubs
         additional_dependencies: ["flake8-bandit", "flake8-bugbear"]
 
@@ -46,7 +46,7 @@ repos:
     rev: 5.13.2
     hooks:
       - id: isort
-        args: [--py=39, --gitignore, --multi-line=VERTICAL_HANGING_INDENT, --use-parentheses, --filter-files]
+        args: [--py=310, --gitignore, --multi-line=VERTICAL_HANGING_INDENT, --use-parentheses, --filter-files]
         additional_dependencies: [toml]
         exclude: ^tests|^stubs
 
@@ -55,13 +55,13 @@ repos:
     hooks:
       - id: ruff
         exclude: ^tests|^stubs|cache|work|json|temp
-        args: [ --fix, --target-version=py39]
+        args: [ --select=I, --fix, --target-version=py310]
       - id: ruff-format
         exclude: ^tests|^stubs|cache|work|json|temp
-        args: [--target-version=py39, --line-length=79]
+        args: [--target-version=py310, --line-length=79]
 
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.15.2
     hooks:
       - id: pyupgrade
-        args: [--py39-plus]
+        args: [--py310-plus]
