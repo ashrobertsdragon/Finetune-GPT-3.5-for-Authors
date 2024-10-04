@@ -1,10 +1,10 @@
 from flask import Blueprint, jsonify, render_template, session
 
-from prosepal.decorators import credit_required, login_required
-from prosepal.file_handling import send_file_to_bucket
-
 from .forms import LoreBinderForm
 from .utils import start_binder, str_to_dedup_list
+
+from prosepal.decorators import credit_required, login_required
+from prosepal.file_handling import send_file_to_bucket
 
 binders_app = Blueprint("binders", __name__)
 

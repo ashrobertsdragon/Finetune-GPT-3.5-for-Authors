@@ -2,6 +2,7 @@ from flask import (
     Blueprint,
     current_app,
     flash,
+    g,
     jsonify,
     redirect,
     render_template,
@@ -9,6 +10,7 @@ from flask import (
     session,
     url_for,
 )
+from supabase import SupabaseAuth
 
 from .forms import (
     AccountManagementForm,
@@ -28,10 +30,7 @@ from .utils import (
 )
 
 from prosepal.decorators import login_required
-from prosepal.logging_config import supabase_logger
-from prosepal.supabase import SupabaseAuth
-from prosepal.supabase_validator import validate
-from prosepal.utils import update_db
+from prosepal.utils import supabase_client, update_db
 
 accounts_app = Blueprint("accounts", __name__)
 
@@ -39,10 +38,11 @@ auth = None
 
 
 def get_auth_client() -> SupabaseAuth:
+    if not g.supabase_client:
+        supabase_client()
     global auth
     if auth is None:
-        supabase_client = current_app.config["SUPABASE_CLIENT"]
-        auth = SupabaseAuth(supabase_client, supabase_logger, validate)
+        auth = SupabaseAuth(g.supabase_client)
     return auth
 
 

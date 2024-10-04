@@ -8,10 +8,10 @@ from flask import (
     session,
 )
 
+from .utils import create_stripe_session, set_stripe_key
+
 from prosepal.decorators import login_required
 from prosepal.utils import update_db
-
-from .utils import create_stripe_session, set_stripe_key
 
 stripe_app = Blueprint("stripe", __name__)
 
@@ -30,8 +30,7 @@ def create_checkout_session():
 
     if not stripe.api_key:
         set_stripe_key()
-    stripe_session = create_stripe_session(num_credits, customer_email)
-    if stripe_session:
+    if stripe_session := create_stripe_session(num_credits, customer_email):
         return jsonify(clientSecret=stripe_session.client_secret)
     else:
         return jsonify(num_credits)

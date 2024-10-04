@@ -1,14 +1,18 @@
 import secrets
 import string
 
-from flask import app, g, session
+from flask import g, session
 from loguru import logger
+from supasaas import SupabaseClient, SupabaseDB, SupabaseLogin
 
-from .logging_config import supabase_logger
-from .supabase import SupabaseDB
-from .supabase_validator import validate
 
-db = None
+def supabase_login() -> SupabaseLogin:
+    return SupabaseLogin.from_config()
+
+
+def supabase_client() -> None:
+    login = supabase_login()
+    g.supabase_client = SupabaseClient(login)
 
 
 def load_user():
@@ -29,12 +33,11 @@ def random_str():
     )
 
 
-def get_supabasedb() -> SupabaseDB:
-    global db
-    if db is None:
-        client = app.config["SUPABASE_CLIENT"]
-        db = SupabaseDB(client, supabase_logger, validate)
-    return db
+def load_supabasedb() -> None:
+    if not g.db:
+        if not g.supabase_client:
+            supabase_client()
+        g.db = SupabaseDB(g.supabase_client)
 
 
 def update_db() -> bool:
@@ -43,7 +46,8 @@ def update_db() -> bool:
     user_details dictionary. Returns a boolean of whether update was
     successful.
     """
-    db = get_supabasedb()
+    if not g.db:
+        load_supabasedb()
     try:
         auth_id: str = session["user_details"]["auth_id"]
     except LookupError:
@@ -57,4 +61,6 @@ def update_db() -> bool:
     except TypeError as e:
         logger.error(str(e))
     match: dict[str, str] = {"auth_id": auth_id}
-    return db.update_row(table_name="user", info=info, match=match)
+    return g.db.update_row(
+        table_name="user", info=info, match=match, match_type=str
+    )

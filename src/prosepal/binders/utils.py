@@ -1,23 +1,11 @@
 import requests
 from decouple import config
-from flask import current_app
+from flask import current_app, g
 
 from .credits import update_credits
 
 from prosepal.error_handling import email_admin
-from prosepal.logging_config import supabase_logger
-from prosepal.supabase import SupabaseDB
-from prosepal.supabase_validator import validate
-
-db = None
-
-
-def get_supabasedb() -> SupabaseDB:
-    global db
-    if db is None:
-        client = current_app.config["SUPABASE_CLIENT"]
-        db = SupabaseDB(client, supabase_logger, validate)
-    return db
+from prosepal.utils import load_supabasedb
 
 
 def save_binder_data(api_payload: dict, user: str) -> None:
@@ -34,11 +22,12 @@ def save_binder_data(api_payload: dict, user: str) -> None:
     Raises:
         Exception: If there is an error saving the data to the binder table.
     """
-    db = get_supabasedb()
+    if not g.db:
+        load_supabasedb()
     try:
         data = api_payload
         data["owner"] = user
-        db.insert_row(table_name="binders", data=data)
+        g.db.insert_row(table_name="binders", data=data)
     except Exception as e:
         current_app.logger.exception(
             f"Exception {e} saving {data} to binderTable"

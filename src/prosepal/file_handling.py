@@ -1,20 +1,16 @@
-from flask import app
+from flask import g
 from loguru import logger
+from supasaas import SupabaseStorage
 from werkzeug.datastructures.file_storage import FileStorage
 
-from .logging_config import supabase_logger
-from .supabase import SupabaseStorage
-from .supabase_validator import validate
-
-storage = None
+from prosepal.utils import supabase_client
 
 
-def get_storage() -> SupabaseStorage:
-    global storage
-    if storage is None:
-        client = app.config["SUPABASE_CLIENT"]
-        storage = SupabaseStorage(client, supabase_logger, validate)
-    return storage
+def load_storage() -> None:
+    if not hasattr(g, "supabase_client"):
+        supabase_client()
+    if not hasattr(g, "supabase_storage"):
+        g.supabase_storage = SupabaseStorage(g.supabase_client)
 
 
 def send_file_to_bucket(
@@ -40,7 +36,8 @@ def send_file_to_bucket(
         file's MIME type.
     """
 
-    storage = get_storage()
+    if not hasattr(g, "supabase_storage"):
+        load_storage()
     file_name: str = file.filename
     upload_path: str = f"{user_folder}/{file_name}"
 
@@ -49,11 +46,13 @@ def send_file_to_bucket(
     file.seek(0)
     deleted = False
 
-    files: list[dict[str, str]] = storage.list_files(bucket, user_folder)
+    files: list[dict[str, str]] = g.supabase_storage.list_files(
+        bucket, user_folder
+    )
     if any(file_name == file.get("name") for file in files):
-        deleted: bool = storage.delete_file(bucket, upload_path)
+        deleted: bool = g.supabase_storage.delete_file(bucket, upload_path)
     if deleted or upload_path not in files:
-        success: bool = storage.upload_file(
+        success: bool = g.supabase_storage.upload_file(
             bucket, upload_path, file_content, file_mimetype
         )
 
@@ -76,6 +75,7 @@ def create_signed_url(bucket: str, download_path: str) -> str:
             string if the method returned an empty string.
 
     """
-    storage = get_storage()
-    url: str = storage.create_signed_url(bucket, download_path)
+    if not hasattr(g, "supabase_storage"):
+        load_storage()
+    url: str = g.supabase_storage.create_signed_url(bucket, download_path)
     return url or ""
